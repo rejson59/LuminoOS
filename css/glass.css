@@ -374,3 +374,87 @@ button:active{transform:scale(.96)}
     scroll-behavior:auto!important;
   }
 }
+
+
+/* ============================================================
+   7. SZKLANE IKONY APLIKACJI
+   Gradientowa „szkłana” płytka: rozświetlona góra, refleks,
+   miękka krawędź, cień i delikatna przezroczystość.
+   ============================================================ */
+.bi{
+  position:relative;
+  border-radius:30%;
+  background-image:
+    linear-gradient(160deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.08) 34%, rgba(255,255,255,0) 60%),
+    var(--bg, linear-gradient(150deg,#8ea2c4,#3a4356));
+  background-blend-mode:overlay, normal;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.55) inset,
+    0 -1px 0 rgba(0,0,0,.18) inset,
+    0 0 0 .5px rgba(255,255,255,.35) inset,
+    0 10px 22px -10px rgba(0,0,0,.65),
+    0 2px 6px rgba(0,0,0,.28);
+  isolation:isolate;
+  transition:transform 320ms var(--ease-ios), box-shadow 320ms var(--ease-soft), filter 320ms var(--ease-soft);
+  will-change:transform;
+}
+.bi.bi--circle{border-radius:50%}
+
+/* refleks świetlny w górnej części (szkło) */
+.bi::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:
+    radial-gradient(120% 70% at 26% 4%, rgba(255,255,255,.62), rgba(255,255,255,.14) 42%, transparent 68%),
+    radial-gradient(90% 60% at 82% 92%, rgba(255,255,255,.20), transparent 62%);
+  opacity:.85;
+  z-index:0;
+}
+/* cienka obwódka + połysk krawędzi */
+.bi::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(255,255,255,.28) inset;
+  background:linear-gradient(125deg, rgba(255,255,255,.34), transparent 30%, transparent 72%, rgba(255,255,255,.14));
+  z-index:0;
+}
+.bi > svg, .bi > .cal-day{position:relative;z-index:1}
+.bi svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.bi svg.lu-chrome{filter:none}
+
+/* Calendar z dzisiejszą datą: biała płytka + niebieski pasek */
+.bi.lu-cal{background-image:linear-gradient(160deg,#fff,#f0f4fb);backdrop-filter:blur(6px)}
+.bi.lu-cal::before{background:linear-gradient(180deg, rgba(26,115,232,.96) 0 22%, transparent 22%);opacity:1}
+.bi.lu-cal::after{box-shadow:0 0 0 1px rgba(26,115,232,.18) inset}
+.bi.lu-cal .cal-day{color:#1a73e8;font-weight:700}
+
+/* Gmail / Sklep: jasne płytki, delikatne szkło */
+.bi.lu-gmail, .bi.lu-store{background-image:linear-gradient(160deg,#fff,#eef3fb)}
+.bi.lu-gmail svg, .bi.lu-store svg{filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.18))}
+
+/* podświetlenie i uniesienie pod kursorem */
+.app:hover .bi{
+  transform:translateY(-4px) scale(1.07);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.7) inset,
+    0 0 0 .5px rgba(255,255,255,.5) inset,
+    0 18px 30px -12px rgba(0,0,0,.6),
+    0 0 22px -4px rgba(150,205,255,.45);
+  filter:saturate(1.12) brightness(1.06);
+}
+.dock-app:hover .bi{
+  transform:translateY(-3px) scale(1.1);
+  filter:saturate(1.15) brightness(1.08);
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 16px 28px -12px rgba(0,0,0,.6), 0 0 20px -4px rgba(160,215,255,.5);
+}
+.app:active .bi, .dock-app:active .bi{transform:translateY(-1px) scale(.97)}
+
+/* ikony w oknach/starcie Windows: mniejsza skala efektów */
+.start-app .bi, .notif .bi, .sp-tile .bi{border-radius:26%}
+.start-app:hover .bi{transform:scale(1.06)}
+
+/* dock: wyraźne szkło pod ikonami */
+.dock{gap:6px}
+.dock .dock-app{background:none!important;box-shadow:none!important}
+
+@media (prefers-reduced-motion:reduce){
+  .bi, .app:hover .bi, .dock-app:hover .bi{transform:none!important;filter:none!important}
+}

@@ -122,13 +122,25 @@ i `assets/wallpaper-tablet-home.jpg` — style podciągną je automatycznie
   - wszystko na Web Animations API (transform/opacity = warstwa kompozytora),
   - automatyczne wyłączenie przy `prefers-reduced-motion`.
 
+### Szklane ikony aplikacji
+Wszystkie ikony (`js/core.js` → `brandIcon`, styl `css/glass.css` → `.bi`) są teraz
+„szklanymi” płytkami: gradient marki + refleks świetlny u góry, cienka rozświetlona
+krawędź, miękki cień i podniesienie pod kursorem. Dotyczy to pulpitu, docku,
+szuflady aplikacji, ekranu blokady i widgetów.
+
+### Serwer bez cache
+`tools/serve.py` wysyła `Cache-Control: no-store`, więc **każde odświeżenie pokazuje
+najnowszą wersję** — bez `Ctrl+Shift+R`. Uruchomienie: `npm start`.
+
 ## Rozwiązywanie problemów
 
 - **Pusta scena po wybraniu „Telefon / Tablet / Laptop”** — naprawione (selektory
   widoków korzystają z klas `device--phone/tablet/laptop`). Jeśli nadal widzisz stary
   stan, odśwież z pominięciem cache: `Ctrl+Shift+R` (albo `Cmd+Shift+R`).
-- **Zmiany nie widać po aktualizacji** — pliki CSS/JS mają znacznik `?v=3`;
-  podbij go przy większych zmianach, żeby przeglądarka pobrała nową wersję.
+- **Zmiany nie widać po aktualizacji** — serwer podglądu (`tools/serve.py`) wysyła
+  `no-store`, więc wystarczy zwykłe odświeżenie. Dodatkowo pliki mają znacznik
+  `?v=6` (podbijaj przy większych zmianach). Jeśli podgląd nadal pokazuje starą
+  wersję: zamknij i otwórz panel podglądu ponownie albo `Ctrl+Shift+R`.
 - **Coś się wysypuje** — na dole strony pojawia się czerwony pasek z treścią błędu
   (`js/guard.js`). Skopiuj jego treść i wyślij — to najszybsza droga do poprawki.
 - **Testy**: `npm test` (interakcje, 45 sprawdzeń) oraz `npm run test:views`
