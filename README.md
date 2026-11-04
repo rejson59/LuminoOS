@@ -128,27 +128,26 @@ Wszystkie ikony (`js/core.js` → `brandIcon`, styl `css/glass.css` → `.bi`) s
 krawędź, miękki cień i podniesienie pod kursorem. Dotyczy to pulpitu, docku,
 szuflady aplikacji, ekranu blokady i widgetów.
 
-### Ikony — liquid glass (przezroczyste, rozmywają tapetę)
-Ikona ma **dwie warstwy**, dokładnie jak liquid glass w iOS 26:
+### Ikony — liquid glass w trybie „Clear" (jak iOS 26)
+Ikona ma **dwie warstwy**:
 
 1. `.bi::before` — `backdrop-filter: blur(16px) saturate(190%)` przycięty maską
    squircle (`assets/icons/mask.png`): tapeta **pod ikoną jest rozmyta i wysycona**,
-2. `.bi` (tło = `assets/icons/<id>.png`) — **półprzezroczysty** kafel: barwnik
-   w kolorze marki (`tint` 0.2–0.4), rozświetlenie od góry, błysk krawędziowy,
-   jasna krawędź squircle i biały (lub firmowy) glif.
+2. `.bi` (tło = `assets/icons/<id>.png`) — **neutralne, szronione szkło**:
+   lekka mgła (8–20%), rozświetlenie od góry, refleks przy górnej krawędzi,
+   jasna krawędź squircle i wewnętrzny cień (grubość materiału).
 
-Dzięki temu widać przez ikonę tapetę, ale glif pozostaje czytelny —
-kolor kafla pełni rolę filtra barwnego, a nie nieprzezroczystej płytki.
+**Glif jest jednobarwny (biały) i ma wykroje** — detale rysowane na czarno są
+przez maskę **wycinane**, więc widać przez nie tapetę (tak robi to Apple w trybie
+„Clear"). Dzięki temu ikona nie jest kolorową płytką: kolor pochodzi wyłącznie
+od tapety, a glif pozostaje czytelny.
 
 Grafiki generuje `tools/make-icons.js` (SVG → PNG przez `@resvg/resvg-js`):
 squircle n=5 (ta sama krzywa co maska iOS), 512 px, kanał alfa.
-Podpięcie: `Lumino.iconImg(id)` → `<i class="app__icon bi" style="background-image:url('assets/icons/<id>.png?v=4')">`.
+Podpięcie: `Lumino.iconImg(id)` → `<i class="app__icon bi" style="background-image:url('assets/icons/<id>.png?v=6')">`.
 
 Regeneracja: `node tools/make-icons.js` → podbij `ICON_V` w `js/core.js`
 oraz `?v=` przy `mask.png` w `css/glass.css`.
-
-Warianty stylów (Liquid/Frosted/Gel/Chrome) i przełącznik na stronie zostały
-**usunięte** — jest jeden, dopracowany wygląd.
 
 ### Tablet: komplet aplikacji na jednym ekranie
 `14` aplikacji w siatce **5 kolumn** + 3 kompaktowe widgety w jednym rzędzie.
