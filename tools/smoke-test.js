@@ -143,19 +143,28 @@ dom.window.addEventListener("load", async () => {
     assert(!pl.playing, "pauza działa z pigułki");
     pl.pause();
   });
-  check("w trybie muzyki jest wejście do panelu (nie tylko Spotify)", () => {
+  check("klik w pigułkę podczas muzyki otwiera PANEL (nie Spotify)", () => {
+    const pl = dom.window.Lumino.player;
+    phone.lumino.unlock();
+    pl.play(0);
+    const isl = phone.querySelector(".island");
+    assert(isl.dataset.mode === "music", "tryb muzyki");
+    isl.querySelector(".island__face--music").click();
+    assert(isl.dataset.mode === "panel", "panel otwarty mimo grania");
+    assert(isl.classList.contains("has-music"), "pasek „teraz gra” widoczny");
+  });
+  check("panel pokazuje odtwarzacz, gdy muzyka gra (has-music + pasek)", () => {
     const pl = dom.window.Lumino.player;
     pl.play(0);
     const isl = phone.querySelector(".island");
-    assert(isl.dataset.mode === "music");
-    const panelBtn = isl.querySelector("[data-island-open-panel]");
-    assert(panelBtn, "przycisk skrótów w odtwarzaczu");
-    panelBtn.click();
-    assert(isl.dataset.mode === "panel", "panel otwiera się mimo muzyki");
-    /* zamknięcie panelu wraca do odtwarzacza, nie do zegara */
-    phone.querySelector(".island-shade").click();
-    assert(isl.dataset.mode === "music", "powrót do odtwarzacza");
+    assert(isl.classList.contains("has-music"), "klasa has-music");
+    /* symulujemy otwarcie panelu skrótami klawiszowymi/gestem */
+    phone.lumino.unlock();
+    const fake = isl.querySelector(".island__now");
+    assert(fake && fake.querySelector("[data-island-title]"), "pasek teraz gra w panelu");
+    assert(fake.querySelector("[data-island-play]"), "play w panelu");
     pl.pause();
+    assert(!isl.classList.contains("has-music"), "po pauzie pasek znika");
   });
   check("wyspa jest po prawej stronie ekranu", () => {
     const css = require("fs").readFileSync(require("path").join(__dirname, "..", "css/island.css"), "utf8");

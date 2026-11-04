@@ -28,7 +28,7 @@
    ============================================================ */
 .island{
   position:absolute;
-  top:7px;right:10px;
+  top:7px;left:10px;
   z-index:40;
   display:flex;align-items:flex-start;
   min-width:104px;
@@ -43,7 +43,7 @@
     0 0 0 .5px rgba(255,255,255,.10) inset,
     0 8px 20px -8px rgba(0,0,0,.95),
     0 1px 0 rgba(255,255,255,.06) inset;
-  transform-origin:100% 0%;
+  transform-origin:0% 0%;
   transform:scale(1);
   overflow:hidden;
   transition:
@@ -69,7 +69,7 @@
 .island:active{transform:scale(.97)}
 
 .island__cam{
-  position:absolute;right:10px;top:9.5px;
+  position:absolute;left:10px;top:9.5px;
   width:7px;height:7px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%, #25304a 0%, #05070d 72%);
   box-shadow:0 0 0 .5px rgba(140,175,235,.4) inset;
@@ -101,7 +101,7 @@
 /* ---------- idle: zegar + data ---------- */
 .island__face--idle{
   align-items:center;gap:7px;
-  padding:0 22px 0 12px;
+  padding:0 12px 0 22px;
   justify-content:flex-start;
 }
 .island__time{
@@ -153,17 +153,6 @@
   0%,100%{transform:scaleY(.45)}
   50%{transform:scaleY(1)}
 }
-.island__panel-btn{
-  width:22px;height:22px;border-radius:8px;flex:none;
-  display:grid;place-items:center;
-  border:0;cursor:pointer;color:#fff;
-  background:rgba(255,255,255,.10);
-  transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
-}
-.island__panel-btn .ico{width:11px;height:11px}
-.island__panel-btn:hover{background:rgba(255,255,255,.24)}
-.island__panel-btn:active{transform:scale(.9)}
-
 .island__play{
   width:22px;height:22px;border-radius:8px;flex:none;
   display:grid;place-items:center;
@@ -190,7 +179,6 @@
 /* wyspa w trybie panelu: szeroka i wysoka, ale nadal JEDEN element */
 .island[data-mode="panel"]{
   width:calc(100% - 20px);
-  right:10px;
   height:auto;
   border-radius:22px;
   transform:none;
@@ -208,6 +196,22 @@
   width:auto;min-width:172px;
   height:34px;border-radius:17px;
 }
+
+/* ---------- „teraz gra" w środku panelu: muzyka i skróty naraz ---------- */
+.island__now{
+  display:none;
+  align-items:center;gap:8px;width:100%;
+  padding:6px 8px;border-radius:12px;
+  background:rgba(255,255,255,.09);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
+}
+.island[data-mode="panel"].has-music .island__now{display:flex}
+.island__now .island__cover{width:22px;height:22px;border-radius:6px}
+.island__now .island__music-txt b{max-width:96px;font-size:9.5px}
+.island__now .island__music-txt small{max-width:96px;font-size:8px}
+.island__now .island__eq{margin-left:auto}
+.island__now .island__play{width:22px;height:22px}
+.island[data-mode="panel"] .island__now{animation:island-in 320ms cubic-bezier(.34,1.3,.64,1)}
 
 /* kaskada elementów panelu (jak w iOS) */
 .island-tile,
@@ -231,9 +235,9 @@
 .island[data-mode="panel"] .island-notif{will-change:transform,opacity}
 
 /* tablet: większe proporcje */
-.android[data-android="tablet"] .island{top:8px;right:14px;height:28px;border-radius:14px}
+.android[data-android="tablet"] .island{top:8px;left:14px;height:28px;border-radius:14px}
 .android[data-android="tablet"] .island__time{font-size:13px}
-.android[data-android="tablet"] .island__cam{right:12px;top:10.5px;width:8px;height:8px}
+.android[data-android="tablet"] .island__cam{left:12px;top:10.5px;width:8px;height:8px}
 
 /* ============================================================
    WYSPA = JEDYNE CENTRUM STEROWANIA (panel usunięty)

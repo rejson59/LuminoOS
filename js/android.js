@@ -69,12 +69,20 @@
             </span>
             <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
             <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
-            <button class="island__panel-btn" type="button" data-island-open-panel
-                    aria-label="Skróty i ustawienia" title="Skróty i ustawienia">${icon("i-sliders")}</button>
           </div>
 
           <div class="island__face island__face--panel">
             <span class="island__grip" aria-hidden="true"></span>
+            <!-- „teraz gra": muzyka i skróty jednocześnie -->
+            <div class="island__now">
+              <span class="island__cover" data-island-cover></span>
+              <span class="island__music-txt">
+                <b data-island-title>Nocna Jazda</b>
+                <small data-island-artist>Mira Kova</small>
+              </span>
+              <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+              <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
+            </div>
             <div class="island-sliders">
               <label class="island-slider" title="Jasność" style="--i:0">
                 <span class="island-slider__ico">${icon("i-sun")}</span>
@@ -371,18 +379,20 @@
     }
 
     /* --- mini odtwarzacz w wyspie --- */
-    const mCover = $("[data-island-cover]", islandBtn);
-    const mTitle = $("[data-island-title]", islandBtn);
-    const mArtist = $("[data-island-artist]", islandBtn);
-    const mPlay = $("[data-island-play]", islandBtn);
+    const mCovers = $$("[data-island-cover]", islandBtn);
+    const mTitles = $$("[data-island-title]", islandBtn);
+    const mArtists = $$("[data-island-artist]", islandBtn);
+    const mPlays = $$("[data-island-play]", islandBtn);
 
     function paintMusic() {
       const t = player.track;
-      if (mCover) mCover.className = `island__cover ${t.cover}`;
-      if (mTitle) mTitle.textContent = t.title;
-      if (mArtist) mArtist.textContent = t.artist;
-      if (mPlay) mPlay.innerHTML = icon(player.playing ? "i-pause" : "i-play");
+      mCovers.forEach(el => { el.className = `island__cover ${t.cover}`; });
+      mTitles.forEach(el => { el.textContent = t.title; });
+      mArtists.forEach(el => { el.textContent = t.artist; });
+      mPlays.forEach(el => { el.innerHTML = icon(player.playing ? "i-pause" : "i-play"); });
       islandBtn.classList.toggle("is-playing", !!player.playing);
+      /* panel pokazuje pasek „teraz gra", gdy muzyka leci */
+      islandBtn.classList.toggle("has-music", !!player.playing);
     }
     if (player && player.subscribe) {
       player.subscribe(() => {
@@ -393,10 +403,10 @@
       });
       paintMusic();
     }
-    if (mPlay) mPlay.addEventListener("click", e => {
+    mPlays.forEach(el => el.addEventListener("click", e => {
       e.stopPropagation();
       player.toggle();
-    });
+    }));
     /* zachowanie twarzy wyspy */
     const faceIdle = $(".island__face--idle", islandBtn);
     const faceNotif = $("[data-island-notif]", islandBtn);
@@ -409,22 +419,19 @@
       e.stopPropagation();
       setMode("idle");
     });
-    /* klik w odtwarzacz = otwórz Spotify (poza przyciskiem play) */
-    const panelBtn = $("[data-island-open-panel]", islandBtn);
-    if (panelBtn) panelBtn.addEventListener("click", e => {
+    /* W trybie muzyki klik w pigułkę otwiera PANEL (tam jest „teraz gra"),
+       a Spotify otwiera dopiero klik w samą okładkę. Dzięki temu panel jest
+       zawsze dostępny — także gdy muzyka gra. */
+    const onMusicFace = e => {
+      if (e.target.closest("[data-island-play]")) return;   /* play/pauza */
       e.stopPropagation();
+      if (e.target.closest(".island__cover")) { openApp("spotify"); return; }
       openPanel();
-    });
-
-    const openSpotify = e => {
-      if (e.target.closest("[data-island-play], [data-island-open-panel]")) return;
-      e.stopPropagation();
-      openApp("spotify");
     };
     if (faceMusic) {
-      faceMusic.addEventListener("click", openSpotify);
+      faceMusic.addEventListener("click", onMusicFace);
       faceMusic.addEventListener("keydown", e => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSpotify(e); }
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onMusicFace(e); }
       });
     }
 
