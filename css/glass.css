@@ -1,0 +1,376 @@
+/* ============================================================
+   LuminoOS — makiety: warstwa „glass” + ultra płynne animacje
+   Wczytywana jako ostatnia, nadpisuje wygląd powłok.
+   ============================================================ */
+
+:root{
+  --glass-blur: 22px;
+  --glass-sat: 165%;
+  --glass-bg: rgba(255,255,255,.10);
+  --glass-bg-strong: rgba(255,255,255,.16);
+  --glass-line: rgba(255,255,255,.22);
+  --glass-hi: rgba(255,255,255,.45);
+  --ease-ios: cubic-bezier(.22,1,.36,1);
+  --ease-soft: cubic-bezier(.4,0,.2,1);
+  --t-fast: 200ms;
+  --t-mid: 340ms;
+  --t-slow: 520ms;
+  --shadow-soft: 0 18px 40px -16px rgba(0,0,0,.65);
+  --shadow-lift: 0 26px 60px -22px rgba(0,0,0,.8);
+}
+
+/* ------------------------------------------------------------
+   1. Bazowe wygładzenie
+   ------------------------------------------------------------ */
+.app__icon, .bi, .tb-icon, .qs, .notif, .row, .dock-app, .win-desk-icon,
+.win-tab, .start-app, .recent, .sp-track, .sp-tile, .file, .cal-grid .cell,
+.lock-action, .viewbtn, .slider, .switch, .start-search, .searchbar, .widget{
+  transition:
+    transform var(--t-fast) var(--ease-ios),
+    background-color var(--t-fast) var(--ease-soft),
+    box-shadow var(--t-fast) var(--ease-soft),
+    color var(--t-fast) var(--ease-soft),
+    opacity var(--t-fast) var(--ease-soft),
+    filter var(--t-fast) var(--ease-soft);
+}
+
+/* ikony „oddychają” pod kursorem */
+.app .bi, .app .app__icon{align-self:center}
+.app:hover .bi, .app:hover .app__icon{transform:translateY(-3px) scale(1.06)}
+.dock-app:hover .bi{transform:translateY(-2px) scale(1.09)}
+.sp-track:hover{transform:translateX(2px)}
+.file:hover{transform:translateY(-2px)}
+.start-app:hover{transform:translateY(-2px)}
+.viewbtn:hover{transform:translateY(-1px)}
+.win-desk-icon:hover .ico{transform:scale(1.08);transition:transform var(--t-fast) var(--ease-ios)}
+
+/* ------------------------------------------------------------
+   2. Android — szklane powierzchnie
+   ------------------------------------------------------------ */
+/* kafelki aplikacji: lekkie szkło pod ikoną po najechaniu */
+.app__wrap{
+  border-radius:18px;
+  padding:4px;
+  transition:background-color var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-ios);
+}
+.app:hover .app__wrap{background:rgba(255,255,255,.12)}
+
+/* pasek stanu jako szkło */
+.statusbar{
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
+  backdrop-filter:blur(6px) saturate(140%);
+  -webkit-backdrop-filter:blur(6px) saturate(140%);
+}
+
+/* At a Glance i wyszukiwanie — mocniejsze szkło */
+.glance{
+  border-radius:20px;
+  padding:8px 10px;
+  background:rgba(255,255,255,.10);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.18) inset, 0 8px 22px -12px rgba(0,0,0,.5);
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+.glance:hover{background:rgba(255,255,255,.15)}
+
+.searchbar{
+  background:var(--glass-bg-strong);
+  box-shadow:0 0 0 .5px var(--glass-line) inset, 0 10px 26px -14px rgba(0,0,0,.55);
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  transition:transform var(--t-fast) var(--ease-ios), box-shadow var(--t-fast) var(--ease-soft);
+}
+.searchbar:hover{transform:translateY(-1px);box-shadow:0 0 0 .5px var(--glass-hi) inset, 0 14px 32px -14px rgba(0,0,0,.6)}
+
+/* dock — wyraźne szkło jak w Androidzie 15 */
+.dock{
+  background:rgba(255,255,255,.13);
+  box-shadow:
+    0 0 0 .5px var(--glass-line) inset,
+    0 1px 0 rgba(255,255,255,.22) inset,
+    0 16px 34px -18px rgba(0,0,0,.7);
+  backdrop-filter:blur(26px) saturate(180%);
+  -webkit-backdrop-filter:blur(26px) saturate(180%);
+}
+
+/* widgety tabletu */
+.widget{
+  background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.20) inset, 0 14px 30px -18px rgba(0,0,0,.55);
+  backdrop-filter:blur(24px) saturate(170%);
+  -webkit-backdrop-filter:blur(24px) saturate(170%);
+  transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
+}
+.widget:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+
+/* panel powiadomień — szkło premium + sprężyste wejście */
+.a-panel{
+  background:rgba(28,30,44,.62);
+  backdrop-filter:blur(38px) saturate(180%);
+  -webkit-backdrop-filter:blur(38px) saturate(180%);
+  box-shadow:0 30px 60px -22px rgba(0,0,0,.75), 0 0 0 .5px rgba(255,255,255,.18) inset;
+  transform:translateY(-102%) scale(.98);
+  transition:transform var(--t-slow) var(--ease-ios), border-radius var(--t-mid) var(--ease-soft);
+}
+.a-panel.is-open{transform:translateY(0) scale(1);border-radius:0 0 28px 28px}
+
+.qs{
+  background:rgba(255,255,255,.10);
+  backdrop-filter:blur(14px) saturate(150%);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset;
+}
+.qs:hover{background:rgba(255,255,255,.17);transform:translateY(-1px)}
+.qs.on{
+  background:linear-gradient(150deg, rgba(211,227,253,.98), rgba(168,199,250,.92));
+  box-shadow:0 8px 20px -12px rgba(168,199,250,.9), 0 0 0 .5px rgba(255,255,255,.5) inset;
+}
+.notif{
+  background:rgba(255,255,255,.10);
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.12) inset;
+}
+.notif:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
+
+/* szuflada aplikacji — szkło z rozmyciem tła */
+.a-drawer{
+  background:rgba(14,16,28,.55);
+  backdrop-filter:blur(34px) saturate(170%);
+  -webkit-backdrop-filter:blur(34px) saturate(170%);
+  transform:translateY(100%) scale(1.01);
+  transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft);
+}
+.a-drawer.is-open{transform:none}
+.drawer-search{
+  background:rgba(255,255,255,.14);
+  box-shadow:0 0 0 .5px var(--glass-line) inset, 0 8px 20px -14px rgba(0,0,0,.6);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+}
+
+/* aplikacje — szkło pod paskiem tytułu i sprężyste wejście */
+.appbar{
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  box-shadow:0 1px 0 rgba(255,255,255,.08) inset;
+}
+.a-app{
+  transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft), visibility var(--t-mid);
+  transform:translateY(14px) scale(.985);
+}
+.a-app.is-open{transform:none}
+
+/* ekran blokady — tapeta ostra, szkło tylko na kartach */
+.a-lock{transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft)}
+.a-lock.is-unlocked{transform:translateY(-6%) scale(.98);opacity:0;filter:blur(6px)}
+.lock-notif .ln{
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(22px) saturate(170%);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.20) inset, 0 12px 26px -16px rgba(0,0,0,.6);
+}
+.lock-action{
+  background:rgba(255,255,255,.16);
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
+}
+.lock-action:hover{transform:scale(1.06);background:rgba(255,255,255,.24)}
+.lock-action:active{transform:scale(.94)}
+
+/* kalkulator — szklane klawisze */
+.calc__keys button{
+  background:rgba(255,255,255,.10);
+  backdrop-filter:blur(14px) saturate(150%);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.12) inset, 0 8px 18px -14px rgba(0,0,0,.6);
+  transition:transform 120ms var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
+}
+.calc__keys button:hover{background:rgba(255,255,255,.18);transform:translateY(-1px)}
+.calc__keys button:active{transform:scale(.95)}
+
+/* ustawienia / wiadomości / notatki — szkło */
+.setting, .row, .note, .cal-item{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
+  transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
+}
+.row:hover{transform:translateX(2px)}
+.setting:hover{background:rgba(255,255,255,.12)}
+
+/* Spotify — szklany mini-odtwarzacz */
+.sp-playing{
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  transition:transform var(--t-fast) var(--ease-ios), box-shadow var(--t-fast) var(--ease-soft);
+}
+.sp-playing:hover{transform:translateY(-2px)}
+.sp-now{transition:transform var(--t-slow) var(--ease-ios)}
+.sp-chip{transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft)}
+.sp-chip:hover{transform:translateY(-1px)}
+
+/* ------------------------------------------------------------
+   3. Windows — akrylowe szkło
+   ------------------------------------------------------------ */
+.win-window{
+  background:rgba(26,30,42,.62);
+  backdrop-filter:blur(34px) saturate(175%);
+  -webkit-backdrop-filter:blur(34px) saturate(175%);
+  box-shadow:
+    0 30px 60px -22px rgba(0,0,0,.8),
+    0 0 0 1px rgba(255,255,255,.16),
+    0 1px 0 rgba(255,255,255,.20) inset;
+  transition:box-shadow var(--t-mid) var(--ease-soft), opacity var(--t-fast) var(--ease-soft),
+             transform var(--t-mid) var(--ease-ios);
+}
+.win-window.is-minimized{transform:translateY(30px) scale(.94)!important}
+.win-titlebar{
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.win-tab{
+  background:rgba(255,255,255,.10);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset;
+}
+.win-ctrl button{transition:background-color 150ms var(--ease-soft), color 150ms var(--ease-soft)}
+
+.taskbar{
+  background:rgba(26,29,38,.55);
+  backdrop-filter:blur(40px) saturate(180%);
+  -webkit-backdrop-filter:blur(40px) saturate(180%);
+  box-shadow:0 -1px 0 rgba(255,255,255,.10) inset;
+}
+.tb-icon{transition:background-color var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-ios)}
+.tb-icon:hover{transform:translateY(-1px)}
+.tb-icon:active{transform:scale(.94)}
+.tb-icon.is-running::after{transition:width var(--t-mid) var(--ease-ios)}
+
+.start-menu{
+  background:rgba(34,38,50,.68);
+  backdrop-filter:blur(46px) saturate(180%);
+  -webkit-backdrop-filter:blur(46px) saturate(180%);
+  box-shadow:0 34px 70px -24px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.14),
+             0 1px 0 rgba(255,255,255,.16) inset;
+  transform:translate(-50%,18px) scale(.965);
+  transition:opacity var(--t-mid) var(--ease-soft), transform var(--t-slow) var(--ease-ios), visibility var(--t-mid);
+}
+.start-menu.is-open{transform:translate(-50%,0) scale(1)}
+.start-search{
+  background:rgba(255,255,255,.10);
+  backdrop-filter:blur(18px) saturate(170%);
+  -webkit-backdrop-filter:blur(18px) saturate(170%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset;
+  transition:box-shadow var(--t-fast) var(--ease-soft), background-color var(--t-fast) var(--ease-soft);
+}
+.start-search:focus-within{
+  background:rgba(255,255,255,.16);
+  box-shadow:0 0 0 1.5px rgba(140,190,255,.65) inset, 0 10px 26px -16px rgba(120,180,255,.8);
+}
+.start-app__ic{
+  transition:transform var(--t-fast) var(--ease-ios), box-shadow var(--t-fast) var(--ease-soft);
+}
+.start-app:hover .start-app__ic{transform:scale(1.08);box-shadow:0 8px 18px -8px rgba(0,0,0,.7)}
+
+/* kafelki w Eksploratorze */
+.win-side .side-item{transition:background-color var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-ios)}
+.win-side .side-item:hover{transform:translateX(1px)}
+.file__ic{transition:transform var(--t-fast) var(--ease-ios)}
+.win-toolbar .tb-btn{transition:background-color var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-ios)}
+.win-toolbar .tb-btn:active{transform:scale(.96)}
+
+/* ekran blokady Windows */
+.win-lock{
+  background:
+    linear-gradient(180deg, rgba(4,9,22,.28), rgba(4,9,22,.52)),
+    #0a1024 url("../assets/wallpaper-lock.jpg") center/cover no-repeat;
+  backdrop-filter:none;
+  transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft), filter var(--t-slow);
+}
+.win-lock.is-unlocked{transform:translateY(-4%) scale(1.01);opacity:0;filter:blur(8px)}
+.win-lock__avatar{
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.22) inset;
+  backdrop-filter:blur(12px);
+}
+.win-lock__btn{
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
+}
+.win-lock__btn:hover{transform:translateY(-1px) scale(1.02);background:rgba(255,255,255,.26)}
+.win-lock__btn:active{transform:scale(.97)}
+
+.win-toast{
+  background:rgba(38,42,55,.72);
+  backdrop-filter:blur(34px) saturate(180%);
+  -webkit-backdrop-filter:blur(34px) saturate(180%);
+  box-shadow:0 22px 48px -18px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.16);
+  transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft);
+}
+
+/* ------------------------------------------------------------
+   4. Strona makiety: szkło na przyciskach i kartach
+   ------------------------------------------------------------ */
+.viewbar__group{
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset, 0 12px 30px -18px rgba(0,0,0,.7);
+}
+.viewbtn{transition:color var(--t-fast) var(--ease-soft), background-color var(--t-fast) var(--ease-soft),
+                     transform var(--t-fast) var(--ease-ios), box-shadow var(--t-fast) var(--ease-soft)}
+.viewbtn.is-active{
+  background:linear-gradient(150deg, rgba(190,225,255,.95), rgba(124,196,255,.92));
+  box-shadow:0 10px 24px -12px rgba(124,196,255,.9), 0 1px 0 rgba(255,255,255,.5) inset;
+}
+.chip{
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
+}
+.chip:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}
+.device__caption strong{transition:color var(--t-fast)}
+.device__caption span{transition:opacity var(--t-mid)}
+
+/* ------------------------------------------------------------
+   5. Globalne, płynne mikrointerakcje
+   ------------------------------------------------------------ */
+/* przyciski: sprężysty klik */
+button{transition:transform 160ms var(--ease-ios)}
+button:active{transform:scale(.96)}
+/* wyłączniki i suwaki */
+.switch{transition:background-color 220ms var(--ease-soft)}
+.switch::after{transition:transform 260ms var(--ease-ios)}
+.slider::-webkit-slider-thumb{transition:transform 160ms var(--ease-ios), box-shadow 200ms}
+.slider:hover::-webkit-slider-thumb{transform:scale(1.12);box-shadow:0 0 0 6px rgba(255,255,255,.14)}
+.slider:active::-webkit-slider-thumb{transform:scale(1.2)}
+
+/* fokus klawiatury: miękki pierścień */
+:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px rgba(124,196,255,.85), 0 0 0 6px rgba(124,196,255,.22);
+  border-radius:12px;
+}
+
+/* przygaszanie reszty w widoku pojedynczym — płynne */
+.device{
+  transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-slow) var(--ease-soft),
+             filter var(--t-slow) var(--ease-soft);
+}
+
+/* ------------------------------------------------------------
+   6. Ograniczenie animacji dla wrażliwych użytkowników
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}

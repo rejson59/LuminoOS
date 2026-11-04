@@ -48,7 +48,7 @@
 .a-launcher{z-index:1}
 .a-lock{z-index:8}
 .a-panel{z-index:10}
-.a-shade{z-index:9;background:rgba(0,0,0,.42);backdrop-filter:blur(2px);
+.a-shade{z-index:9;background:rgba(0,0,0,.42);
   opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s, visibility .2s}
 .a-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}
 
@@ -166,7 +166,7 @@
   flex:none;margin:6px var(--pad) 0;padding:8px 10px;
   display:flex;justify-content:space-around;align-items:center;
   border-radius:24px;background:rgba(255,255,255,.11);
-  backdrop-filter:blur(18px) saturate(150%);
+  
   box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset;
 }
 .dock .dock-app{
@@ -204,8 +204,6 @@
 .widget{
   background:rgba(255,255,255,.13);border-radius:16px;padding:10px 12px;
   box-shadow:0 0 0 .5px rgba(255,255,255,.18) inset,0 6px 18px rgba(0,0,0,.18);
-  backdrop-filter:blur(14px) saturate(140%);
-  -webkit-backdrop-filter:blur(14px) saturate(140%);
 }
 .widget__row{display:flex;align-items:center;justify-content:space-between}
 .widget__row b{font-size:22px;font-weight:500;letter-spacing:-.5px;display:block}
@@ -230,7 +228,7 @@
 .a-panel{
   top:0;height:auto;max-height:88%;
   background:rgba(22,25,38,.92);
-  backdrop-filter:blur(26px) saturate(150%);
+  
   border-radius:0 0 24px 24px;
   box-shadow:0 22px 44px -12px rgba(0,0,0,.7);
   transform:translateY(-102%);
@@ -286,7 +284,7 @@
 .a-drawer{
   position:absolute;inset:0;z-index:7;
   background:rgba(12,14,24,.97);
-  backdrop-filter:blur(20px);
+  
   transform:translateY(100%);opacity:0;pointer-events:none;
   transition:transform .3s cubic-bezier(.2,.8,.2,1), opacity .25s;
   display:flex;flex-direction:column;padding:20px var(--pad) 6px;
@@ -542,7 +540,7 @@
 .glance__ico{
   width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;
   background:rgba(255,255,255,.18);color:#e6f0ff;
-  backdrop-filter:blur(10px);
+  
 }
 .glance__ico .ico{width:13px;height:13px}
 .glance__main b{display:block;font-size:10.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -555,8 +553,6 @@
   display:flex;align-items:center;gap:9px;
   margin:2px 2px 10px;padding:9px 12px;border-radius:99px;
   background:rgba(255,255,255,.16);
-  backdrop-filter:blur(14px) saturate(140%);
-  -webkit-backdrop-filter:blur(14px) saturate(140%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset, 0 4px 14px rgba(0,0,0,.18);
   font-size:10.5px;color:rgba(255,255,255,.78);
 }

@@ -106,6 +106,22 @@ i `assets/wallpaper-tablet-home.jpg` — style podciągną je automatycznie
 (`css/windows.css`: `.win-wallpaper` / `.win-lock`, `css/android.css`:
 `.android[data-device=...]` oraz `.a-lock`).
 
+## Wygląd i ruch (etap 3)
+
+- **Tapety bez rozmycia** — wszystkie tła są ostre; przyciemnienie tylko pod tekstem.
+- **Styl „glass”** (`css/glass.css`) — półprzezroczyste powierzchnie z rozmyciem tła
+  (`backdrop-filter`), jasną krawędzią 0,5 px i miękkim cieniem: dock, panel
+  powiadomień, szuflada, widgety, okna Windows, menu Start, pasek zadań, karty.
+- **Ultra płynne animacje** (`js/motion.js`):
+  - ripple pod każdym kliknięciem (jak w Androidzie),
+  - sprężyste „dociśnięcie” przycisków i kafli,
+  - sprężyste wejście list, paneli, aplikacji i okien (kaskadowe opóźnienia),
+  - aplikacja Androida „wyrasta” z klikniętej ikony,
+  - przejścia między podglądami (fade + skala + blur),
+  - delikatny efekt 3D pod kursorem na ikonach i kaflach,
+  - wszystko na Web Animations API (transform/opacity = warstwa kompozytora),
+  - automatyczne wyłączenie przy `prefers-reduced-motion`.
+
 ## Rozwiązywanie problemów
 
 - **Pusta scena po wybraniu „Telefon / Tablet / Laptop”** — naprawione (selektory
