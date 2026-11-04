@@ -99,6 +99,20 @@ dom.window.addEventListener("load", () => setTimeout(() => {
   check("audyt płynności nie widzi animacji width/height w motion.css",
     !/transition\s*:\s*[^;}]*\b(width|height|left|top)\b\s*\d/.test(motion));
 
+  /* --- morfowanie wyspy: jawna animacja w pikselach (WAAPI) --- */
+  const androidJs = fs.readFileSync(path.join(root, "js/android.js"), "utf8");
+  check("wyspa morfuje jawną animacją width/height w px (nie auto)",
+    androidJs.includes("function morphIsland") &&
+    androidJs.includes('width: before.w + "px"') &&
+    androidJs.includes("opening ? 520 : 380"));
+  check("pomiar PRZED/PO zmianie trybu (inaczej nie ma czego animować)",
+    androidJs.includes("const before = islandSize()") &&
+    androidJs.includes("const after = islandSize()"));
+  check("CSS wyłącza przejścia tylko na czas pomiaru (.is-morphing)",
+    has(css("island.css"), ".island.is-morphing{transition:none!important}"));
+  check("zamykanie panelu też jest animowane (morphIsland wywołane zawsze)",
+    /function setMode\(mode\)[\s\S]{0,600}morphIsland\(/.test(androidJs));
+
   check("telefon ma 4 uchwyty gestów (góra/dół/lewo/prawo)", edges.length === 4);
   check("uchwyty mają podpowiedzi tekstowe", Array.from(edges).every(e => (e.dataset.hint || "").length > 5));
   check("uchwyty nie przesłaniają treści (są przezroczyste, do 22 px)",

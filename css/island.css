@@ -660,3 +660,37 @@ html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
   .android .a-drawer,.android .a-drawer .drawer-grid .app,
   .android .statusbar,.island,.island__face{transition-duration:.001ms!important}
 }
+
+/* ============================================================
+   MORFOWANIE WYSPY — prawdziwa animacja
+   • .is-morphing wyłącza przejścia CSS tylko na czas pomiaru,
+     dzięki czemu WAAPI dostaje dokładny stan „przed” i „po”
+   • przejście CSS zostaje jako zapas, gdy WAAPI nie jest dostępne
+     (albo gdy użytkownik ma prefers-reduced-motion)
+   ============================================================ */
+.island.is-morphing{
+  transition:none!important;
+}
+.island.is-morphing *{
+  transition:none!important;
+}
+/* wyspa zawsze morfuje od lewego górnego rogu (tak jak pigułka rośnie w iOS) */
+.island{
+  transform-origin:0% 0%;
+  will-change:width, height, border-radius;
+}
+CS
+node tools/cssparse.js | tail -1
+
+/* ============================================================
+   MORFOWANIE WYSPY — prawdziwa animacja
+   • .is-morphing wyłącza przejścia CSS tylko na czas pomiaru,
+     dzięki czemu WAAPI dostaje dokładny stan „przed" i „po"
+   • przejście CSS zostaje jako zapas, gdy WAAPI nie jest dostępne
+     (albo gdy użytkownik ma prefers-reduced-motion)
+   ============================================================ */
+.island.is-morphing{transition:none!important}
+/* UWAGA: NIE wyłączamy przejść dzieciom — kafle panelu mają własną
+   kaskadę (opacity/transform) i muszą się animować po morfowaniu */
+/* wyspa morfuje od lewego górnego rogu (pigułka rośnie tak jak w iOS) */
+.island{transform-origin:0% 0%;will-change:width,height,border-radius}

@@ -354,15 +354,17 @@
       if (h > 0) islandBtn.style.setProperty("--panel-h", h + "px");
       return h;
     }
-    function settlePanel() {
-      /* po animacji zdejmujemy sztywne wysokości — panel znowu jest auto */
-      clearTimeout(panelTimer);
-      panelTimer = setTimeout(() => {
-        if (islandMode === "panel" && panelFace) {
-          const h = panelFace.scrollHeight;
-          if (h) islandBtn.style.setProperty("--panel-h", h + "px");
-        }
-      }, 520);
+    /* wysokość panelu aktualizuje się na bieżąco (np. gdy dojdzie pasek
+       „teraz gra”), ale NIE w trakcie morfowania — inaczej animacja drga */
+    let panelObserver = null;
+    function watchPanelHeight() {
+      if (panelObserver || typeof ResizeObserver !== "function" || !panelFace) return;
+      panelObserver = new ResizeObserver(() => {
+        if (islandMode !== "panel" || islandAnim) return;
+        const h = panelFace.scrollHeight;
+        if (h) islandBtn.style.setProperty("--panel-h", h + "px");
+      });
+      try { panelObserver.observe(panelFace); } catch (e) { /* ignorujemy */ }
     }
     if (typeof ResizeObserver === "function") {
       try { new ResizeObserver(fitIslandPanel).observe(root); } catch (e) { /* starsze przeglądarki */ }
@@ -372,24 +374,111 @@
     let modeTimer = 0;
     const musicOn = () => !!(player && player.playing);
 
+    /* ------------------------------------------------------------
+       PRAWDZIWA ANIMACJA MORFOWANIA (WAAPI, wartości w pikselach)
+       Dlaczego dotąd nie animowało:
+       • `height:auto` NIE jest interpolowane → panel przeskakiwał,
+       • a gdy tylko ustawialiśmy tryb, przeglądarka liczyła już NOWĄ
+         szerokość/wysokość, więc nie było stanu „przed” do animowania.
+       Rozwiązanie: mierzymy prostokąt PRZED zmianą, wyłączamy przejścia,
+       ustawiamy tryb, mierzymy prostokąt PO zmianie i animujemy jawnie
+       width/height/border-radius z „przed” do „po”. To zawsze działa,
+       niezależnie od tego, czy wysokość jest auto, w px, czy z `calc()`.
+       ------------------------------------------------------------ */
+    let islandAnim = null;
+    const REDUCE_MOTION = typeof window.matchMedia === "function"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches : false;
+
+    /* rozmiar wyspy w pikselach (offsetWidth/Height — bez wpływu transformacji
+       i efektu hover, więc pomiar jest zawsze dokładny) */
+    function islandSize() {
+      return { w: islandBtn.offsetWidth || 0, h: islandBtn.offsetHeight || 0 };
+    }
+
+    /* ------------------------------------------------------------
+       MORFOWANIE WYSPY — JEDNA, JAWNA ANIMACJA (Web Animations API)
+       Dlaczego wcześniej „nie było animacji":
+       • `height:auto` nie jest interpolowane → skok,
+       • po zmianie trybu przeglądarka liczy już NOWY rozmiar, więc nie ma
+         stanu „przed” do animowania.
+       Teraz: mierzymy rozmiar PRZED, wyłączamy przejścia CSS na jedną
+       klatkę, zmieniamy tryb, mierzymy rozmiar PO i animujemy jawnie
+       width/height/border-radius od „przed” do „po”. Zawsze widoczne,
+       niezależnie od tego, czy wysokość jest w px, auto czy calc().
+       ------------------------------------------------------------ */
+    function morphIsland(applyMode, opening) {
+      const before = islandSize();
+      islandBtn.classList.add("is-morphing");
+      applyMode();
+      const after = islandSize();
+      islandBtn.classList.remove("is-morphing");
+
+      if (!islandAnim && typeof islandBtn.animate !== "function") return;
+      if (islandAnim) { islandAnim.cancel(); islandAnim = null; }
+      if (REDUCE_MOTION) return;
+      if (!before.w || !after.w) return;                       /* brak geometrii (testy) */
+      if (before.w === after.w && before.h === after.h) return; /* nic się nie zmienia */
+
+      const radiusBefore = "13px";
+      islandAnim = islandBtn.animate(
+        [
+          { width: before.w + "px", height: before.h + "px", borderRadius: radiusBefore },
+          {
+            width: (after.w + (after.w - before.w) * 0.015) + "px",
+            height: (after.h + (after.h - before.h) * 0.03) + "px",
+            offset: opening ? 0.6 : 0.45
+          },
+          { width: after.w + "px", height: after.h + "px", borderRadius: afterRadius() }
+        ],
+        {
+          duration: opening ? 520 : 380,
+          easing: "cubic-bezier(.32,1.06,.36,1)",
+          fill: "none"
+        }
+      );
+      islandAnim.onfinish = islandAnim.oncancel = () => { islandAnim = null; };
+    }
+
+    function afterRadius() {
+      return islandMode === "panel" ? (isTablet ? "24px" : "22px") : "13px";
+    }
+
     function setMode(mode) {
       if (mode !== "panel") {
         /* muzyka i powiadomienia są ważniejsze niż powrót do zegara */
         if (musicOn() && mode === "idle") mode = "music";
       }
-      islandMode = mode;
-      if (mode === "panel") fitIslandPanel();     /* najpierw szerokość */
-      islandBtn.dataset.mode = mode;
-      /* świeżo ustawiona wysokość w px jest ZARAZ kolejnym krokiem przejścia —
-         dlatego przeglądarka zawsze animuje morfowanie (auto → px → auto) */
-      if (mode === "panel") { measurePanel(); settlePanel(); }
+      const opening = mode === "panel";
+      morphIsland(() => {
+        islandMode = mode;
+        if (opening) fitIslandPanel();     /* najpierw szerokość panelu */
+        islandBtn.dataset.mode = mode;
+        if (opening) measurePanel();       /* potem wysokość zawartości w px */
+      }, opening);
+      if (opening) watchPanelHeight();
+
+      /* --- reszta stanu: klasy, atrybuty ARIA i cień pod panelem ---
+         (wcześniej wykonywała się razem z ustawieniem trybu; po wydzieleniu
+         morfowania trzeba ją przenieść tutaj, inaczej panel nie dostawał
+         klasy is-open i aria-expanded) */
       islandBtn.classList.toggle("is-open", mode === "panel");
       islandBtn.classList.toggle("is-music", mode === "music");
       islandBtn.classList.toggle("is-notif", mode === "notif");
       islandBtn.setAttribute("aria-expanded", mode === "panel" ? "true" : "false");
       islandShade.classList.toggle("is-open", mode === "panel");
-      islandFaces.forEach(f => f.setAttribute("aria-hidden", f.classList.contains(`island__face--${mode}`) ? "false" : "true"));
+      islandFaces.forEach(f => f.setAttribute("aria-hidden",
+        f.classList.contains(`island__face--${mode}`) ? "false" : "true"));
     }
+
+    /* widok pojedynczy zmienia rozmiar ekranu — panel musi przeliczyć wymiary,
+       a nie tylko „przeskoczyć” (to była druga przyczyna braku animacji) */
+    window.addEventListener("resize", () => {
+      if (islandMode !== "panel") return;
+      const h = panelFace ? panelFace.scrollHeight : 0;
+      islandBtn.style.setProperty("--panel-w", Math.max(0, (root.clientWidth || 0) - 2 * PANEL_MARGIN) + "px");
+      if (h) islandBtn.style.setProperty("--panel-h", h + "px");
+    }, { passive: true });
+
     function openPanel() { setMode("panel"); }
     /* zamknięcie panelu: wracamy do odtwarzacza, jeśli muzyka nadal gra */
     function closePanel() { setMode(musicOn() ? "music" : "idle"); }
