@@ -3,11 +3,11 @@
    ============================================================ */
 (function () {
   "use strict";
-  const STYLES = ["liquid", "frosted", "gel", "chrome"];
+  const STYLES = ["glass", "clear", "gel", "chrome"];
   const buttons = Array.from(document.querySelectorAll("[data-icons-set]"));
 
   function setStyle(name) {
-    if (!STYLES.includes(name)) name = "liquid";
+    if (!STYLES.includes(name)) name = "glass";
     document.body.dataset.icons = name;
     buttons.forEach(b => {
       const on = b.dataset.iconsSet === name;
@@ -37,7 +37,7 @@
   buttons.forEach(b => b.addEventListener("click", () => setStyle(b.dataset.iconsSet)));
 
   const fromUrl = new URLSearchParams(location.search).get("icons");
-  setStyle(fromUrl && STYLES.includes(fromUrl) ? fromUrl : "liquid");
+  setStyle(fromUrl && STYLES.includes(fromUrl) ? fromUrl : "glass");
 
   window.Lumino = window.Lumino || {};
   window.Lumino.setIconStyle = setStyle;

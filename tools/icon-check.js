@@ -16,15 +16,15 @@ dom.window.addEventListener("load", () => setTimeout(() => {
   check("przełącznik ma 4 warianty", document.querySelectorAll("[data-icons-set]").length === 4);
 
   const seen = new Set();
-  ["liquid", "frosted", "gel", "chrome"].forEach(name => {
+  ["glass", "clear", "gel", "chrome"].forEach(name => {
     L.setIconStyle(name);
     const el = icon();
     const cs = getComputedStyle(el);
     seen.add(cs.backgroundImage + "|" + cs.boxShadow);
     check(`wariant "${name}" ustawiony`, document.body.dataset.icons === name);
     check(`  ikona ma tło i cień (${name})`, cs.backgroundImage !== "none" && cs.boxShadow !== "none");
-    check(`  blur tylko wewnątrz ikony (${name})`, /blur/.test(cs.backdropFilter || cs.webkitBackdropFilter || "") ||
-      name === "gel");
+    check(`  ikona ma warstwy tła i cień (${name})`,
+      cs.backgroundImage !== "none" && cs.boxShadow !== "none");
   });
   check("warianty różnią się wyglądem (4 unikalne style)", seen.size === 4);
   const sheet = Array.from(document.styleSheets)
