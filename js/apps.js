@@ -3,7 +3,7 @@
    ============================================================ */
 (function () {
   "use strict";
-  const { icon, fmtTime, clamp, player, tracks, appById } = window.Lumino;
+  const { icon, iconImg, fmtTime, clamp, player, tracks, appById } = window.Lumino;
 
   /* ------------------------------------------------------------
      Pomocnicze

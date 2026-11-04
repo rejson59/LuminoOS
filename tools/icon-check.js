@@ -80,6 +80,23 @@ dom.window.addEventListener("load", () => setTimeout(() => {
   check(`wszystkie ikony użyte w kodzie mają pliki (${lower.length})`, missing.length === 0);
   if (missing.length) console.log("      brakuje: " + missing.join(", "));
 
+  /* spójność modułów: każda funkcja z window.Lumino użyta w pliku musi być
+     z niego pobrana (inaczej leci ReferenceError dopiero po kliknięciu) */
+  const API = ["iconImg", "brandIcon", "icon", "fmtTime", "appById", "clamp",
+               "player", "tracks", "buildAndroid", "buildWindows", "paintClock"];
+  const broken = [];
+  for (const f of fs.readdirSync(path.join(root, "js")).filter(f => f.endsWith(".js"))) {
+    if (f === "core.js" || f === "perf.js" || f === "fps-meter.js") continue;
+    const src = fs.readFileSync(path.join(root, "js", f), "utf8");
+    const decl = (src.match(/const\s*\{([^}]*)\}\s*=\s*window\.Lumino/) || [])[1] || "";
+    for (const name of API) {
+      const re = new RegExp("(?<![.\\w])(?<!function\\s)" + name + "\\s*\\(", "g");
+      if (re.test(src) && !new RegExp("\\b" + name + "\\b").test(decl)) broken.push(`${f}: ${name}`);
+    }
+  }
+  check("każda funkcja Lumino jest pobrana przed użyciem (brak ReferenceError)", broken.length === 0);
+  if (broken.length) console.log("      " + broken.join(", "));
+
   console.log(`\nIkony: ${pass} OK, ${fail} błędów`);
   process.exit(fail ? 1 : 0);
 }, 450));
