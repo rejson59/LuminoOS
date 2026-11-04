@@ -243,7 +243,7 @@
 
 /* ekran blokady Windows */
 .win-lock{
-  background:url("../assets/wallpaper-lock.jpg") center/cover no-repeat;
+  background:url("../assets/wallpaper-lock.jpg?v=20261104b") center/cover no-repeat;
   transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft), filter var(--t-slow);
 }
 .win-lock.is-unlocked{transform:translateY(-4%) scale(1.01);opacity:0}

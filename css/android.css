@@ -24,13 +24,13 @@
 
 /* tapety bez przyciemniania — czysty obraz */
 .android[data-device="phone"]{
-  background:url("../assets/wallpaper-phone-home.jpg") center/cover no-repeat;
+  background:url("../assets/wallpaper-phone-home.jpg?v=20261104b") center/cover no-repeat;
 }
 .android[data-device="tablet"]{
-  background:url("../assets/wallpaper-tablet-home.jpg") center/cover no-repeat;
+  background:url("../assets/wallpaper-tablet-home.jpg?v=20261104b") center/cover no-repeat;
 }
 .android[data-device="tablet"] .a-lock{
-  background:url("../assets/wallpaper-tablet-lock.jpg") center/cover no-repeat;
+  background:url("../assets/wallpaper-tablet-lock.jpg?v=20261104b") center/cover no-repeat;
 }
 
 /* warstwy */
@@ -64,7 +64,7 @@
 .a-lock{
   align-items:center;justify-content:space-between;
   padding:34px 20px 14px;
-  background:#0a0716 url("../assets/wallpaper-phone-lock.jpg") center/cover no-repeat;
+  background:#0a0716 url("../assets/wallpaper-phone-lock.jpg?v=20261104b") center/cover no-repeat;
   transition:transform .38s cubic-bezier(.2,.8,.2,1), opacity .3s;
 }
 .android[data-device="phone"] .a-lock{padding-top:56px}
