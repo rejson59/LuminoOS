@@ -7,64 +7,97 @@
    (animacje tylko na transform/opacity — patrz js/perf.js)
    ============================================================ */
 
-/* ---------- belka ---------- */
+/* ---------- belka: status po prawej, miejsce na pigułkę po lewej ---------- */
 .android .statusbar{
   height:34px;
-  padding:0 10px 0 8px;
+  padding:0 10px 0 12px;
   align-items:center;
   gap:8px;
+  /* nie zasłaniaj wyspy — zostaw po lewej puste miejsce */
+  position:relative;
+  z-index:12;
 }
 
-/* ---------- wyspa (lewa strona) ---------- */
+/* ============================================================
+   PŁYWAJĄCA PIGUŁKA (Dynamic Island) — jak w iOS 26
+   • CZARNA, nie szklana: kryje tło, siedzi NAD aplikacjami
+   • oderwana od góry (top:7px, własny cień) — naprawdę pływa
+   • po lewej: soczewka aparatu · zegar · data
+   • rozwinięcie = morfowanie: pigułka rośnie w szerokość i wysokość,
+     zaokrąglenie się zmniejsza, a pod nią wysuwa się panel skrótów
+   ============================================================ */
 .island{
-  position:relative;
+  position:absolute;
+  top:7px;left:10px;
+  z-index:40;
   display:flex;align-items:center;gap:7px;
-  height:24px;padding:0 11px 0 9px;
+  height:26px;padding:0 12px 0 10px;
   border:0;cursor:pointer;font-family:inherit;
   border-radius:99px;
   color:#fff;
-  background:linear-gradient(180deg, rgba(20,24,34,.80), rgba(12,15,23,.86));
+  background:#04050a;
   box-shadow:
-    0 0 0 .5px rgba(255,255,255,.16) inset,
-    0 6px 16px -10px rgba(0,0,0,.9);
-  transition:transform 260ms cubic-bezier(.32,.72,0,1), background-color 200ms ease;
-  flex:none;
+    0 0 0 .5px rgba(255,255,255,.10) inset,
+    0 8px 20px -8px rgba(0,0,0,.95),
+    0 1px 0 rgba(255,255,255,.06) inset;
+  transform-origin:0% 50%;
+  transform:scale(1);
+  transition:
+    transform 460ms cubic-bezier(.34,1.30,.64,1),
+    border-radius 380ms cubic-bezier(.32,.72,0,1),
+    padding 380ms cubic-bezier(.32,.72,0,1),
+    box-shadow 300ms ease;
+  will-change:transform, border-radius;
+  -webkit-tap-highlight-color:transparent;
 }
-.island:hover{transform:scale(1.03);background:rgba(30,36,50,.68)}
-.island:active{transform:scale(.97)}
+/* świeża, „żywa” poświata pod pigułką — bez barwienia treści */
+.island::after{
+  content:"";
+  position:absolute;inset:-1px;
+  border-radius:inherit;
+  pointer-events:none;
+  box-shadow:0 0 0 1px rgba(150,195,255,.14) inset;
+  opacity:0;
+  transition:opacity 300ms ease;
+}
+.island:hover{transform:scale(1.04)}
+.island:hover::after{opacity:1}
+.island:active{transform:scale(.96)}
+
 .island__cam{
   width:7px;height:7px;border-radius:50%;flex:none;
-  background:radial-gradient(circle at 35% 30%, #2a3550 0%, #070a12 70%);
-  box-shadow:0 0 0 .5px rgba(140,175,235,.35) inset;
+  background:radial-gradient(circle at 35% 30%, #25304a 0%, #05070d 72%);
+  box-shadow:0 0 0 .5px rgba(140,175,235,.4) inset;
 }
 .island__time{
-  font-size:11.5px;font-weight:600;letter-spacing:.2px;
+  font-size:12px;font-weight:600;letter-spacing:.2px;
   font-variant-numeric:tabular-nums;
+  transition:letter-spacing 300ms ease;
 }
 .island__date{
   font-size:9.5px;font-weight:500;
-  color:rgba(255,255,255,.66);
+  color:rgba(255,255,255,.62);
+  transition:opacity 240ms ease;
 }
 
-/* wyspa „rozkłada się”: rośnie, jaśnieje i łączy się z panelem pod nią */
-.island{
-  transform-origin:50% 50%;
-  transition:
-    transform 420ms cubic-bezier(.34,1.32,.64,1),
-    background-color 240ms ease,
-    box-shadow 300ms ease;
-}
-.island:hover{transform:scale(1.035)}
-.island:active{transform:scale(.965)}
+/* ROZWINIĘTA PIGUŁKA — morfuje w szerszy, wyższy kapsel */
 .island.is-open{
-  background:linear-gradient(180deg, rgba(40,48,66,.98), rgba(22,27,40,.98));
-  transform:scale(1.06);
+  border-radius:22px;
+  padding:0 14px 0 11px;
+  transform:scale(1.02);
   box-shadow:
-    0 0 0 .5px rgba(255,255,255,.26) inset,
-    0 8px 22px -10px rgba(0,0,0,.9),
-    0 0 0 5px rgba(140,190,255,.10);
+    0 0 0 .5px rgba(255,255,255,.16) inset,
+    0 16px 34px -12px rgba(0,0,0,.98),
+    0 0 0 6px rgba(120,175,255,.06);
 }
-.island.is-open .island__time{letter-spacing:.4px}
+.island.is-open::after{opacity:1}
+.island.is-open .island__time{letter-spacing:.5px}
+.island.is-open .island__date{opacity:.75}
+
+/* tablet: pigułka większa */
+.android[data-android="tablet"] .island{top:8px;left:14px;height:28px;padding:0 14px 0 11px}
+.android[data-android="tablet"] .island__time{font-size:13px}
+.android[data-android="tablet"] .island__cam{width:8px;height:8px}
 
 /* ---------- prawa strona belki ---------- */
 .statusbar__right{
@@ -110,7 +143,7 @@
 .island-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}
 
 .island-menu{
-  position:absolute;z-index:9;left:8px;right:8px;top:36px;
+  position:absolute;z-index:39;left:10px;right:10px;top:39px;
   pointer-events:none;
 }
 .island-menu__panel{

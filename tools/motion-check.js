@@ -39,8 +39,10 @@ dom.window.addEventListener("load", () => setTimeout(() => {
 
   const has = (src, ...parts) => parts.every(p => src.includes(p));
 
-  check("wyspa rośnie przy otwarciu (sprężysta skala)",
-    has(island, ".island.is-open", "transform:scale(1.06)"));
+  check("wyspa morfuje przy otwarciu (sprężysta skala + zaokrąglenie)",
+    has(island, ".island.is-open", "transform:scale(1.02)", "border-radius:22px"));
+  check("pigułka jest czarna i pływa nad belką (nie szklana)",
+    has(island, ".island{", "position:absolute", "background:#04050a"));
   check("panel wyspy wyjeżdża sprężyście (cubic-bezier > 1)",
     has(island, ".island-menu__panel", "cubic-bezier(.34,1.30,.64,1)"));
   check("kafle wyspy mają kaskadę (transition-delay z --i)",

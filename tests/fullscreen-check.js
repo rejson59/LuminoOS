@@ -17,8 +17,11 @@ w.addEventListener("load", () => setTimeout(() => {
   /* --- nowa belka --- */
   const phone = document.querySelector('[data-android="phone"]');
   const bar = phone.querySelector(".statusbar");
-  const island = bar.querySelector(".island");
-  check("belka ma wyspę po lewej", !!island && bar.firstElementChild === island);
+  const island = phone.querySelector(".a-launcher > .island");
+  check("wyspa pływa poza belką (nad aplikacjami, po lewej)",
+    !!island && !bar.contains(island));
+  check("belka nie zawiera już zegara po lewej (wyspa go zastąpiła)",
+    !bar.querySelector(".js-time"));
   check("wyspa pokazuje zegar i datę", !!island.querySelector(".island__time") && !!island.querySelector(".island__date"));
   check("prawa strona belki: szukaj + status (panel otwiera wyspa)",
     bar.querySelectorAll("[data-action='search']").length === 1 &&

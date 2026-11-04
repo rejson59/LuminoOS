@@ -194,10 +194,13 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   i przywraca zwykłe dopasowanie.
 
 ### Górna belka telefonu/tabletu + wyspa (panel usunięty)
-- **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką
-  aparatu, zegarem i krótką datą. Bez animowanej kropki i bez
-  `backdrop-filter` — czytelność daje ciemna mgła, zgodnie z zasadą
-  „blur tylko w ikonach aplikacji”.
+- **Pływająca pigułka (Dynamic Island) po lewej**: **czarna**, nie szklana
+  (`#04050a`), z soczewką aparatu, zegarem i krótką datą. Jest
+  `position:absolute` w launcherze, `top:7px`, z własnym cieniem — dzięki temu
+  naprawdę **pływa nad aplikacjami**, zamiast siedzieć wciśnięta w belkę
+  (wcześniej była elementem paska stanu i wyglądała jak zwykły chip).
+  Przy rozwinięciu **morfuje**: rośnie do `scale(1.02)`, zaokrąglenie schodzi
+  z 99 px do 22 px, dochodzi poświata i szeroki cień — jak w iOS 26.
 - **Klik w wyspę rozwija skróty** — wyspa jest teraz **jedynym centrum
   sterowania**, panel powiadomień został usunięty w całości
   (`.a-panel`, `.a-shade`, `.qs`, `.notif` w panelu). Rozwinięcie zawiera:

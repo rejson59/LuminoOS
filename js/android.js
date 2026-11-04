@@ -28,13 +28,7 @@
       <!-- ===== launcher ===== -->
       <div class="a-layer a-launcher">
         <div class="statusbar">
-          <!-- WYSPA: po lewej stronie, tam gdzie wcześniej była godzina -->
-          <button class="island" data-action="panel" aria-label="Panel i skróty">
-            <span class="island__cam" aria-hidden="true"></span>
-            <span class="island__time js-time">09:41</span>
-            <span class="island__date js-date-short">4 lis</span>
-          </button>
-          <!-- PRAWA STRONA: szukaj, centrum sterowania, status -->
+          <!-- WYSPA jest poza belką (niżej w DOM) — pływa nad aplikacjami -->
           <div class="statusbar__right">
             <button class="statusbar__btn" data-action="search" aria-label="Szukaj">${icon("i-search")}</button>
             <span class="statusbar__icons">
@@ -42,6 +36,13 @@
             </span>
           </div>
         </div>
+
+        <!-- PŁYWAJĄCA PIGUŁKA (Dynamic Island) — po lewej, nad aplikacjami -->
+        <button class="island" data-action="panel" aria-label="Wyspa — skróty i status" aria-expanded="false">
+          <span class="island__cam" aria-hidden="true"></span>
+          <span class="island__time js-time">09:41</span>
+          <span class="island__date js-date-short">4 lis</span>
+        </button>
 
         <div class="launcher-pages">
           <div class="page">
@@ -315,17 +316,18 @@
     }
     const panelOpen = () => islandMenu.classList.contains("is-open");
 
-    /* belka: wyspa rozwija skróty, lupa otwiera szukanie aplikacji
-       (szuflada z podświetlonym polem) */
+    /* wyspa (pływająca pigułka) rozwija skróty; belka tylko szuka */
+    islandBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      panelOpen() ? closePanel() : openPanel();
+    });
     $(".statusbar", root).addEventListener("click", e => {
       if (e.target.closest('[data-action="search"]')) {
         e.stopPropagation();
         toggleDrawer(true);
         const input = drawer.querySelector("input");
         if (input) setTimeout(() => input.focus(), 180);
-        return;
       }
-      panelOpen() ? closePanel() : openPanel();
     });
     islandShade.addEventListener("click", closePanel);
     $$("[data-action='close-panel']", root).forEach(b => b.addEventListener("click", closePanel));
