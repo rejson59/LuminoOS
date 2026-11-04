@@ -12,15 +12,10 @@
 .win-wallpaper{
   position:absolute;inset:0;
   background:#0a1024 url("../assets/wallpaper-desktop.jpg") center/cover no-repeat;
-  filter:saturate(1.05);
+
 }
-/* delikatne wyrównanie jasności + ochrona czytelności ikon i paska zadań */
-.win-wallpaper::after{
-  content:"";position:absolute;inset:0;
-  background:
-    linear-gradient(180deg, rgba(4,10,24,.22) 0%, rgba(4,10,24,0) 26%, rgba(4,10,24,0) 68%, rgba(4,10,24,.30) 100%),
-    radial-gradient(120% 90% at 50% 50%, rgba(4,10,24,0) 55%, rgba(4,10,24,.28) 100%);
-}
+/* bez przyciemniania tapety (czysty obraz) */
+.win-wallpaper::after{content:none}
 .win-desktop{position:absolute;inset:0 0 var(--tb-h) 0;padding:10px}
 
 /* ---------------- ikony pulpitu ---------------- */

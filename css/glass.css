@@ -58,8 +58,6 @@
 /* pasek stanu jako szkło */
 .statusbar{
   background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
-  backdrop-filter:blur(6px) saturate(140%);
-  -webkit-backdrop-filter:blur(6px) saturate(140%);
 }
 
 /* At a Glance i wyszukiwanie — mocniejsze szkło */
@@ -68,16 +66,12 @@
   padding:8px 10px;
   background:rgba(255,255,255,.10);
   box-shadow:0 0 0 .5px rgba(255,255,255,.18) inset, 0 8px 22px -12px rgba(0,0,0,.5);
-  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
 .glance:hover{background:rgba(255,255,255,.15)}
 
 .searchbar{
   background:var(--glass-bg-strong);
   box-shadow:0 0 0 .5px var(--glass-line) inset, 0 10px 26px -14px rgba(0,0,0,.55);
-  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
   transition:transform var(--t-fast) var(--ease-ios), box-shadow var(--t-fast) var(--ease-soft);
 }
 .searchbar:hover{transform:translateY(-1px);box-shadow:0 0 0 .5px var(--glass-hi) inset, 0 14px 32px -14px rgba(0,0,0,.6)}
@@ -89,16 +83,12 @@
     0 0 0 .5px var(--glass-line) inset,
     0 1px 0 rgba(255,255,255,.22) inset,
     0 16px 34px -18px rgba(0,0,0,.7);
-  backdrop-filter:blur(26px) saturate(180%);
-  -webkit-backdrop-filter:blur(26px) saturate(180%);
 }
 
 /* widgety tabletu */
 .widget{
   background:rgba(255,255,255,.12);
   box-shadow:0 0 0 .5px rgba(255,255,255,.20) inset, 0 14px 30px -18px rgba(0,0,0,.55);
-  backdrop-filter:blur(24px) saturate(170%);
-  -webkit-backdrop-filter:blur(24px) saturate(170%);
   transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
 }
 .widget:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
@@ -106,8 +96,6 @@
 /* panel powiadomień — szkło premium + sprężyste wejście */
 .a-panel{
   background:rgba(28,30,44,.62);
-  backdrop-filter:blur(38px) saturate(180%);
-  -webkit-backdrop-filter:blur(38px) saturate(180%);
   box-shadow:0 30px 60px -22px rgba(0,0,0,.75), 0 0 0 .5px rgba(255,255,255,.18) inset;
   transform:translateY(-102%) scale(.98);
   transition:transform var(--t-slow) var(--ease-ios), border-radius var(--t-mid) var(--ease-soft);
@@ -116,8 +104,6 @@
 
 .qs{
   background:rgba(255,255,255,.10);
-  backdrop-filter:blur(14px) saturate(150%);
-  -webkit-backdrop-filter:blur(14px) saturate(150%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset;
 }
 .qs:hover{background:rgba(255,255,255,.17);transform:translateY(-1px)}
@@ -127,8 +113,6 @@
 }
 .notif{
   background:rgba(255,255,255,.10);
-  backdrop-filter:blur(18px) saturate(150%);
-  -webkit-backdrop-filter:blur(18px) saturate(150%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.12) inset;
 }
 .notif:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
@@ -136,8 +120,6 @@
 /* szuflada aplikacji — szkło z rozmyciem tła */
 .a-drawer{
   background:rgba(14,16,28,.55);
-  backdrop-filter:blur(34px) saturate(170%);
-  -webkit-backdrop-filter:blur(34px) saturate(170%);
   transform:translateY(100%) scale(1.01);
   transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft);
 }
@@ -145,15 +127,11 @@
 .drawer-search{
   background:rgba(255,255,255,.14);
   box-shadow:0 0 0 .5px var(--glass-line) inset, 0 8px 20px -14px rgba(0,0,0,.6);
-  backdrop-filter:blur(18px) saturate(160%);
-  -webkit-backdrop-filter:blur(18px) saturate(160%);
 }
 
 /* aplikacje — szkło pod paskiem tytułu i sprężyste wejście */
 .appbar{
   background:rgba(255,255,255,.06);
-  backdrop-filter:blur(20px) saturate(160%);
-  -webkit-backdrop-filter:blur(20px) saturate(160%);
   box-shadow:0 1px 0 rgba(255,255,255,.08) inset;
 }
 .a-app{
@@ -164,17 +142,13 @@
 
 /* ekran blokady — tapeta ostra, szkło tylko na kartach */
 .a-lock{transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft)}
-.a-lock.is-unlocked{transform:translateY(-6%) scale(.98);opacity:0;filter:blur(6px)}
+.a-lock.is-unlocked{transform:translateY(-6%) scale(.98);opacity:0}
 .lock-notif .ln{
   background:rgba(255,255,255,.12);
-  backdrop-filter:blur(22px) saturate(170%);
-  -webkit-backdrop-filter:blur(22px) saturate(170%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.20) inset, 0 12px 26px -16px rgba(0,0,0,.6);
 }
 .lock-action{
   background:rgba(255,255,255,.16);
-  backdrop-filter:blur(18px) saturate(160%);
-  -webkit-backdrop-filter:blur(18px) saturate(160%);
   transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
 }
 .lock-action:hover{transform:scale(1.06);background:rgba(255,255,255,.24)}
@@ -183,8 +157,6 @@
 /* kalkulator — szklane klawisze */
 .calc__keys button{
   background:rgba(255,255,255,.10);
-  backdrop-filter:blur(14px) saturate(150%);
-  -webkit-backdrop-filter:blur(14px) saturate(150%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.12) inset, 0 8px 18px -14px rgba(0,0,0,.6);
   transition:transform 120ms var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
 }
@@ -194,8 +166,6 @@
 /* ustawienia / wiadomości / notatki — szkło */
 .setting, .row, .note, .cal-item{
   background:rgba(255,255,255,.08);
-  backdrop-filter:blur(16px) saturate(150%);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
   transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
 }
@@ -204,8 +174,6 @@
 
 /* Spotify — szklany mini-odtwarzacz */
 .sp-playing{
-  backdrop-filter:blur(20px) saturate(180%);
-  -webkit-backdrop-filter:blur(20px) saturate(180%);
   transition:transform var(--t-fast) var(--ease-ios), box-shadow var(--t-fast) var(--ease-soft);
 }
 .sp-playing:hover{transform:translateY(-2px)}
@@ -218,8 +186,6 @@
    ------------------------------------------------------------ */
 .win-window{
   background:rgba(26,30,42,.62);
-  backdrop-filter:blur(34px) saturate(175%);
-  -webkit-backdrop-filter:blur(34px) saturate(175%);
   box-shadow:
     0 30px 60px -22px rgba(0,0,0,.8),
     0 0 0 1px rgba(255,255,255,.16),
@@ -230,8 +196,6 @@
 .win-window.is-minimized{transform:translateY(30px) scale(.94)!important}
 .win-titlebar{
   background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
 }
 .win-tab{
   background:rgba(255,255,255,.10);
@@ -241,8 +205,6 @@
 
 .taskbar{
   background:rgba(26,29,38,.55);
-  backdrop-filter:blur(40px) saturate(180%);
-  -webkit-backdrop-filter:blur(40px) saturate(180%);
   box-shadow:0 -1px 0 rgba(255,255,255,.10) inset;
 }
 .tb-icon{transition:background-color var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-ios)}
@@ -252,8 +214,6 @@
 
 .start-menu{
   background:rgba(34,38,50,.68);
-  backdrop-filter:blur(46px) saturate(180%);
-  -webkit-backdrop-filter:blur(46px) saturate(180%);
   box-shadow:0 34px 70px -24px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.14),
              0 1px 0 rgba(255,255,255,.16) inset;
   transform:translate(-50%,18px) scale(.965);
@@ -262,8 +222,6 @@
 .start-menu.is-open{transform:translate(-50%,0) scale(1)}
 .start-search{
   background:rgba(255,255,255,.10);
-  backdrop-filter:blur(18px) saturate(170%);
-  -webkit-backdrop-filter:blur(18px) saturate(170%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset;
   transition:box-shadow var(--t-fast) var(--ease-soft), background-color var(--t-fast) var(--ease-soft);
 }
@@ -285,21 +243,15 @@
 
 /* ekran blokady Windows */
 .win-lock{
-  background:
-    linear-gradient(180deg, rgba(4,9,22,.28), rgba(4,9,22,.52)),
-    #0a1024 url("../assets/wallpaper-lock.jpg") center/cover no-repeat;
-  backdrop-filter:none;
+  background:url("../assets/wallpaper-lock.jpg") center/cover no-repeat;
   transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft), filter var(--t-slow);
 }
-.win-lock.is-unlocked{transform:translateY(-4%) scale(1.01);opacity:0;filter:blur(8px)}
+.win-lock.is-unlocked{transform:translateY(-4%) scale(1.01);opacity:0}
 .win-lock__avatar{
   box-shadow:0 12px 30px -10px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.22) inset;
-  backdrop-filter:blur(12px);
 }
 .win-lock__btn{
   background:rgba(255,255,255,.18);
-  backdrop-filter:blur(20px) saturate(160%);
-  -webkit-backdrop-filter:blur(20px) saturate(160%);
   transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
 }
 .win-lock__btn:hover{transform:translateY(-1px) scale(1.02);background:rgba(255,255,255,.26)}
@@ -307,8 +259,6 @@
 
 .win-toast{
   background:rgba(38,42,55,.72);
-  backdrop-filter:blur(34px) saturate(180%);
-  -webkit-backdrop-filter:blur(34px) saturate(180%);
   box-shadow:0 22px 48px -18px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.16);
   transition:transform var(--t-slow) var(--ease-ios), opacity var(--t-mid) var(--ease-soft);
 }
@@ -318,8 +268,6 @@
    ------------------------------------------------------------ */
 .viewbar__group{
   background:rgba(255,255,255,.06);
-  backdrop-filter:blur(20px) saturate(160%);
-  -webkit-backdrop-filter:blur(20px) saturate(160%);
   box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset, 0 12px 30px -18px rgba(0,0,0,.7);
 }
 .viewbtn{transition:color var(--t-fast) var(--ease-soft), background-color var(--t-fast) var(--ease-soft),
@@ -329,8 +277,6 @@
   box-shadow:0 10px 24px -12px rgba(124,196,255,.9), 0 1px 0 rgba(255,255,255,.5) inset;
 }
 .chip{
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
   transition:transform var(--t-fast) var(--ease-ios), background-color var(--t-fast) var(--ease-soft);
 }
 .chip:hover{transform:translateY(-1px);background:rgba(255,255,255,.08)}

@@ -22,25 +22,15 @@
 }
 .android[data-android="tablet"]{--pad:20px;--icon:46px;--gap:14px}
 
-/* tapeta pulpitu telefonu (przyciemniona dla czytelności ikon) */
+/* tapety bez przyciemniania — czysty obraz */
 .android[data-device="phone"]{
-  background:#0a0716 url("../assets/wallpaper-phone-home.jpg") center/cover no-repeat;
+  background:url("../assets/wallpaper-phone-home.jpg") center/cover no-repeat;
 }
-.android[data-device="phone"]::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(8,6,24,.24) 0%, rgba(8,6,24,.10) 34%, rgba(8,6,24,.42) 100%),
-    radial-gradient(120% 80% at 50% 30%, rgba(8,6,24,0) 55%, rgba(8,6,24,.30) 100%);
-}
-/* tapeta pulpitu tabletu (kadr poziomy) */
 .android[data-device="tablet"]{
-  background:#0a0716 url("../assets/wallpaper-tablet-home.jpg") center/cover no-repeat;
+  background:url("../assets/wallpaper-tablet-home.jpg") center/cover no-repeat;
 }
-.android[data-device="tablet"]::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(8,6,24,.20) 0%, rgba(8,6,24,.08) 40%, rgba(8,6,24,.36) 100%),
-    radial-gradient(120% 90% at 50% 30%, rgba(8,6,24,0) 58%, rgba(8,6,24,.26) 100%);
+.android[data-device="tablet"] .a-lock{
+  background:url("../assets/wallpaper-tablet-lock.jpg") center/cover no-repeat;
 }
 
 /* warstwy */
@@ -78,11 +68,7 @@
   transition:transform .38s cubic-bezier(.2,.8,.2,1), opacity .3s;
 }
 .android[data-device="phone"] .a-lock{padding-top:56px}
-.a-lock::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(6,4,18,.42) 0%, rgba(6,4,18,.06) 26%, rgba(6,4,18,.10) 62%, rgba(6,4,18,.55) 100%);
-}
+/* (bez przyciemnień — czytelność zapewniają cienie tekstu) */
 .a-lock > *{position:relative;z-index:1}
 .a-lock.is-unlocked{transform:translateY(-100%);opacity:0;pointer-events:none}
 
@@ -682,8 +668,6 @@
   border:0;cursor:pointer;color:#fff;font-size:12px;
   background:rgba(255,255,255,.18);
   box-shadow:0 0 0 .5px rgba(255,255,255,.24) inset,0 6px 16px -10px rgba(0,0,0,.6);
-  backdrop-filter:blur(14px) saturate(160%);
-  -webkit-backdrop-filter:blur(14px) saturate(160%);
   transition:transform 200ms var(--ease-ios), background-color 200ms;
 }
 .tablet-all:hover{transform:scale(1.06);background:rgba(255,255,255,.28)}

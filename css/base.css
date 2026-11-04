@@ -343,3 +343,15 @@ body[data-view="laptop"] .device__caption{margin-top:8px}
   flex:none;width:24px;height:24px;border-radius:6px;border:0;cursor:pointer;
   background:rgba(255,255,255,.14);color:#fff;font-size:14px;line-height:1;
 }
+
+
+/* czytelność na jasnych tapetach — bez przyciemniania obrazu */
+.app__label,
+.glance__main b, .glance__main span, .glance__weather,
+.clock-widget__time, .clock-widget__date,
+.tablet-greeting b, .tablet-greeting span,
+.widget b, .widget span, .widget li,
+.statusbar, .dock-app,
+.win-desk-icon, .tray-clock, .weather-pill{
+  text-shadow:0 1px 3px rgba(0,0,0,.55), 0 0 12px rgba(0,0,0,.35);
+}

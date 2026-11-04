@@ -139,6 +139,18 @@ tylko kolorowy glif marki (kolor ustawia `--ink`). Definicje: `js/core.js`
 Siatka trzyma się w ramce (sprawdzane testem `tools/layout-check.js`), a pełna
 lista aplikacji jest w szufladzie (pasek gestów).
 
+### Tapety bez rozmycia i bez przyciemniania
+Tapety są wstawiane jako czysty obraz (`center / cover`), bez nakładanych gradientów
+i **bez `backdrop-filter`** — jedyne rozmycie w całym interfejsie występuje
+w przezroczystych ikonach aplikacji (`.bi`). Czytelność białego tekstu zapewniają
+wyłącznie cienie tekstu (`text-shadow`).
+
+| Ekran | Plik |
+|---|---|
+| Pulpit i blokada laptopa | `assets/wallpaper-desktop.jpg`, `assets/wallpaper-lock.jpg` |
+| Ekran główny i blokada tabletu | `assets/wallpaper-tablet-home.jpg`, `assets/wallpaper-tablet-lock.jpg` |
+| Ekran główny i blokada telefonu | `assets/wallpaper-phone-home.jpg`, `assets/wallpaper-phone-lock.jpg` |
+
 ### Serwer bez cache
 `tools/serve.py` wysyła `Cache-Control: no-store`, więc **każde odświeżenie pokazuje
 najnowszą wersję** — bez `Ctrl+Shift+R`. Uruchomienie: `npm start`.
