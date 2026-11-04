@@ -80,6 +80,15 @@ w.addEventListener("load", () => setTimeout(() => {
     !/is-fullscreen[^{}]*\.device\.is-shown[\s\S]{0,200}transform:scale\(/.test(fs_css));
   check("w pełnym ekranie rozmiar makiety jest liczony w px okna",
     typeof w.Lumino !== "undefined");
+  check("zmiana urządzenia w pełnym ekranie przenosi .is-shown", (() => {
+    fullBtn.click();                       /* wejdź */
+    document.querySelector('[data-view="laptop"]').click();
+    const shown = document.querySelectorAll(".device.is-shown");
+    const ok = shown.length === 1 && shown[0].classList.contains("device--laptop");
+    document.querySelector('[data-view="phone"]').click();
+    fullBtn.click();                       /* wyjdź */
+    return ok;
+  })());
   check("wyjście z pełnego ekranu przywraca rozmiary makiety", (() => {
     const html = document.documentElement;
     const before = html.style.getPropertyValue("--phone-w");
@@ -88,6 +97,9 @@ w.addEventListener("load", () => setTimeout(() => {
     fullBtn.click();          /* włącz z powrotem */
     return before !== "" && after === "";
   })());
+  check("w pełnym ekranie ukryte są WSZYSTKIE nie-wybrane urządzenia (jedno źródło prawdy)",
+    fs_css.includes("html.is-fullscreen .stage > .device{display:none!important}") &&
+    !/html\.is-fullscreen \.stage > \.device\{\s*display:flex!important/.test(fs_css));
   check("laptop w pełnym ekranie mieści się w oknie (brak przycięcia)",
     fs_css.includes("html.is-fullscreen .device--laptop .lid") && fs_css.includes("max-width:100vw"));
   check("awaryjna reguła CSS pokazuje telefon, gdy brak .is-shown",

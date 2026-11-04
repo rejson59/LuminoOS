@@ -61,6 +61,13 @@
   let sizeReal = false;
   const sizeBtn = document.getElementById("sizeToggle");
 
+  /* po wejściu w pełny ekran nie pozwalamy, by fokus na przycisku poza
+     widokiem zrzucił tryb (przeglądarki potrafią wtedy wyjść z fullscreen) */
+  function safeBlur() {
+    const a = document.activeElement;
+    if (a && a !== document.body && typeof a.blur === "function") a.blur();
+  }
+
   function fit() {
     const v = currentView();
     /* w pełnym ekranie rozmiar liczy fitFullscreen() — tu nic nie zmieniamy */
@@ -186,7 +193,7 @@
     }
     /* w pełnym ekranie zawsze dokładnie jedno urządzenie (nigdy czarne tło) */
     if (on && currentView() === "all") setView("phone");
-    if (on) { fitFullscreen(); }
+    if (on) { safeBlur(); fitFullscreen(); }
     else { resetSizeVars(); }
     requestAnimationFrame(fit);
     setTimeout(() => { if (fullscreen) fitFullscreen(); fit(); }, 260);
@@ -292,7 +299,14 @@
       /* np. przy otwarciu z file:// — pomijamy zapis w adresie */
     }
     pauseHiddenDevices();
-    if (fullscreen) fitFullscreen();
+    if (fullscreen) {
+      const shown = stage.querySelector(".device.is-shown");
+      if (!shown || !shown.classList.contains(`device--${v}`)) {
+        const next = stage.querySelector(`.device.device--${v}`);
+        if (next) devices.forEach(d => d.classList.toggle("is-shown", d === next));
+      }
+      fitFullscreen();
+    }
     // natychmiast, a potem jeszcze po ustabilizowaniu layoutu
     fit();
     requestAnimationFrame(fit);

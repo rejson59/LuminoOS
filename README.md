@@ -195,6 +195,17 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   treść (zwłaszcza okna Windows) i wypychało ją poza ekran. Wyjście z pełnego
   ekranu przywraca bazowe rozmiary makiet.
 
+### Odblokowanie w stylu iOS 26
+Ekran blokady **podąża za palcem/myszką** (`--lock-drag`, `--lock-p` od 0 do 1):
+- zegar i ikona kłódki „wysysają się” w górę szybciej niż reszta i maleją,
+- powiadomienia odjeżdżają wolniej (efekt paralaksy), dolny pasek opada,
+- tło blokady rozjaśnia się radialną mgłą, a launcher wjeżdża spod spodu,
+- powyżej progu **96 px** ekran odblokowuje się (blokada wysysa się w górę,
+  zaokrągla dolne rogi i znika), poniżej — **sprężysty powrót**
+  (`cubic-bezier(.34,1.42,.64,1)`).
+- Podczas przeciągania wszystkie przejścia są wyłączone, więc ruch idzie 1:1
+  za wskaźnikiem (tak jak w iOS).
+
 ### Górna belka telefonu/tabletu + wyspa (panel usunięty)
 - **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką
   aparatu, zegarem i krótką datą. Bez animowanej kropki i bez

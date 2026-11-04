@@ -53,17 +53,109 @@
 .batt span{font-size:8px;opacity:.8}
 /* otwór aparatu siedzi teraz w wyspie po lewej — nie ma osobnej kropki na środku */
 
-/* ================= EKRAN BLOKADY ================= */
+/* ================= EKRAN BLOKADY (odblokowanie jak w iOS 26) =================
+   • blokada podąża za palcem/myszką (--lock-drag, --lock-p od 0 do 1)
+   • zegar „wysysa się” w górę i maleje, powiadomienia rozjeżdżają się
+   • tło blokady jaśnieje, a launcher wjeżdża spod spodu
+   • po puszczeniu poniżej progu — sprężysty powrót (is-snapping)
+   ============================================================================ */
 .a-lock{
+  --lock-drag:0px;
+  --lock-p:0;
   align-items:center;justify-content:space-between;
   padding:34px 20px 14px;
   background:#0a0716 url("../assets/wallpaper-phone-lock.jpg?v=20261104b") center/cover no-repeat;
-  transition:transform .38s cubic-bezier(.2,.8,.2,1), opacity .3s;
+  overflow:hidden;
+  transform:translate3d(0, calc(var(--lock-drag) * -1), 0);
+  opacity:calc(1 - var(--lock-p) * .55);
+  transition:
+    transform 520ms cubic-bezier(.22,1,.36,1),
+    opacity 420ms ease-out,
+    border-radius 420ms ease-out;
+  will-change:transform, opacity;
 }
 .android[data-device="phone"] .a-lock{padding-top:56px}
 /* (bez przyciemnień — czytelność zapewniają cienie tekstu) */
 .a-lock > *{position:relative;z-index:1}
-.a-lock.is-unlocked{transform:translateY(-100%);opacity:0;pointer-events:none}
+
+/* warstwa treści — lekko maleje i rozmywa krawędzie w trakcie przeciągania */
+.a-lock .lock-content{
+  position:absolute;inset:0;z-index:2;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:space-between;
+  padding:34px 20px 14px;
+}
+.android[data-device="phone"] .a-lock .lock-content{padding-top:56px}
+.a-lock .lock-content{
+  transform:scale(calc(1 - var(--lock-p) * .045));
+  transform-origin:50% 22%;
+  transition:transform 520ms cubic-bezier(.22,1,.36,1);
+}
+/* zegar odjeżdża szybciej niż reszta — efekt „wysysania” */
+.a-lock .lock-clock,
+.a-lock .lock-lockicon{
+  transform:translate3d(0, calc(var(--lock-p) * -90px), 0) scale(calc(1 - var(--lock-p) * .12));
+  opacity:calc(1 - var(--lock-p) * .9);
+  transition:transform 420ms cubic-bezier(.22,1,.36,1), opacity 300ms ease-out;
+  will-change:transform, opacity;
+}
+.a-lock .lock-notif{
+  transform:translate3d(0, calc(var(--lock-p) * -40px), 0);
+  opacity:calc(1 - var(--lock-p));
+  transition:transform 420ms cubic-bezier(.22,1,.36,1), opacity 260ms ease-out;
+}
+.a-lock .lock-bottom{
+  transform:translate3d(0, calc(var(--lock-p) * 26px), 0);
+  opacity:calc(1 - var(--lock-p) * .7);
+  transition:transform 520ms cubic-bezier(.22,1,.36,1), opacity 320ms ease-out;
+}
+/* mgła, która rozjaśnia ekran w miarę odblokowywania */
+.a-lock .lock-veil{
+  position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 100%, rgba(180,215,255,.22), transparent 60%);
+  opacity:var(--lock-p);
+  transition:opacity 320ms ease-out;
+}
+/* podczas przeciągania nie ma opóźnień — wszystko idzie 1:1 za palcem */
+.a-lock.is-dragging,
+.a-lock.is-dragging .lock-content,
+.a-lock.is-dragging .lock-clock,
+.a-lock.is-dragging .lock-lockicon,
+.a-lock.is-dragging .lock-notif,
+.a-lock.is-dragging .lock-bottom,
+.a-lock.is-dragging .lock-veil{
+  transition:none!important;
+}
+/* sprężysty powrót po zbyt krótkim przeciągnięciu */
+.a-lock.is-snapping{
+  transition:transform 560ms cubic-bezier(.34,1.42,.64,1), opacity 380ms ease-out;
+}
+.a-lock.is-snapping .lock-content,
+.a-lock.is-snapping .lock-clock,
+.a-lock.is-snapping .lock-lockicon,
+.a-lock.is-snapping .lock-notif,
+.a-lock.is-snapping .lock-bottom{
+  transition:transform 620ms cubic-bezier(.34,1.42,.64,1), opacity 380ms ease-out;
+}
+/* odblokowanie: blokada „wysysa się” w górę i znika */
+.a-lock.is-unlocked{
+  transform:translate3d(0,-100%,0) scale(1.02);
+  opacity:0;pointer-events:none;
+  transition:
+    transform 620ms cubic-bezier(.32,.72,0,1),
+    opacity 420ms ease-out;
+  border-radius:0 0 34px 34px;
+}
+.a-lock.is-unlocked .lock-content{transform:scale(1.06);opacity:0;transition:transform 620ms cubic-bezier(.32,.72,0,1), opacity 300ms ease-out}
+/* launcher wjeżdża spod blokady */
+.a-launcher{
+  transform:translate3d(0,0,0) scale(1);
+  transition:transform 620ms cubic-bezier(.32,.72,0,1), filter 420ms ease-out;
+}
+.android:has(.a-lock:not(.is-unlocked)) .a-launcher{
+  --lock-p:0;
+  transform:translate3d(0, calc(18px * (1 - var(--lock-p))), 0) scale(calc(.965 + .035 * var(--lock-p)));
+}
 
 .lock-clock{text-align:center;margin-top:8px;flex:none}
 .lock-clock b{display:block;font-size:56px;font-weight:300;letter-spacing:-2.5px;line-height:1}

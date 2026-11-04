@@ -55,6 +55,34 @@ dom.window.addEventListener("load", async () => {
     const lock = phone.querySelector(".a-lock");
     assert(!lock.classList.contains("is-unlocked"));
   });
+  check("blokadę można odblokować przeciągnięciem w górę (myszka też)", () => {
+    phone.lumino.lockScreen();
+    assert(phone.lumino.isLocked());
+    const lock = phone.querySelector(".a-lock");
+    const fire = (el, type, cy) => el.dispatchEvent(new dom.window.PointerEvent(type, {
+      bubbles: true, clientX: 140, clientY: cy, pointerType: "mouse", button: 0
+    }));
+    fire(lock, "pointerdown", 520);
+    /* ruch i puszczenie POZA makietą — myszka ucieka za krawędź */
+    fire(dom.window, "pointermove", 480);
+    fire(dom.window, "pointermove", 400);
+    assert(lock.classList.contains("is-dragging"), "blokada podąża za wskaźnikiem");
+    fire(dom.window, "pointerup", 380);
+    assert(!phone.lumino.isLocked(), "przeciągnięcie odblokowuje ekran");
+  });
+  check("krótkie przeciągnięcie wraca sprężyście (bez odblokowania)", () => {
+    phone.lumino.lockScreen();
+    const lock = phone.querySelector(".a-lock");
+    const fire = (el, type, cy) => el.dispatchEvent(new dom.window.PointerEvent(type, {
+      bubbles: true, clientX: 140, clientY: cy, pointerType: "mouse", button: 0
+    }));
+    fire(lock, "pointerdown", 500);
+    fire(dom.window, "pointermove", 480);
+    fire(dom.window, "pointerup", 470);
+    assert(phone.lumino.isLocked(), "ekran dalej zablokowany");
+    assert(lock.classList.contains("is-snapping"), "jest sprężysty powrót");
+    phone.lumino.unlock();
+  });
   check("kłódka w wyspie blokuje ekran", () => {
     phone.querySelector(".island").click();
     const lockBtn = phone.querySelector('.island-foot [data-action="lock"]');

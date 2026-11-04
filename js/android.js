@@ -140,6 +140,7 @@
 
       <!-- ===== ekran blokady ===== -->
       <div class="a-layer a-lock">
+        <div class="lock-content">
         <div class="lock-clock">
           <b class="js-time">09:41</b>
           <span class="js-date">poniedziałek, 4 listopada</span>
@@ -157,9 +158,11 @@
             <button class="lock-action" title="Latarka">${icon("i-flash")}</button>
             <button class="lock-action" title="Aparat" data-app="camera">${icon("i-camera")}</button>
           </div>
-          <div class="lock-hint">Przesuń w górę, aby odblokować</div>
+          <div class="lock-hint"><span>Przesuń w górę, aby odblokować</span></div>
           <div class="navbar__pill" style="position:static;transform:none;margin-bottom:4px" data-action="unlock"></div>
         </div>
+        </div>
+        <div class="lock-veil" aria-hidden="true"></div>
       </div>
 
       <!-- WYSPA: wszystkie skróty (panel usunięty) -->
@@ -232,17 +235,64 @@
       drawer.classList.remove("is-open");
       lock.classList.remove("is-unlocked");
     }
-    lock.addEventListener("click", e => {
-      if (e.target.closest("[data-app]")) return;
-      if (e.target.closest('[data-action="unlock"]')) { unlock(); return; }
-      // klik gdziekolwiek w tło też odblokowuje (wygodne w podglądzie)
-      if (!e.target.closest(".lock-notif")) unlock();
+    /* ---------------- odblokowanie przeciągnięciem (iOS 26) ----------------
+       Blokada podąża za palcem/myszką (--lock-drag), a po przekroczeniu progu
+       „wysysa się” w górę: zegar i powiadomienia rozjeżdżają się, tło jaśnieje,
+       a launcher wjeżdża spod spodu. Wszystko na transform/opacity. */
+    let dragStartY = null, dragging = false, dragDist = 0;
+    const RELEASE = 96;          /* px — poniżej tego blokada wraca na miejsce */
+
+    function lockPaint(dy) {
+      const h = lock.clientHeight || 600;
+      const d = Math.max(0, Math.min(dy, h));
+      const p = (d / Math.max(1, h)).toFixed(3);
+      lock.style.setProperty("--lock-drag", d.toFixed(1) + "px");
+      lock.style.setProperty("--lock-p", p);
+      root.style.setProperty("--lock-p", p);   /* launcher też to czyta */
+    }
+    function lockReset(withAnim) {
+      lock.classList.remove("is-dragging");
+      lock.style.removeProperty("--lock-drag");
+      lock.style.removeProperty("--lock-p");
+      root.style.removeProperty("--lock-p");
+      if (withAnim) {
+        lock.classList.add("is-snapping");
+        setTimeout(() => lock.classList.remove("is-snapping"), 420);
+      }
+    }
+
+    lock.addEventListener("pointerdown", e => {
+      if (e.target.closest("[data-app], .lock-action, [data-action]")) return;
+      if (lock.classList.contains("is-unlocked")) return;
+      dragStartY = e.clientY;
+      dragDist = 0;
+      dragging = false;
     });
-    let dragStartY = null;
-    lock.addEventListener("pointerdown", e => { dragStartY = e.clientY; });
-    lock.addEventListener("pointerup", e => {
-      if (dragStartY !== null && dragStartY - e.clientY > 26) unlock();
-      dragStartY = null;
+    /* ruch i puszczenie także poza blokadą — myszka łatwo ucieka za makietę */
+    window.addEventListener("pointermove", e => {
+      if (dragStartY === null) return;
+      dragDist = dragStartY - e.clientY;
+      if (!dragging && dragDist > 4) {
+        dragging = true;
+        lock.classList.add("is-dragging");
+      }
+      if (dragging) lockPaint(dragDist);
+    }, { passive: true });
+    window.addEventListener("pointerup", () => {
+      if (dragStartY === null) return;
+      const far = dragDist > RELEASE;
+      dragStartY = null; dragging = false;
+      if (far) { unlock(); lockReset(false); }
+      else lockReset(true);
+    });
+    /* przycisk „odblokuj” (pigułka) działa jak dotąd */
+    lock.querySelectorAll('[data-action="unlock"]').forEach(b =>
+      b.addEventListener("click", e => { e.stopPropagation(); unlock(); }));
+
+    /* klik w tło bez przeciągania też odblokowuje (wygodne w podglądzie) */
+    lock.addEventListener("click", e => {
+      if (e.target.closest("[data-app], .lock-action, [data-action], .lock-notif")) return;
+      if (!dragging) unlock();
     });
 
     /* ---------------- wyspa: rozwijane skróty (panel usunięty) ----------------
