@@ -323,81 +323,152 @@ button:active{transform:scale(.96)}
 
 
 /* ============================================================
-   7. IKONY: LIQUID GLASS
-   Wszystkie ikony to ten sam szklany kwadrat (squircle) — bez kół.
-   Środek jest mocno przezroczysty, więc widoczna jest tylko
-   kolorowa ikona (glif). Krawędź: jasna, „mokra” obwódka + refleks.
+   7. IKONY — 4 warianty stylu (przełącznik u góry strony)
+   data-icons = liquid | frosted | gel | chrome
+   Każdy wariant to szklany kwadrat (zaokrąglone rogi, bez kół).
    ============================================================ */
 .bi{
-  --radius-icon: 31%;
+  color:var(--ink,#eaf2ff);
   position:relative;
-  border-radius:var(--radius-icon)!important;
-  background:
-    linear-gradient(160deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.10) 38%, rgba(255,255,255,.045) 100%);
-  background-color:rgba(255,255,255,.10);
-  box-shadow:
-    0 0 0 .5px rgba(255,255,255,.42) inset,          /* jasna krawędź */
-    0 1px 0 rgba(255,255,255,.55) inset,             /* highlight góra */
-    0 -1px 0 rgba(0,0,0,.10) inset,
-    0 10px 22px -12px rgba(0,0,0,.55),
-    0 2px 8px -2px rgba(0,0,0,.28);
-  backdrop-filter:blur(8px) saturate(180%);
-  -webkit-backdrop-filter:blur(8px) saturate(180%);
+  border-radius:31%!important;
   isolation:isolate;
   overflow:hidden;
+  display:grid;place-items:center;
   transition:transform 340ms var(--ease-ios), box-shadow 340ms var(--ease-soft),
              background-color 340ms var(--ease-soft), filter 340ms var(--ease-soft);
   will-change:transform;
 }
-/* każdy wariant koloru znika — zostaje szkło */
-.bi.bi--circle{border-radius:var(--radius-icon)!important}
+.bi > svg{position:relative;z-index:2;width:56%;height:56%;color:inherit;fill:currentColor}
 
-/* refleks „liquid”: rozświetlona górna część + smuga światła */
-.bi::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+/* ---------- WARSTWY WSPÓLNE ---------- */
+.bi::before,.bi::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1}
+
+/* ============================================================
+   A) LIQUID — mocna soczewka: grube szkło, tęczowa krawędź,
+      jasna smuga światła (najbardziej „liquid glass”)
+   ============================================================ */
+[data-icons="liquid"] .bi{
   background:
-    radial-gradient(120% 74% at 24% 2%, rgba(255,255,255,.55), rgba(255,255,255,.12) 44%, transparent 70%),
-    linear-gradient(112deg, transparent 34%, rgba(255,255,255,.18) 48%, transparent 60%);
-  opacity:.9;
-}
-/* druga warstwa: „mokra” obwódka + cień narożny = efekt szkła 3D */
-.bi::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.16) inset,
-    0 6px 14px -10px rgba(0,0,0,.6) inset;
-  background:linear-gradient(150deg, rgba(255,255,255,.22), transparent 38%, transparent 74%, rgba(255,255,255,.10));
-}
-
-/* glif — jedyny kolorowy element ikony */
-.bi > svg{
-  position:relative;z-index:1;
-  width:58%;height:58%;
-  color:var(--ink, #e8eefc);
-  fill:currentColor;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));
-}
-.bi > svg .lu-day{fill:currentColor;filter:none}
-.bi > svg text{filter:none}
-
-/* hover: uniesienie + mocniejsze szkło i poświata glifu */
-.app:hover .bi,
-.dock-app:hover .bi{
-  transform:translateY(-4px) scale(1.06);
-  background-color:rgba(255,255,255,.20);
+    radial-gradient(120% 100% at 22% -10%, rgba(255,255,255,.55), rgba(255,255,255,.10) 46%, rgba(255,255,255,.02) 70%),
+    radial-gradient(100% 90% at 84% 116%, currentColor, transparent 66%),
+    linear-gradient(160deg, rgba(255,255,255,.20), rgba(255,255,255,.06) 52%, rgba(255,255,255,.14));
   box-shadow:
     0 0 0 1px rgba(255,255,255,.55) inset,
-    0 1px 0 rgba(255,255,255,.7) inset,
-    0 18px 30px -14px rgba(0,0,0,.6),
-    0 0 26px -6px rgba(180,220,255,.45);
+    0 2px 1px rgba(255,255,255,.65) inset,
+    0 -6px 14px -8px rgba(0,0,0,.45) inset,
+    0 14px 26px -12px rgba(0,0,0,.62),
+    0 2px 10px -2px rgba(0,0,0,.32);
+  backdrop-filter:blur(11px) saturate(200%);
+  -webkit-backdrop-filter:blur(11px) saturate(200%);
 }
-.app:hover .bi > svg,
-.dock-app:hover .bi > svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.5)) brightness(1.1)}
-.app:active .bi,.dock-app:active .bi{transform:translateY(-1px) scale(.97)}
+[data-icons="liquid"] .bi::before{
+  background:
+    radial-gradient(60% 42% at 30% 6%, rgba(255,255,255,.85), transparent 70%),
+    conic-gradient(from 210deg, rgba(255,120,220,.30), rgba(120,200,255,.30), rgba(120,255,210,.28), rgba(255,225,140,.28), rgba(255,120,220,.30));
+  opacity:.55;
+  -webkit-mask:linear-gradient(#000 0 43%, transparent 72%);
+          mask:linear-gradient(#000 0 43%, transparent 72%);
+}
+[data-icons="liquid"] .bi::after{
+  box-shadow:0 0 0 1px rgba(255,255,255,.22) inset, 0 -14px 22px -16px rgba(255,255,255,.9) inset;
+  background:linear-gradient(122deg, transparent 32%, rgba(255,255,255,.42) 46%, rgba(255,255,255,.06) 52%, transparent 62%);
+  opacity:.9;
+}
 
-/* mniejsze ikony (powiadomienia, Start, miniodtwarzacz) */
-.notif .bi, .start-app .bi, .sp-tile .bi, .sp-playing .bi, .win-toast .bi{border-radius:30%!important}
+/* ============================================================
+   B) FROSTED — mleczne, matowe szkło (iOS 18 / visionOS)
+   ============================================================ */
+[data-icons="frosted"] .bi{
+  background:
+    linear-gradient(165deg, rgba(255,255,255,.44), rgba(255,255,255,.20) 55%, rgba(255,255,255,.30));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.6) inset,
+    0 1px 0 rgba(255,255,255,.8) inset,
+    0 16px 28px -14px rgba(0,0,0,.55);
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+}
+[data-icons="frosted"] .bi::before{
+  background:radial-gradient(90% 70% at 28% 2%, rgba(255,255,255,.55), transparent 66%);
+  opacity:.75;
+}
+[data-icons="frosted"] .bi::after{
+  background:linear-gradient(130deg, rgba(255,255,255,.30), transparent 38%, transparent 74%, rgba(255,255,255,.16));
+}
+
+/* ============================================================
+   C) GEL — kolorowy, wypukły „żel” z połyskiem (Apple/One UI)
+   ============================================================ */
+[data-icons="gel"] .bi{
+  background:
+    radial-gradient(120% 90% at 28% -8%, rgba(255,255,255,.62), rgba(255,255,255,.16) 42%, transparent 70%),
+    linear-gradient(165deg, currentColor, rgba(0,0,0,.30) 72%, rgba(0,0,0,.48));
+  background-color:currentColor;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.42) inset,
+    0 2px 2px rgba(255,255,255,.55) inset,
+    0 -8px 14px -8px rgba(0,0,0,.55) inset,
+    0 16px 30px -14px rgba(0,0,0,.55),
+    0 3px 10px -2px rgba(0,0,0,.4);
+}
+[data-icons="gel"] .bi > svg{color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+[data-icons="gel"] .bi::before{
+  background:radial-gradient(70% 50% at 32% 4%, rgba(255,255,255,.9), transparent 72%);
+  opacity:.9;
+}
+[data-icons="gel"] .bi::after{
+  background:linear-gradient(118deg, transparent 38%, rgba(255,255,255,.34) 47%, transparent 58%);
+}
+
+/* ============================================================
+   D) CHROME — polerowane metaficzne szkło (notion/„liquid metal”)
+   ============================================================ */
+[data-icons="chrome"] .bi{
+  background:
+    linear-gradient(160deg,
+      rgba(255,255,255,.62) 0%, rgba(210,225,245,.28) 24%,
+      rgba(255,255,255,.10) 46%, rgba(120,150,190,.20) 70%, rgba(255,255,255,.34) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.66) inset,
+    0 1px 0 rgba(255,255,255,.9) inset,
+    0 -1px 0 rgba(90,110,140,.5) inset,
+    0 18px 30px -14px rgba(0,0,0,.65);
+  backdrop-filter:blur(6px) saturate(130%);
+  -webkit-backdrop-filter:blur(6px) saturate(130%);
+}
+[data-icons="chrome"] .bi::before{
+  background:conic-gradient(from 200deg at 60% 30%,
+    rgba(255,255,255,.5), rgba(180,210,255,.22), rgba(255,255,255,.05), rgba(200,225,255,.35), rgba(255,255,255,.5));
+  opacity:.6;
+  mix-blend-mode:screen;
+}
+[data-icons="chrome"] .bi::after{
+  background:linear-gradient(125deg, rgba(255,255,255,.55), transparent 34%, transparent 68%, rgba(255,255,255,.28));
+}
+
+/* ---------- WSPÓLNE: hover / active / rozmiary ---------- */
+.bi > svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+[data-icons="gel"] .bi > svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+
+.app:hover .bi,.dock-app:hover .bi{transform:translateY(-4px) scale(1.07)}
+[data-icons="liquid"] .app:hover .bi,[data-icons="liquid"] .dock-app:hover .bi{
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.85) inset,
+    0 2px 1px rgba(255,255,255,.8) inset,
+    0 20px 34px -14px rgba(0,0,0,.6),
+    0 0 26px -4px rgba(190,225,255,.55);
+}
+[data-icons="gel"] .app:hover .bi,[data-icons="gel"] .dock-app:hover .bi{
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.55) inset,
+    0 2px 2px rgba(255,255,255,.7) inset,
+    0 22px 36px -14px rgba(0,0,0,.6);
+}
+.app:active .bi,.dock-app:active .bi{transform:translateY(-1px) scale(.96)}
+
+/* mniejsze ikony */
+.notif .bi,.start-app .bi,.sp-tile .bi,.sp-playing .bi,.win-toast .bi{border-radius:30%!important}
 
 @media (prefers-reduced-motion:reduce){
-  .bi,.app:hover .bi,.dock-app:hover .bi{transform:none!important;filter:none!important}
+  .bi,.app:hover .bi,.dock-app:hover .bi{transform:none!important}
 }

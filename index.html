@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LuminoOS — makiety telefonu, tabletu i laptopa</title>
-<link rel="stylesheet" href="css/base.css?v=10">
+<link rel="stylesheet" href="css/base.css?v=11">
 <link rel="stylesheet" href="css/android.css?v=10">
 <link rel="stylesheet" href="css/windows.css?v=10">
-<link rel="stylesheet" href="css/glass.css?v=10">
+<link rel="stylesheet" href="css/glass.css?v=11">
 </head>
-<body>
+<body data-icons="liquid">
 
 <!-- ================= IKONY ================= -->
 <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -101,7 +101,13 @@
       <svg class="ico"><use href="#i-laptop"/></svg> Laptop
     </button>
   </div>
-  <p class="viewbar__hint">Osobny podgląd skaluje urządzenie do okna — wygodniej się klika.</p>
+  <div class="iconbar" role="group" aria-label="Styl ikon">
+    <span class="iconbar__label">Styl ikon</span>
+    <button class="iconbtn-style is-active" data-icons-set="liquid">Liquid</button>
+    <button class="iconbtn-style" data-icons-set="frosted">Frosted</button>
+    <button class="iconbtn-style" data-icons-set="gel">Gel</button>
+    <button class="iconbtn-style" data-icons-set="chrome">Chrome</button>
+  </div>
 </nav>
 
 <main class="stage" id="stage" data-view="all">
@@ -154,5 +160,6 @@
 <script src="js/views.js?v=10"></script>
 <script src="js/page.js?v=10"></script>
 <script src="js/motion.js?v=10"></script>
+<script src="js/iconswitch.js?v=1"></script>
 </body>
 </html>
