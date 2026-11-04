@@ -281,7 +281,8 @@
       const closePanel = () => {
         if (shade) shade.classList.remove("is-open");
         if (islandEl) {
-          islandEl.dataset.mode = "idle";
+          const playing = !!(window.Lumino.player && window.Lumino.player.playing);
+          islandEl.dataset.mode = playing ? "music" : "idle";
           islandEl.classList.remove("is-open");
           islandEl.setAttribute("aria-expanded", "false");
         }

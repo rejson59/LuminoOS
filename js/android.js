@@ -69,6 +69,8 @@
             </span>
             <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
             <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
+            <button class="island__panel-btn" type="button" data-island-open-panel
+                    aria-label="Skróty i ustawienia" title="Skróty i ustawienia">${icon("i-sliders")}</button>
           </div>
 
           <div class="island__face island__face--panel">
@@ -348,7 +350,8 @@
       islandFaces.forEach(f => f.setAttribute("aria-hidden", f.classList.contains(`island__face--${mode}`) ? "false" : "true"));
     }
     function openPanel() { setMode("panel"); }
-    function closePanel() { setMode("idle"); }
+    /* zamknięcie panelu: wracamy do odtwarzacza, jeśli muzyka nadal gra */
+    function closePanel() { setMode(musicOn() ? "music" : "idle"); }
     const panelOpen = () => islandMode === "panel";
 
     /* --- powiadomienie w wyspie: morfuje na ~4,5 s, potem wraca --- */
@@ -407,8 +410,14 @@
       setMode("idle");
     });
     /* klik w odtwarzacz = otwórz Spotify (poza przyciskiem play) */
+    const panelBtn = $("[data-island-open-panel]", islandBtn);
+    if (panelBtn) panelBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      openPanel();
+    });
+
     const openSpotify = e => {
-      if (e.target.closest("[data-island-play]")) return;
+      if (e.target.closest("[data-island-play], [data-island-open-panel]")) return;
       e.stopPropagation();
       openApp("spotify");
     };

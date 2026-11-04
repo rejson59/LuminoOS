@@ -143,6 +143,25 @@ dom.window.addEventListener("load", async () => {
     assert(!pl.playing, "pauza działa z pigułki");
     pl.pause();
   });
+  check("w trybie muzyki jest wejście do panelu (nie tylko Spotify)", () => {
+    const pl = dom.window.Lumino.player;
+    pl.play(0);
+    const isl = phone.querySelector(".island");
+    assert(isl.dataset.mode === "music");
+    const panelBtn = isl.querySelector("[data-island-open-panel]");
+    assert(panelBtn, "przycisk skrótów w odtwarzaczu");
+    panelBtn.click();
+    assert(isl.dataset.mode === "panel", "panel otwiera się mimo muzyki");
+    /* zamknięcie panelu wraca do odtwarzacza, nie do zegara */
+    phone.querySelector(".island-shade").click();
+    assert(isl.dataset.mode === "music", "powrót do odtwarzacza");
+    pl.pause();
+  });
+  check("wyspa jest po prawej stronie ekranu", () => {
+    const css = require("fs").readFileSync(require("path").join(__dirname, "..", "css/island.css"), "utf8");
+    const base = css.slice(css.indexOf(".island{"), css.indexOf(".island:hover"));
+    return base.includes("right:10px") && !base.includes("left:10px");
+  });
   check("skróty zamykają się klikiem w tło", () => {
     phone.querySelector(".island-shade").click();
     assert(phone.querySelector(".island").dataset.mode !== "panel");

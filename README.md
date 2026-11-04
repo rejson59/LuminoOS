@@ -194,11 +194,12 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   i przywraca zwykłe dopasowanie.
 
 ### Górna belka telefonu/tabletu + wyspa (panel usunięty)
-- **Pływająca pigułka (Dynamic Island) po lewej**: **czarna**, nie szklana
+- **Pływająca pigułka (Dynamic Island) po prawej**: **czarna**, nie szklana
   (`#04050a`), z soczewką aparatu, zegarem i krótką datą. Jest
-  `position:absolute` w launcherze, `top:7px`, z własnym cieniem — dzięki temu
-  naprawdę **pływa nad aplikacjami**, zamiast siedzieć wciśnięta w belkę
-  (wcześniej była elementem paska stanu i wyglądała jak zwykły chip).
+  `position:absolute` w launcherze, `top:7px; right:10px` (rośnie w **lewo**,
+  `transform-origin:100% 0%`), z własnym cieniem — dzięki temu naprawdę
+  **pływa nad aplikacjami**, zamiast siedzieć wciśnięta w belkę.
+  Status (zasięg, Wi-Fi, bateria) i lupa są po lewej stronie belki.
   **Morfuje w czterech trybach** (`data-mode`), i za każdym razem jest to
   **ten sam element** — rozciąga się na wysokość i szerokość:
 
@@ -207,7 +208,7 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   | `idle` | domyślnie | soczewka + zegar + data |
   | `panel` | klik w pigułkę | rozciąga się w panel: 2 suwaki, 8 kafli 4×2, stopka ikon i powiadomień, grabber |
   | `notif` | nowe powiadomienie (`lumino.notify(...)` albo klik ikony w panelu) | ikona aplikacji + tytuł i treść; po ~4,5 s wraca do zegara |
-  | `music` | gdy gra Spotify | okładka, tytuł, wykonawca, animowany equalizer i play/pauza; klik w pigułkę otwiera Spotify |
+  | `music` | gdy gra Spotify | okładka, tytuł, wykonawca, animowany equalizer, play/pauza **oraz przycisk skrótów** — panel jest dostępny także w trakcie słuchania; klik w resztę pigułki otwiera Spotify |
 
   Wcześniej panel skrótów był **osobnym elementem** wsuwanym pod pigułkę, a sama
   pigułka była `<button>` — zagnieżdżone w niej kafle łamały HTML, więc panel
