@@ -1,0 +1,147 @@
+/* ============================================================
+   LuminoOS — telefon: wysuwany pasek ostatnich aplikacji (styl macOS)
+   • szkło w stylu systemu (backdrop-filter tylko tutaj, nie w animacji)
+   • karty aplikacji z podglądem, przewijane w poziomie
+   • pasek podąża za palcem (--follow), potem sprężyście się ustala
+   ============================================================ */
+.a-activity{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  z-index:60;
+  padding:10px 10px 14px;
+  display:flex;flex-direction:column;
+  gap:8px;
+  background:linear-gradient(180deg, rgba(22,26,38,.72), rgba(14,17,26,.92));
+  border-radius:26px 26px 0 0;
+  box-shadow:0 -18px 40px -22px rgba(0,0,0,.85), 0 0 0 .5px rgba(255,255,255,.14) inset;
+  -webkit-backdrop-filter:blur(22px) saturate(170%);
+          backdrop-filter:blur(22px) saturate(170%);
+  transform:translate3d(0, calc(100% + var(--follow, 0px)), 0) scale(.98);
+  opacity:0;
+  pointer-events:none;
+  transition:transform 420ms cubic-bezier(.32,.72,0,1), opacity 240ms ease-out;
+  will-change:transform, opacity;
+}
+.a-activity.is-following{
+  transition:none;
+  opacity:1;
+  transform:translate3d(0, calc(100% + var(--follow, 0px)), 0) scale(1);
+}
+.a-activity.is-open{
+  transform:translate3d(0,0,0) scale(1);
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* nagłówek */
+.a-activity__head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4px 0 6px;
+}
+.a-activity__hint{
+  font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:rgba(255,255,255,.60);font-weight:600;
+}
+.a-activity__nav{display:flex;gap:6px}
+.a-activity__arrow{
+  width:24px;height:24px;border-radius:50%;border:0;cursor:pointer;
+  display:grid;place-items:center;font-size:15px;line-height:1;
+  color:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.10);
+  transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
+}
+.a-activity__arrow:hover{background:rgba(255,255,255,.22)}
+.a-activity__arrow:active{transform:scale(.92)}
+
+/* tor i szyna kart */
+.a-activity__track{
+  overflow:hidden;
+  touch-action:pan-y;
+  cursor:grab;
+}
+.a-activity__track:active{cursor:grabbing}
+.a-activity__rail{
+  display:flex;gap:8px;
+  will-change:transform;
+  transform:translate3d(0,0,0);
+}
+
+/* karta aplikacji */
+.a-card{
+  position:relative;flex:none;
+  width:74px;height:88px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  padding:8px 6px;
+  border:0;border-radius:17px;cursor:pointer;
+  color:#fff;font-family:inherit;
+  background:rgba(255,255,255,.09);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset, 0 10px 20px -14px rgba(0,0,0,.8);
+  transition:transform 260ms cubic-bezier(.32,.72,0,1), background-color 200ms ease;
+}
+.a-card:hover{transform:translateY(-3px) scale(1.05);background:rgba(255,255,255,.16)}
+.a-card:active{transform:translateY(0) scale(.97)}
+.a-card__icon{width:38px;height:38px}
+.a-card__label{
+  font-size:9px;line-height:1.15;text-align:center;max-width:100%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:rgba(255,255,255,.9);
+}
+.a-card--empty{width:auto;padding:14px 20px;cursor:default;background:rgba(255,255,255,.05)}
+.a-card--empty .a-card__label{font-size:10px;color:rgba(255,255,255,.6)}
+
+/* zamykanie karty */
+.a-card__actions{position:absolute;top:3px;right:3px;opacity:0;transition:opacity 180ms ease}
+.a-card:hover .a-card__actions{opacity:1}
+.a-card__x{
+  display:grid;place-items:center;width:17px;height:17px;border-radius:50%;
+  font-size:9px;line-height:1;color:#fff;background:rgba(255,255,255,.22);
+  transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
+}
+.a-card__x:hover{background:rgba(255,80,80,.85);transform:scale(1.1)}
+
+/* uchwyt */
+.a-activity__grabber{
+  width:36px;height:4px;border-radius:99px;margin:0 auto;
+  background:rgba(255,255,255,.45);
+}
+
+/* tablet: pasek tylko na telefonie */
+.android[data-android="tablet"] .a-activity{display:none}
+
+/* gest „wstecz” od lewej krawędzi: lekki podgląd przesunięcia */
+.android[data-android="phone"] .a-launcher{
+  --edge-back:0;
+}
+.android[data-android="phone"] .a-app.is-open{
+  transition:transform 300ms cubic-bezier(.32,.72,0,1), opacity 200ms ease-out;
+}
+
+/* dostępność: bez ruchu */
+@media (prefers-reduced-motion:reduce){
+  .a-activity,.a-card,.a-activity__arrow,.a-card__x{transition-duration:.001ms}
+}
+
+/* ---------- „Cofnij” po zamknięciu aplikacji z paska ---------- */
+.a-undo{
+  position:absolute;left:50%;bottom:86px;z-index:70;
+  display:flex;align-items:center;gap:12px;
+  padding:9px 10px 9px 14px;border-radius:14px;
+  background:rgba(28,32,44,.92);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset, 0 16px 30px -18px rgba(0,0,0,.9);
+  color:#fff;font-size:10.5px;white-space:nowrap;
+  transform:translate(-50%, 12px) scale(.96);
+  opacity:0;pointer-events:none;
+  transition:transform 320ms cubic-bezier(.32,.72,0,1), opacity 200ms ease-out;
+  will-change:transform, opacity;
+}
+.a-undo.is-open{transform:translate(-50%, 0) scale(1);opacity:1;pointer-events:auto}
+.a-undo__txt{color:rgba(255,255,255,.86)}
+.a-undo__btn{
+  border:0;cursor:pointer;font:inherit;font-weight:600;
+  padding:5px 11px;border-radius:9px;color:#fff;
+  background:rgba(122,180,255,.28);
+  transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
+}
+.a-undo__btn:hover{background:rgba(122,180,255,.45)}
+.a-undo__btn:active{transform:scale(.94)}
+.android[data-android="tablet"] .a-undo{display:none}

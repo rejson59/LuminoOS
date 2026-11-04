@@ -68,9 +68,14 @@ dom.window.addEventListener("load", async () => {
   });
 
   console.log("\n— Android: szuflada —");
-  check("szuflada otwiera się", () => {
-    phone.querySelector('.navbar__pill[data-action="drawer"]').click();
+  check("pasek gestów otwiera ostatnie aplikacje (nowe sterowanie)", () => {
+    phone.querySelector(".navbar__pill").click();
+    assert(phone.querySelector(".a-activity").classList.contains("is-open"));
+  });
+  check("szuflada aplikacji nadal działa (kafel „Wszystkie”)", () => {
+    phone.querySelector('.app[data-action="drawer"]').click();
     assert(phone.querySelector(".a-drawer").classList.contains("is-open"));
+    phone.querySelector('.a-drawer .app[data-app="notes"]').click();
   });
 
   console.log("\n— Android: Spotify —");

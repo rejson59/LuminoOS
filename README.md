@@ -170,6 +170,24 @@ na właściwościach układu, zmiany `backdrop-filter` na hover i animacje filtr
 Licznik klatek w podglądzie: dopisz `?fps=1` do adresu — w prawym dolnym rogu
 pojawi się FPS, średnia klatka, najgorsza klatka i procent zaciągnięć.
 
+### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
+Zamiast systemowego ekranu „ostatnich zadań” telefon ma **wysuwany pasek w stylu
+macOS** z ostatnio używanymi aplikacjami (`js/gestures.js` + `css/activity.css`).
+
+| Gest | Efekt |
+|---|---|
+| przesunięcie **w górę od dolnej krawędzi** | wysuwa się pasek ostatnich aplikacji (podąża za palcem) |
+| przesunięcie **w górę na pasku** | ekran główny |
+| przesunięcie **w dół** | schowanie paska |
+| przesunięcie **od lewej krawędzi** | wstecz (zamyka aplikację / panel) |
+| przesunięcie **od prawej krawędzi** | ekran główny |
+| kółko / przeciąganie / strzałki ‹ › | przewijanie paska w poziomie |
+| ✕ na karcie | zamknięcie aplikacji + **„Cofnij”** (4 s) |
+
+Pasek trzyma do 8 ostatnich aplikacji (bez duplikatów, kolejność jak w systemie),
+karty mają prawdziwe ikony i podpisy. Cały ruch idzie na `transform`/`opacity`
+przez wspólny scheduler (`js/perf.js`), więc nie gubi klatek.
+
 ### Tablet: komplet aplikacji na jednym ekranie
 `14` aplikacji w siatce **5 kolumn** + 3 kompaktowe widgety w jednym rzędzie.
 Siatka trzyma się w ramce (sprawdzane testem `tools/layout-check.js`), a pełna

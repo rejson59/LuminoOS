@@ -36,6 +36,23 @@ dom.window.addEventListener("load", () => setTimeout(() => {
     `${r.ekran}: ${r.aplikacjiNaStronie} kafli na 1. stronie, ${r.widgetow} widgetów, ` +
     `${r.kolumnySiatki} kolumn (grid), ${r.liczbaWszystkich} aplikacji w szufladzie`));
 
+  // tablet: struktura — siatka rośnie, dock/pasek w przepływie (nic nie nachodzi)
+  const tScreen = document.querySelector('[data-android="tablet"]');
+  const tGrid = tScreen.querySelector(".app-grid--tablet-home");
+  const tDock = tScreen.querySelector(".dock");
+  const tNav = tScreen.querySelector(".navbar");
+  const g = el => (el ? gcs(el) : null);
+  const gridFlex = g(tGrid).flexGrow;
+  const dockPos = g(tDock).position;
+  const navPos = g(tNav).position;
+  const gridOverflow = g(tGrid).overflow;
+  const inFlow = p => p === "static" || p === "relative";
+  const structure = gridFlex === "1" && inFlow(dockPos) && inFlow(navPos) && gridOverflow === "hidden";
+  console.log(`tablet: siatka flex-grow=${gridFlex}, dock=${dockPos}, pasek=${navPos}, overflow=${gridOverflow}`);
+  console.log(structure
+    ? "OK — tablet: siatka kurczy się nad dockiem, pasek nie nachodzi na aplikacje"
+    : "PROBLEM — tablet: pasek może nachodzić na aplikacje");
+
   // tablet: 20 aplikacji, 5 kolumn, 3 widgety
   const t = report.find(r => r.ekran === "tablet");
   const ok = t.aplikacjiNaStronie >= 14 && t.kolumnySiatki === 5 && t.widgetow === 3;
@@ -51,5 +68,5 @@ dom.window.addEventListener("load", () => setTimeout(() => {
   console.log("promienie ikon (powinien być 1 typ):", [...radii].join(", ") || "(brak)");
   console.log(square ? "OK — wszystkie ikony to kwadraty z zaokrągleniem" : "PROBLEM — ikony mają różne kształty");
 
-  process.exit(ok && square ? 0 : 1);
+  process.exit(ok && square && structure ? 0 : 1);
 }, 350));

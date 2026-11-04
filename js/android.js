@@ -409,6 +409,13 @@
       });
     }
 
+    /* API dla modułu gestów (js/gestures.js): otwieranie aplikacji w powłoce */
+    window.Lumino.androidOpen = window.Lumino.androidOpen || function (screen, id) {
+      const btn = screen.querySelector(`[data-app="${id}"]`);
+      if (btn) btn.click();
+      else if (screen.lumino && screen.lumino.openApp) screen.lumino.openApp(id);
+    };
+
     /* ---------------- publiczne API ---------------- */
     root.lumino = {
       unlock,

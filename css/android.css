@@ -713,3 +713,58 @@
 
 /* wysokość ramki: więcej miejsca dla treści */
 .device--tablet .frame{height:calc(var(--tablet-h) + 26px)}
+
+/* ============================================================
+   TABLET — koniec z nachodzeniem paska na aplikacje
+   Siatka dostaje dokładnie tyle miejsca, ile zostaje nad dockiem
+   i paskiem gestów; kafle skalują się do dostępnej wysokości.
+   ============================================================ */
+.android[data-device="tablet"] .launcher-pages{
+  /* dolny margines = miejsce na dock + pasek gestów */
+  padding-bottom:2px;
+}
+.android[data-device="tablet"] .page{
+  padding:4px 16px 0;
+  min-height:0;
+  overflow:hidden;
+}
+.android[data-device="tablet"] .app-grid--tablet-home{
+  flex:1 1 auto;
+  min-height:0;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  grid-auto-rows:minmax(0,1fr);
+  gap:6px 6px;
+  align-content:stretch;
+  align-items:center;
+  overflow:hidden;
+}
+.android[data-device="tablet"] .app-grid--tablet-home .app{
+  min-height:0;
+  height:100%;
+  justify-content:center;
+  gap:3px;
+  padding:0;
+}
+/* ikona i podpis mieszczą się w kaflu — bez wychodzenia poza rząd */
+.android[data-device="tablet"] .app-grid--tablet-home .app__wrap{flex:none;min-height:0}
+.android[data-device="tablet"] .app-grid--tablet-home .app__label{
+  font-size:9px;
+  line-height:1.1;
+  max-width:100%;
+}
+/* dock i pasek gestów nie nachodzą na siatkę — są w normalnym przepływie */
+.android[data-device="tablet"] .dock{
+  margin:4px 56px 0;
+  padding:5px 9px;
+  border-radius:20px;
+}
+.android[data-device="tablet"] .dock .dock-app .bi{width:34px;height:34px}
+.android[data-device="tablet"] .navbar{height:22px;flex:none}
+.android[data-device="tablet"] .navbar__pill{width:88px;height:4px}
+
+/* bardzo niski tablet (np. 540 px): jeszcze kompaktowiej */
+@media (max-height:640px){
+  .android[data-device="tablet"] .app-grid--tablet-home{gap:4px}
+  .android[data-device="tablet"] .app-grid--tablet-home .app__label{font-size:8.5px}
+  .android[data-device="tablet"] .widgets{margin-bottom:6px}
+}
