@@ -96,11 +96,15 @@ W `assets/` leżą jej wersje zoptymalizowane pod makietę:
 | `assets/wallpaper-desktop.jpg` | ~193 KB | pulpit laptopa (lekkie przyciemnienie + gradient pod ikonami) |
 | `assets/wallpaper-lock.jpg` | ~41 KB | ekran blokady laptopa (rozmycie + mocniejsze przyciemnienie) |
 | `assets/wallpaper-phone-lock.jpg` | ~277 KB | ekran blokady telefonu i tabletu (tapeta pionowa) |
+| `assets/wallpaper-phone-home.jpg` | ~145 KB | ekran główny (launcher) telefonu — lekko rozmyta |
+| `assets/wallpaper-tablet-home.jpg` | ~64 KB | ekran główny tabletu — kadr poziomy z tapety pionowej |
 
 Podmiana tapety: wrzuć nowy plik jako `assets/wallpaper-desktop.jpg`
 (i rozmyty wariant jako `assets/wallpaper-lock.jpg`), a dla telefonu
-`assets/wallpaper-phone-lock.jpg` — style podciągną je automatycznie
-(`css/windows.css`: `.win-wallpaper` / `.win-lock`, `css/android.css`: `.a-lock`).
+`assets/wallpaper-phone-lock.jpg`, a na ekrany główne `assets/wallpaper-phone-home.jpg`
+i `assets/wallpaper-tablet-home.jpg` — style podciągną je automatycznie
+(`css/windows.css`: `.win-wallpaper` / `.win-lock`, `css/android.css`:
+`.android[data-device=...]` oraz `.a-lock`).
 
 ## Rozwiązywanie problemów
 
