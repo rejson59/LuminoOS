@@ -166,35 +166,39 @@
       <div class="island-menu" role="dialog" aria-label="Skróty" aria-hidden="true">
         <div class="island-menu__panel">
           <div class="island-sliders">
-            <label class="island-slider" title="Jasność">
+            <label class="island-slider" title="Jasność" style="--i:0">
               <span class="island-slider__ico">${icon("i-sun")}</span>
               <input class="slider island-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
             </label>
-            <label class="island-slider" title="Głośność">
+            <label class="island-slider" title="Głośność" style="--i:1">
               <span class="island-slider__ico">${icon("i-volume")}</span>
               <input class="slider island-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
             </label>
           </div>
           <div class="island-grid">
-            <button class="island-tile on" data-qs="wifi" aria-label="Internet" aria-pressed="true">${icon("i-wifi")}</button>
-            <button class="island-tile on" data-qs="bt" aria-label="Bluetooth" aria-pressed="true">${icon("i-bluetooth")}</button>
-            <button class="island-tile" data-qs="dnd" aria-label="Nie przeszkadzać">${icon("i-bell-off")}</button>
-            <button class="island-tile" data-qs="saver" aria-label="Oszczędzanie baterii">${icon("i-saver")}</button>
-            <button class="island-tile" data-qs="flash" aria-label="Latarka">${icon("i-flash")}</button>
-            <button class="island-tile" data-qs="rotate" aria-label="Auto-obrót">${icon("i-rotate")}</button>
-            <button class="island-tile" data-qs="air" aria-label="Tryb samolotowy">${icon("i-airplane")}</button>
-            <button class="island-tile" data-qs="cast" aria-label="Przesyłanie obrazu">${icon("i-cast")}</button>
+            ${[
+              ["wifi", "i-wifi", "Internet", true],
+              ["bt", "i-bluetooth", "Bluetooth", true],
+              ["dnd", "i-bell-off", "Nie przeszkadzać", false],
+              ["saver", "i-saver", "Oszczędzanie baterii", false],
+              ["flash", "i-flash", "Latarka", false],
+              ["rotate", "i-rotate", "Auto-obrót", false],
+              ["air", "i-airplane", "Tryb samolotowy", false],
+              ["cast", "i-cast", "Przesyłanie obrazu", false]
+            ].map(([key, ico, label, on], i) => `<button class="island-tile${on ? " on" : ""}"
+              data-qs="${key}" aria-label="${label}" title="${label}"
+              aria-pressed="${on ? "true" : "false"}" style="--i:${i}">${icon(ico)}</button>`).join("")}
           </div>
           <div class="island-bar">
             <div class="island-foot">
-              <button class="island-tile island-tile--sm" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
-              <button class="island-tile island-tile--sm" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
-              <button class="island-tile island-tile--sm" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
+              <button class="island-tile island-tile--sm" style="--i:8" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
+              <button class="island-tile island-tile--sm" style="--i:9" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
+              <button class="island-tile island-tile--sm" style="--i:10" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
             </div>
             <div class="island-notifs">
               ${notifications.map(n => {
                 const a = androidApps.find(x => x.id === n.app);
-                return `<button class="island-notif" title="${n.title} — ${n.text}">
+                return `<button class="island-notif" style="--i:${notifications.indexOf(n)}" title="${n.title} — ${n.text}">
                   ${iconImg(a.id, "notif__ico")}<span class="island-notif__dot"></span></button>`;
               }).join("")}
             </div>

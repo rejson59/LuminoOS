@@ -65,7 +65,22 @@
   box-shadow:0 0 0 .5px rgba(255,255,255,.28) inset, 0 8px 16px -12px rgba(0,0,0,.7);
   transition:transform 260ms cubic-bezier(.32,.72,0,1), background-color 200ms ease;
 }
-.a-card:hover{transform:translateY(-3px) scale(1.06);background:rgba(255,255,255,.24)}
+/* kaskada kart przy otwieraniu paska + sprężyste podniesienie */
+.a-activity .a-card{
+  opacity:0;
+  transform:translateY(14px) scale(.86);
+  transition:
+    opacity 200ms ease-out,
+    transform 460ms cubic-bezier(.34,1.38,.64,1),
+    background-color 200ms ease;
+}
+.a-activity.is-open .a-card{
+  opacity:1;
+  transform:none;
+  transition-delay:calc(var(--i, 0) * 42ms);
+}
+.a-activity.is-following .a-card{opacity:1;transform:none;transition:none}
+.a-card:hover{transform:translateY(-3px) scale(1.06)!important;background:rgba(255,255,255,.24)}
 .a-card:active{transform:translateY(0) scale(.97)}
 .a-card__icon{width:34px;height:34px}
 .a-card__label{

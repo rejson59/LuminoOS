@@ -220,8 +220,10 @@
   position:absolute;inset:0;z-index:7;
   background:rgba(12,14,24,.97);
   
-  transform:translateY(100%);opacity:0;pointer-events:none;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1), opacity .25s;
+  transform:translateY(100%) scale(.985);opacity:0;pointer-events:none;
+  transition:
+    transform .48s cubic-bezier(.2,.86,.24,1),
+    opacity .24s ease-out;
   display:flex;flex-direction:column;padding:20px var(--pad) 6px;
 }
 .a-drawer.is-open{transform:translateY(0);opacity:1;pointer-events:auto}
@@ -240,11 +242,21 @@
   position:absolute;inset:26px 0 0 0;z-index:5;
   display:flex;flex-direction:column;
   background:#0f1220;
-  transform:translateY(8%) scale(.97);opacity:0;visibility:hidden;pointer-events:none;
-  transition:transform .34s cubic-bezier(.32,.72,0,1), opacity .22s ease-out, visibility .22s;
+  transform:translateY(9%) scale(.955);opacity:0;visibility:hidden;pointer-events:none;
+  transition:
+    transform .46s cubic-bezier(.32,.78,.28,1),
+    opacity .2s ease-out,
+    visibility 0s linear .46s;
+  will-change:transform, opacity;
   overflow:hidden;
 }
-.a-app.is-open{transform:none;opacity:1;visibility:visible;pointer-events:auto}
+.a-app.is-open{
+  transform:none;opacity:1;visibility:visible;pointer-events:auto;
+  transition:
+    transform .5s cubic-bezier(.26,.9,.24,1),
+    opacity .24s ease-out,
+    visibility 0s;
+}
 .appbar{
   flex:none;display:flex;align-items:center;gap:8px;
   padding:10px 12px 8px;min-height:40px;
@@ -416,7 +428,8 @@
 .sp-now{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
   padding:10px 16px 18px;
   background:linear-gradient(180deg,#2a6b45 0%,#123524 38%,#060f0a 100%);
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);overflow:hidden}
+  transform:translateY(100%);overflow:hidden;
+  transition:transform .46s cubic-bezier(.2,.88,.24,1), opacity .24s ease-out}
 .sp-now.is-open{transform:none}
 .sp-now__top{display:flex;align-items:center;justify-content:space-between;font-size:8.5px;
   letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7)}

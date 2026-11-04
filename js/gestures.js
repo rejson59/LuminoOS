@@ -109,6 +109,10 @@
             </button>`;
           }).join("")
         : `<div class="a-card a-card--empty"><span class="a-card__label">Brak ostatnich aplikacji</span></div>`;
+      /* kaskada: karty pojawiają się jedna po drugiej przy otwarciu */
+      Array.from(rail.children).forEach((card, i) => {
+        card.style.setProperty("--i", String(i));
+      });
       requestAnimationFrame(measure);
     }
 
@@ -116,8 +120,8 @@
     function show() {
       if (open) return false;
       open = true;
-      bar.classList.add("is-open");
-      render();
+      render();                       /* karty w DOM przed wejściem klasy */
+      bar.classList.add("is-open");   /* synchronicznie — bez opóźnienia animacji */
       return true;
     }
     function hide() {
@@ -357,7 +361,8 @@
             : g.kind === "right" ? rb.right - g.x
             : g.kind === "up" ? rb.bottom - g.y
             : g.y - rb.top;
-          g.edge = valid ? d : 0;                        /* brak geometrii = traktuj jak krawędź */
+          /* start z uchwytu = zawsze traktuj jak krawędź */
+          g.edge = g.forceEdge || !valid ? 0 : d;
         }
 
         /* podążanie palca: pasek wysuwa się razem z gestem */
@@ -415,10 +420,48 @@
         }
       }
 
+      /* --- UCHWYTY DLA MYSZKI ---
+         Kursorem nie da się „chwycić” krawędzi makiety, więc nad nią leżą
+         cztery cienkie strefy. Przeciąganie zaczyna się na uchwycie,
+         a kończy na oknie — bez setPointerCapture (odbierałby gest paskowi). */
+      const EDGES = [
+        ["top", "Przesuń w górę — wyspa i skróty"],
+        ["right", "Przesuń w lewo — ekran główny"],
+        ["bottom", "Przesuń w górę — ostatnie aplikacje"],
+        ["left", "Przesuń w prawo — wstecz"]
+      ];
+      const handles = device === "phone" ? EDGES.map(([edge, hint]) => {
+        const el = document.createElement("div");
+        el.className = `gesture-edge gesture-edge--${edge}`;
+        el.dataset.gestureEdge = edge;
+        el.dataset.hint = hint;
+        el.setAttribute("aria-hidden", "true");
+        screen.appendChild(el);
+        return el;
+      }) : [];
+
+      handles.forEach(el => {
+        el.addEventListener("pointerdown", e => {
+          /* gest startuje z konkretnej krawędzi — nie zgadujemy po geometrii */
+          pdown(e);
+          if (g) g.forceEdge = true;
+        });
+      });
+
       /* nasłuchujemy na całej makiecie telefonu (krawędzie też) */
       screen.addEventListener("pointerdown", pdown, { passive: true });
       screen.addEventListener("pointermove", pmove, { passive: true });
       screen.addEventListener("pointerup", pup, { passive: true });
+      /* gest myszką trwa także wtedy, gdy kursor wyjedzie poza makietę */
+      window.addEventListener("pointermove", e => { if (g) pmove(e); }, { passive: true });
+      window.addEventListener("pointerup", e => { if (g) pup(e); }, { passive: true });
+      window.addEventListener("blur", () => {
+        if (!g) return;
+        g = null;
+        api.bar.classList.remove("is-following");
+        api.bar.style.removeProperty("--follow");
+        screen.style.removeProperty("--edge-back");
+      });
       if (window.LUMINO_DEBUG) window.__luLast = () => ({ kind: "attached", g: !!g });
       screen.addEventListener("pointercancel", () => { g = null; api.bar.classList.remove("is-following"); });
 

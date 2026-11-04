@@ -28,6 +28,9 @@ w.addEventListener("load", () => setTimeout(() => {
       base.includes("backdrop-filter:blur") && base.includes("border-radius:24px");
   });
   check("pasek nie ma już nagłówka z tekstem (styl macOS)", !phone.querySelector(".a-activity__head"));
+  check("telefon ma uchwyty gestów dla myszki", phone.querySelectorAll(".gesture-edge").length === 4);
+  check("tablet nie ma uchwytów (gesty tylko na telefonie)",
+    !document.querySelector('[data-android="tablet"] .gesture-edge'));
 
   const act = phone.lumino && phone.lumino.activity;
   check("API gestów dostępne (window.Lumino.androidActivity)", !!act);
@@ -54,7 +57,23 @@ w.addEventListener("load", () => setTimeout(() => {
     setTimeout(() => {
       check("klik w kartę zamyka pasek", !bar.classList.contains("is-open"));
 
-      /* --- gesty: przesunięcie w górę od dolnej krawędzi --- */
+      /* --- gest MYSZKĄ: przeciągnięcie w górę po uchwycie dolnym
+         (wszystko synchronicznie — obsługa gestów nie czeka na klatkę) --- */
+      {
+        const handle = phone.querySelector(".gesture-edge--bottom");
+        const fireAt = (el, type, cx, cy) => el.dispatchEvent(new w.PointerEvent(type, {
+          bubbles: true, clientX: cx, clientY: cy, pointerType: "mouse", button: 0
+        }));
+        act.hide();
+        fireAt(handle, "pointerdown", 140, 592);
+        /* ruch i puszczenie POZA makietą — myszka potrafi wyjechać za krawędź */
+        fireAt(w, "pointermove", 140, 540);
+        fireAt(w, "pointerup", 140, 500);
+        check("gest myszką z uchwytu wysuwa pasek", act.isOpen());
+        act.hide();
+      }
+
+  /* --- gesty: przesunięcie w górę od dolnej krawędzi --- */
       act.hide();
       const r = phone.getBoundingClientRect();
       const x = (r.left + r.right) / 2 || 100;

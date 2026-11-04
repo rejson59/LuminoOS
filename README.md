@@ -210,6 +210,34 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   (wcześniej start automatycznie je odblokowywał). Blokada wraca kłódką
   w wyspie albo `lumino.lockScreen()`.
 
+### Gesty myszką (podgląd na laptopie)
+Na komputerze nie da się „chwycić krawędzi” kursorem, więc nad makietą telefonu
+leżą **cztery niewidoczne uchwyty** (`.gesture-edge`, widać je dopiero pod
+kursorem, z podpisem):
+
+| Uchwyt | Przeciągnięcie | Efekt |
+|---|---|---|
+| dolny | w górę | wysuwa pływający pasek ostatnich aplikacji |
+| górny | w dół | rozwija skróty wyspy |
+| lewy | w prawo | wstecz (zamyka aplikację / skróty) |
+| prawy | w lewo | ekran główny |
+
+Przeciąganie działa też wtedy, gdy kursor wyjedzie poza makietę (ruch i
+puszczenie nasłuchiwane są na `window`). Pasek można dodatkowo otwierać
+klikiem w pasek gestów u dołu — a także przeciągać go w poziomie myszką.
+
+### Płynność animacji
+- **Wyspa rośnie i „rozkłada się”**: `transform:scale(1.06)` z krzywą
+  sprężystą `cubic-bezier(.34,1.32,.64,1)`, a panel wyjeżdża spod niej
+  (`cubic-bezier(.34,1.30,.64,1)`, 520 ms).
+- **Kaskada kafli**: kafle, suwaki i powiadomienia pojawiają się kolejno
+  (`transition-delay: calc(70ms + var(--i) * 26ms)`), przy zamykaniu — od razu.
+- **Pasek aplikacji**: karty wjeżdżają kaskadowo (`--i * 42 ms`), a przy
+  otwieraniu palcem (`is-following`) pojawiają się bez opóźnień.
+- **Aplikacje**: sprężyste wejście 500 ms bez skoku `visibility`.
+- Wszystkie animacje idą wyłącznie na `transform`/`opacity` (kompozytor),
+  więc nie ruszają layoutem i trzymają 60–120 fps.
+
 ### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
 Zamiast systemowego ekranu „ostatnich zadań” telefon ma **pływający, szklany
 pasek w stylu macOS** z ostatnio używanymi aplikacjami (`js/gestures.js` +

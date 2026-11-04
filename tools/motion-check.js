@@ -33,6 +33,34 @@ dom.window.addEventListener("load", () => setTimeout(() => {
 
   check("brak błędów po kliknięciach", errs.length === 0);
 
+  /* --- płynność: animacje są na transform/opacity i mają sprężyste krzywe --- */
+  const css = name => fs.readFileSync(path.join(root, "css", name), "utf8");
+  const island = css("island.css"), activity = css("activity.css"), android = css("android.css");
+
+  const has = (src, ...parts) => parts.every(p => src.includes(p));
+
+  check("wyspa rośnie przy otwarciu (sprężysta skala)",
+    has(island, ".island.is-open", "transform:scale(1.06)"));
+  check("panel wyspy wyjeżdża sprężyście (cubic-bezier > 1)",
+    has(island, ".island-menu__panel", "cubic-bezier(.34,1.30,.64,1)"));
+  check("kafle wyspy mają kaskadę (transition-delay z --i)",
+    island.includes("transition-delay:calc(70ms + var(--i, 0) * 26ms)"));
+  check("karty paska też mają kaskadę",
+    activity.includes("transition-delay:calc(var(--i, 0) * 42ms)"));
+  check("pasek ma blur (szkło) i jest oderwany od krawędzi",
+    has(activity, "backdrop-filter:blur(26px)", "left:8px"));
+  check("aplikacje wchodzą sprężyście (bez skoku visibility)",
+    has(android, ".a-app.is-open", "visibility 0s"));
+  check("animacje nie ruszają layoutem (brak transition na width/height w wyspie)",
+    !island.includes("transition:width") && !island.includes("transition:height"));
+
+  /* --- gesty myszką: cztery uchwyty nad makietą telefonu --- */
+  const edges = document.querySelectorAll('[data-android="phone"] .gesture-edge');
+  check("telefon ma 4 uchwyty gestów (góra/dół/lewo/prawo)", edges.length === 4);
+  check("uchwyty mają podpowiedzi tekstowe", Array.from(edges).every(e => (e.dataset.hint || "").length > 5));
+  check("uchwyty nie przesłaniają treści (są przezroczyste, do 22 px)",
+    /\.gesture-edge\{[\s\S]*?background:transparent/.test(island));
+
   console.log(`\nAnimacje: ${pass} OK, ${fail} błędów`);
   process.exit(fail ? 1 : 0);
 }, 450));

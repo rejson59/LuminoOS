@@ -46,11 +46,25 @@
   color:rgba(255,255,255,.66);
 }
 
-/* wyspa „rozszerza się”, gdy skróty są rozwinięte */
-.island.is-open{
-  background:linear-gradient(180deg, rgba(34,40,56,.95), rgba(20,25,38,.96));
-  transform:scale(1.04);
+/* wyspa „rozkłada się”: rośnie, jaśnieje i łączy się z panelem pod nią */
+.island{
+  transform-origin:50% 50%;
+  transition:
+    transform 420ms cubic-bezier(.34,1.32,.64,1),
+    background-color 240ms ease,
+    box-shadow 300ms ease;
 }
+.island:hover{transform:scale(1.035)}
+.island:active{transform:scale(.965)}
+.island.is-open{
+  background:linear-gradient(180deg, rgba(40,48,66,.98), rgba(22,27,40,.98));
+  transform:scale(1.06);
+  box-shadow:
+    0 0 0 .5px rgba(255,255,255,.26) inset,
+    0 8px 22px -10px rgba(0,0,0,.9),
+    0 0 0 5px rgba(140,190,255,.10);
+}
+.island.is-open .island__time{letter-spacing:.4px}
 
 /* ---------- prawa strona belki ---------- */
 .statusbar__right{
@@ -107,13 +121,51 @@
   box-shadow:
     0 0 0 .5px rgba(255,255,255,.12) inset,
     0 18px 34px -14px rgba(0,0,0,.9);
-  transform:translateY(-8px) scale(.97);
-  transform-origin:12% 0;
+  transform:translateY(-14px) scale(.90);
+  transform-origin:14% -6px;
   opacity:0;
-  transition:transform 240ms cubic-bezier(.32,.72,0,1), opacity 180ms ease;
+  transition:
+    transform 520ms cubic-bezier(.34,1.30,.64,1),
+    opacity 200ms ease-out;
 }
 .island-menu.is-open{pointer-events:auto}
-.island-menu.is-open .island-menu__panel{transform:translateY(0) scale(1);opacity:1}
+.island-menu.is-open .island-menu__panel{
+  transform:translateY(0) scale(1);
+  opacity:1;
+}
+
+/* kaskada: kafle „wyskakują” jeden po drugim, jak w iOS */
+.island-tile,
+.island-slider,
+.island-notif{
+  opacity:0;
+  transform:translateY(10px) scale(.82);
+  transition:
+    opacity 220ms ease-out,
+    transform 420ms cubic-bezier(.34,1.42,.64,1);
+}
+.island-menu.is-open .island-tile,
+.island-menu.is-open .island-slider,
+.island-menu.is-open .island-notif{
+  opacity:1;
+  transform:none;
+}
+.island-menu.is-open .island-slider{
+  transition-delay:calc(40ms + var(--i, 0) * 30ms);
+}
+.island-menu.is-open .island-tile{
+  transition-delay:calc(70ms + var(--i, 0) * 26ms);
+}
+.island-menu.is-open .island-notif{
+  transition-delay:calc(70ms + var(--i, 0) * 26ms + 220ms);
+}
+/* przy zamykaniu bez opóźnień — znika natychmiast, bez „ogonów” */
+.island-menu:not(.is-open) .island-tile,
+.island-menu:not(.is-open) .island-slider,
+.island-menu:not(.is-open) .island-notif{
+  transition-delay:0ms;
+  transition-duration:150ms;
+}
 
 /* suwaki: pełna szerokość, cienkie, bez podpisów */
 .island-sliders{display:grid;gap:5px}
@@ -317,3 +369,59 @@ html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
   transition:opacity 200ms ease, transform 240ms cubic-bezier(.32,.72,0,1);
 }
 .fs-hint.is-visible{opacity:1;transform:translate(-50%,0)}
+
+/* ============================================================
+   UCHWYTY GESTÓW DLA MYSZKI
+   Na telefonie/tablecie nie da się „chwycić krawędzi” kursorem,
+   więc nad powierzchnią makiety leżą cztery cienkie strefy.
+   Są niewidoczne, dopóki nie najedziesz kursorem.
+   ============================================================ */
+.gesture-edge{
+  position:absolute;z-index:30;
+  background:transparent;
+  cursor:grab;
+  touch-action:none;
+  transition:background-color 200ms ease, box-shadow 200ms ease;
+}
+.gesture-edge:active{cursor:grabbing}
+.gesture-edge::after{
+  content:attr(data-hint);
+  position:absolute;
+  opacity:0;pointer-events:none;
+  font:600 8.5px/1.2 ui-sans-serif,system-ui,sans-serif;
+  letter-spacing:.04em;white-space:nowrap;
+  color:rgba(255,255,255,.9);
+  background:rgba(10,14,22,.86);
+  padding:4px 7px;border-radius:6px;
+  transition:opacity 160ms ease;
+}
+/* dolna krawędź — wysuwa pasek ostatnich aplikacji */
+.gesture-edge--bottom{
+  left:22%;right:22%;bottom:0;height:22px;
+  border-radius:12px 12px 0 0;
+}
+.gesture-edge--bottom::after{bottom:26px;left:50%;transform:translateX(-50%)}
+/* górna krawędź — wyspa / skróty */
+.gesture-edge--top{
+  left:22%;right:22%;top:0;height:20px;
+  border-radius:0 0 12px 12px;
+}
+.gesture-edge--top::after{top:24px;left:50%;transform:translateX(-50%)}
+/* lewa krawędź — gest „wstecz” */
+.gesture-edge--left{left:0;top:24%;bottom:24%;width:20px;border-radius:0 12px 12px 0}
+.gesture-edge--left::after{left:26px;top:50%;transform:translateY(-50%)}
+/* prawa krawędź — ekran główny */
+.gesture-edge--right{right:0;top:24%;bottom:24%;width:20px;border-radius:12px 0 0 12px}
+.gesture-edge--right::after{right:26px;top:50%;transform:translateY(-50%)}
+
+/* widoczność: tylko przy myszce (na dotyku palec i tak trafia w krawędź) */
+@media (hover:hover) and (pointer:fine){
+  .gesture-edge:hover{background:rgba(160,205,255,.16)}
+  .gesture-edge--bottom:hover{box-shadow:0 -1px 0 rgba(190,220,255,.55) inset}
+  .gesture-edge--top:hover{box-shadow:0 1px 0 rgba(190,220,255,.55) inset}
+  .gesture-edge--left:hover{box-shadow:1px 0 0 rgba(190,220,255,.55) inset}
+  .gesture-edge--right:hover{box-shadow:-1px 0 0 rgba(190,220,255,.55) inset}
+  .gesture-edge:hover::after{opacity:1}
+}
+/* tablet: gesty tylko telefon (spójnie z js/gestures.js) */
+.android[data-android="tablet"] .gesture-edge{display:none}
