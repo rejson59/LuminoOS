@@ -76,8 +76,11 @@ w.addEventListener("load", () => setTimeout(() => {
   check("panel na telefonie też liczy szerokość z ekranu",
     phone.querySelector(".island").style.getPropertyValue("--panel-w") === "272px");
   const islandCss = fs.readFileSync(path.join(root, "css/island.css"), "utf8");
-  check("tablet: rozwinięty panel nie jest przycięty do 28 px (wysokość auto)",
-    /\.android\[data-android="tablet"\] \.island\[data-mode="panel"\]\{[^}]*height:auto/.test(islandCss));
+  check("tablet: rozwinięty panel nie jest przycięty do 28 px (wysokość z pomiaru)",
+    /\.android\[data-android="tablet"\] \.island\[data-mode="panel"\]\{[^}]*height:var\(--panel-h, auto\)/.test(islandCss));
+  check("panel morfuje na wysokości w pikselach (auto nie da się animować)",
+    /\.island\[data-mode="panel"\]\{[^}]*height:var\(--panel-h, auto\)/.test(islandCss) &&
+    fs.readFileSync(path.join(root, "js/android.js"), "utf8").includes("function measurePanel"));
   check("tablet: powiadomienie i muzyka zostają niskimi pigułkami",
     /\.android\[data-android="tablet"\] \.island\[data-mode="notif"\]/.test(islandCss));
   check("CSS nie ma już szerokości panelu zaszytej na sztywno dla tabletu",

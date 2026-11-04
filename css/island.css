@@ -181,7 +181,11 @@
   /* szerokość policzona w JS (fitIslandPanel) — panel zawsze mieści się
      między marginesami; calc() zostaje jako bezpiecznik bez JS */
   width:var(--panel-w, calc(100% - 20px));
-  height:auto;
+  /* WYSOKOŚĆ W PIKSLACH, NIE auto — `height:auto` NIE da się animować,
+     więc panel przeskakiwał („morphuje bez żadnej animacji”).
+     JS mierzy zawartość i ustawia --panel-h, dzięki czemu przejście
+     26px → wysokość panelu idzie płynnie w obie strony. */
+  height:var(--panel-h, auto);
   border-radius:22px;
   transform:none;
   box-shadow:
@@ -246,7 +250,7 @@
       zostawał przycięty do paska ~28 px — widać było tylko czarny pasek
       z uchwytem, bez kafli i suwaków. Poniżej nadpisujemy to jawnie. */
 .android[data-android="tablet"] .island[data-mode="panel"]{
-  height:auto;
+  height:var(--panel-h, auto);
   border-radius:24px;
 }
 .android[data-android="tablet"] .island[data-mode="notif"],

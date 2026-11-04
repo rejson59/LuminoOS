@@ -147,7 +147,15 @@
       </div>
 
       <div class="taskbar">
-        <div class="taskbar__left"><span class="weather-pill">☁ 12°</span></div>
+        <div class="taskbar__left">
+          <span class="weather-pill">☁ 12°</span>
+          <button class="tb-now" data-tb-now type="button" aria-label="Teraz gra — otwórz Spotify">
+            <span class="cover cv-1 tb-now__cover"></span>
+            <span class="tb-now__txt"><b>Nocna Jazda</b><small>Mira Kova</small></span>
+            <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="tb-now__play" data-tb-now-play>${icon("i-play")}</span>
+          </button>
+        </div>
         <div class="taskbar__center">
           ${TASKBAR_APPS.map(a => `
             <button class="tb-icon" data-tb="${a.id}" data-icon="${a.dataIcon || a.id}"
@@ -155,13 +163,6 @@
               ${a.ico ? iconImg(a.ico) : icon(a.icon)}
             </button>`).join("")}
         </div>
-        <button class="tb-now" data-tb-now type="button" aria-label="Teraz gra — otwórz Spotify">
-          <span class="cover cv-1 tb-now__cover"></span>
-          <span class="tb-now__txt"><b>Nocna Jazda</b><small>Mira Kova</small></span>
-          <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="tb-now__play" data-tb-now-play>${icon("i-play")}</span>
-        </button>
-
         <div class="taskbar__right" role="button" tabindex="0" aria-label="Panel szybkich ustawień"
              aria-expanded="false" data-action="tray">
           <span class="tray-ico">⌃</span>
@@ -213,6 +214,10 @@
     const layer = $(".win-layer", screen);
     const startMenu = $(".start-menu", screen);
     const qsPanel = $(".qs-panel", screen);
+    /* panel zasobnika jest pozycjonowany względem CAŁEGO ekranu, nie paska —
+       wcześniej trafiał do pływającego paska zadań (position:relative)
+       i rozjeżdżał się na całą szerokość. Przenosimy go do warstwy okien. */
+    if (qsPanel && qsPanel.parentElement !== screen) screen.appendChild(qsPanel);
     const trayBtn = $("[data-action='tray']", screen);
     const startBtn = $('[data-tb="start"]', screen);
     const toast = $(".win-toast", screen);
@@ -473,6 +478,7 @@
       $(".tb-now__txt b", screen).textContent = t.title;
       $(".tb-now__txt small", screen).textContent = t.artist;
       $("[data-tb-now-play]", screen).innerHTML = icon(player.playing ? "i-pause" : "i-play");
+      /* jak w Windows: mini odtwarzacz pojawia się tylko, gdy coś gra */
       tbNow.classList.toggle("is-playing", !!player.playing);
     }
     if (tbNow) {

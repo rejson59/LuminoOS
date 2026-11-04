@@ -141,7 +141,10 @@ dom.window.addEventListener("load", () => setTimeout(async () => {
   check("te same przełączniki w Androidzie i Windows",
     has(motion, ".switch::after", "320ms var(--mo-spring)"));
   check("pasek zadań jest pływający (jak dock Androida)",
-    has(os, ".win .taskbar", "left:8px", "border-radius:16px"));
+    has(os, ".win .taskbar", "left:8px", "border-radius:14px"));
+  check("mini „teraz gra” ma własną pigułkę w lewej strefie paska (nie rozjeżdża paska)",
+    has(os, ".win .tb-now", "max-width:190px") &&
+    has(os, ".win .taskbar__center", "position:static"));
   check("pasek systemu respektuje prefers-reduced-motion",
     has(os, "@media (prefers-reduced-motion:reduce)"));
   check("widok pojedynczy powiadamia moduły (lumino:view)",

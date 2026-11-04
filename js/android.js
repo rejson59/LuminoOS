@@ -336,6 +336,33 @@
     function fitIslandPanel() {
       const w = Math.max(0, (root.clientWidth || 0) - 2 * PANEL_MARGIN);
       if (w > 0) islandBtn.style.setProperty("--panel-w", w + "px");
+      measurePanel();
+    }
+
+    /* ------------------------------------------------------------
+       MORFOWANIE, KTÓRE NAPRAWDĘ SIĘ ANIMUJE
+       `height:auto` nie da się interpolować — dlatego wcześniej panel
+       „przeskakiwał” bez animacji. Mierzymy naturalną wysokość zawartości
+       i podajemy ją jako liczbę (--panel-h) TYLKO na czas przejścia;
+       po zakończeniu wracamy do auto, żeby panel rósł z treścią.
+       ------------------------------------------------------------ */
+    const panelFace = islandBtn.querySelector(".island__face--panel");
+    let panelTimer = 0;
+    function measurePanel() {
+      if (!panelFace) return 0;
+      const h = panelFace.scrollHeight || 0;
+      if (h > 0) islandBtn.style.setProperty("--panel-h", h + "px");
+      return h;
+    }
+    function settlePanel() {
+      /* po animacji zdejmujemy sztywne wysokości — panel znowu jest auto */
+      clearTimeout(panelTimer);
+      panelTimer = setTimeout(() => {
+        if (islandMode === "panel" && panelFace) {
+          const h = panelFace.scrollHeight;
+          if (h) islandBtn.style.setProperty("--panel-h", h + "px");
+        }
+      }, 520);
     }
     if (typeof ResizeObserver === "function") {
       try { new ResizeObserver(fitIslandPanel).observe(root); } catch (e) { /* starsze przeglądarki */ }
@@ -351,8 +378,11 @@
         if (musicOn() && mode === "idle") mode = "music";
       }
       islandMode = mode;
-      if (mode === "panel") fitIslandPanel();
+      if (mode === "panel") fitIslandPanel();     /* najpierw szerokość */
       islandBtn.dataset.mode = mode;
+      /* świeżo ustawiona wysokość w px jest ZARAZ kolejnym krokiem przejścia —
+         dlatego przeglądarka zawsze animuje morfowanie (auto → px → auto) */
+      if (mode === "panel") { measurePanel(); settlePanel(); }
       islandBtn.classList.toggle("is-open", mode === "panel");
       islandBtn.classList.toggle("is-music", mode === "music");
       islandBtn.classList.toggle("is-notif", mode === "notif");

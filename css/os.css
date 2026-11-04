@@ -101,17 +101,37 @@
   width:14px;height:14px;
 }
 
-/* pasek zadań: pływający (jak dock Androida), nie przyklejony do krawędzi */
+/* pasek zadań: pływający (jak dock Androida), ale BEZ ramki i poświaty
+   wokół przycisku Start — wcześniej „kapsuła" wyglądała jak obcy element */
 .win .taskbar{
   left:8px;right:8px;bottom:6px;
-  border-radius:16px;
+  border-radius:14px;
   border-top:0;
-  border:1px solid var(--os-line);
-  background:rgba(28,31,42,.72);
-  box-shadow:0 18px 40px -18px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.08) inset;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(26,29,39,.86);
+  box-shadow:0 16px 36px -20px rgba(0,0,0,.85), 0 0 0 .5px rgba(255,255,255,.06) inset;
+  padding:0 8px;
 }
 /* okna kończą się nad pływającym paskiem */
-.win{--tb-h:46px}
+.win{--tb-h:44px}
+/* lewa strefa paska: pogoda + mini odtwarzacz (nie rozjeżdża się na środek) */
+.win .taskbar__left{
+  width:auto;min-width:0;flex:1 1 auto;
+  display:flex;align-items:center;gap:6px;overflow:hidden;
+}
+.win .taskbar__center{position:static;transform:none;flex:0 0 auto}
+.win .taskbar__right{flex:0 0 auto}
+/* ukrywamy przewijak, jeśli mini odtwarzacz jest szeroki */
+.win .tb-now{max-width:190px;overflow:hidden}
+
+/* przycisk Start: zwykły przycisk paska, bez kapsuły i poświaty */
+.win .tb-icon[data-tb="start"]{
+  background:transparent;
+  box-shadow:none;
+  border-radius:6px;
+}
+.win .tb-icon[data-tb="start"]:hover{background:rgba(255,255,255,.10)}
+.win .tb-icon[data-tb="start"] .ico{width:17px;height:17px;color:#eaf1ff}
 
 /* ============================================================
    2. PASEK „SYSTEM LUMINOOS" (pod przełącznikiem podglądów)
@@ -292,3 +312,74 @@ html.is-fullscreen .fs-switch{display:flex}
 .android .dock .dock-app.is-running::after,
 .android .app.is-running .app__wrap::after{transform:translateX(-50%) scale(1);opacity:.9}
 .android .app .app__wrap::after{bottom:-4px;background:#a9d5ff}
+
+/* ============================================================
+   7. MINI „TERAZ GRA" W PASKU ZADAŃ (poprawka etapu 15)
+   Wcześniej przycisk nie miał żadnych stylów: okładka, tytuł i ikony
+   rozjeżdżały się na cały pasek zadań. Teraz to mała szklana pigułka
+   w lewej strefie paska — dokładnie jak pasek „teraz gra" w wyspie.
+   ============================================================ */
+.win .tb-now{
+  display:inline-flex;align-items:center;gap:6px;
+  height:26px;padding:0 7px 0 3px;
+  border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.08);color:#eef1f7;
+  font-family:inherit;max-width:100%;
+  transition:background-color 180ms ease-out, transform 220ms var(--mo-spring),
+             opacity 220ms ease-out;
+}
+.win .tb-now[hidden]{display:none}
+.win .tb-now:hover{background:rgba(255,255,255,.14)}
+.win .tb-now:active{transform:scale(.98)}
+.win .tb-now__cover{
+  width:20px;height:20px;border-radius:6px;flex:none;
+  background-size:cover;
+  box-shadow:0 0 0 .5px rgba(255,255,255,.18) inset;
+}
+.win .tb-now__txt{display:flex;flex-direction:column;min-width:0;line-height:1.1;text-align:left}
+.win .tb-now__txt b{
+  font-size:8.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px;
+}
+.win .tb-now__txt small{
+  font-size:7.5px;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;max-width:96px;
+}
+.win .tb-now .island__eq{height:9px;margin-left:2px}
+.win .tb-now .island__eq i{background:linear-gradient(#bfe0ff,#7fb6ff)}
+.win .tb-now__play{
+  width:18px;height:18px;border-radius:50%;flex:none;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.16);color:#fff;
+  transition:background-color 180ms ease-out, transform 200ms var(--mo-spring);
+}
+.win .tb-now__play .ico{width:9px;height:9px}
+.win .tb-now:hover .tb-now__play{background:rgba(255,255,255,.28)}
+/* mini odtwarzacz pokazuje się dopiero, gdy coś gra (jak w macOS/Windows) */
+.win .tb-now{opacity:0;width:0;padding:0;margin:0;pointer-events:none;overflow:hidden}
+.win .tb-now.is-playing{opacity:1;width:auto;pointer-events:auto;padding:0 7px 0 3px}
+
+/* ============================================================
+   8. IKONY PULPITU WINDOWS (poprawka etapu 15)
+   PNG w stylu „liquid glass" są przezroczyste i na jasnej, kolorowej
+   tapecie dosłownie znikały (widać było tylko biały glif). Na pulpicie
+   używamy więc czytelnych, kolorowych ikon systemowych Windows —
+   dokładnie jak w prawdziwym systemie, gdzie pulpit ≠ szklane kafle.
+   ============================================================ */
+.win .win-desk-icon{
+  width:76px;gap:5px;padding:6px 4px;border-radius:6px;
+  font-size:9.5px;line-height:1.2;color:#f2f6ff;
+  text-shadow:0 1px 3px rgba(0,0,0,.9);
+}
+.win .win-desk-icon .app__icon.bi{
+  width:38px;height:38px;
+  border-radius:9px!important;
+  background-size:contain;
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.5));
+}
+/* przezroczyste PNG na pulpicie: dodajemy ciemną „płytkę", żeby ikona
+   była widoczna na każdej tapecie (bez rozmywania tapety) */
+.win .win-desk-icon .app__icon.bi::after{
+  content:"";position:absolute;inset:-4px;z-index:-1;border-radius:11px;
+  background:radial-gradient(80% 80% at 50% 45%, rgba(8,12,22,.55), rgba(8,12,22,0) 72%);
+}
+.win .win-desk-icon > .ico{width:30px;height:30px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.7))}
