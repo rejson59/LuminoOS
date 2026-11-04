@@ -199,8 +199,20 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   `position:absolute` w launcherze, `top:7px`, z własnym cieniem — dzięki temu
   naprawdę **pływa nad aplikacjami**, zamiast siedzieć wciśnięta w belkę
   (wcześniej była elementem paska stanu i wyglądała jak zwykły chip).
-  Przy rozwinięciu **morfuje**: rośnie do `scale(1.02)`, zaokrąglenie schodzi
-  z 99 px do 22 px, dochodzi poświata i szeroki cień — jak w iOS 26.
+  **Morfuje w czterech trybach** (`data-mode`), i za każdym razem jest to
+  **ten sam element** — rozciąga się na wysokość i szerokość:
+
+  | Tryb | Kiedy | Wygląd |
+  |---|---|---|
+  | `idle` | domyślnie | soczewka + zegar + data |
+  | `panel` | klik w pigułkę | rozciąga się w panel: 2 suwaki, 8 kafli 4×2, stopka ikon i powiadomień, grabber |
+  | `notif` | nowe powiadomienie (`lumino.notify(...)` albo klik ikony w panelu) | ikona aplikacji + tytuł i treść; po ~4,5 s wraca do zegara |
+  | `music` | gdy gra Spotify | okładka, tytuł, wykonawca, animowany equalizer i play/pauza; klik w pigułkę otwiera Spotify |
+
+  Wcześniej panel skrótów był **osobnym elementem** wsuwanym pod pigułkę, a sama
+  pigułka była `<button>` — zagnieżdżone w niej kafle łamały HTML, więc panel
+  w ogóle nie trafiał do DOM. Stąd „wcale się nie morfuje”. Teraz wyspa to
+  `<div>` z czterema twarzami; pokazywana jest tylko aktywna.
 - **Klik w wyspę rozwija skróty** — wyspa jest teraz **jedynym centrum
   sterowania**, panel powiadomień został usunięty w całości
   (`.a-panel`, `.a-shade`, `.qs`, `.notif` w panelu). Rozwinięcie zawiera:

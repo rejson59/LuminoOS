@@ -26,7 +26,7 @@ w.addEventListener("load", () => setTimeout(() => {
   check("prawa strona belki: szukaj + status (panel otwiera wyspa)",
     bar.querySelectorAll("[data-action='search']").length === 1 &&
     bar.querySelector(".statusbar__right [data-action='search']") !== null &&
-    island.getAttribute("data-action") === "panel" &&
+    !!island.querySelector('.island__face--idle[data-action="panel"]') &&
     !!bar.querySelector(".statusbar__icons"));
   check("brak osobnej kropki aparatu na środku belki", !bar.querySelector(".punch") && !island.querySelector(".island__dot"));
   check("wyspa ma soczewkę aparatu", !!island.querySelector(".island__cam"));
@@ -34,10 +34,11 @@ w.addEventListener("load", () => setTimeout(() => {
     !bar.hasAttribute("data-action"));
 
   /* --- wyspa zamiast panelu --- */
-  const menu = phone.querySelector(".island-menu");
+  const menu = phone.querySelector(".island__face--panel");
   check("panel powiadomień usunięty (brak .a-panel i .a-shade)",
     !phone.querySelector(".a-panel") && !phone.querySelector(".a-shade"));
-  check("wyspa ma rozwijane skróty", !!menu && !!phone.querySelector(".island-shade"));
+  check("wyspa ma w sobie panel skrótów (morfowanie, nie osobne okno)",
+    !!menu && island.contains(menu) && !!phone.querySelector(".island-shade"));
   check("skróty: 8 kafli + 2 suwaki + powiadomienia jako ikony",
     menu.querySelectorAll(".island-grid .island-tile").length === 8 &&
     menu.querySelectorAll(".island-slider").length === 2 &&
@@ -48,8 +49,8 @@ w.addEventListener("load", () => setTimeout(() => {
   check("kafle to kwadraty z zaokrągleniem (nie koła)",
     /island-tile\{[\s\S]*?border-radius:\s*12px/.test(fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
 
-  island.click();
-  check("klik w wyspę rozwija skróty", menu.classList.contains("is-open") &&
+  island.querySelector(".island__face--idle").click();
+  check("klik w wyspę morfuje ją w panel", island.dataset.mode === "panel" &&
     island.classList.contains("is-open") && island.getAttribute("aria-expanded") === "true");
   const tile = menu.querySelector('.island-tile[data-qs="dnd"]');   /* domyślnie wyłączony */
   tile.click();
@@ -57,7 +58,8 @@ w.addEventListener("load", () => setTimeout(() => {
   tile.click();
   check("kafel wyłącza się ponownym klikiem", !tile.classList.contains("on") && tile.getAttribute("aria-pressed") === "false");
   phone.querySelector(".island-shade").click();
-  check("tło zamyka skróty", !menu.classList.contains("is-open") && menu.getAttribute("aria-hidden") === "true");
+  check("tło zamyka panel (wyspa wraca do zegara)", island.dataset.mode !== "panel" &&
+    menu.getAttribute("aria-hidden") === "true");
 
   /* --- 1:1 --- */
   const sizeBtn = document.getElementById("sizeToggle");

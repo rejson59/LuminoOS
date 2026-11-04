@@ -37,7 +37,7 @@
 .a-layer{position:absolute;inset:0;display:flex;flex-direction:column}
 .a-launcher{z-index:1}
 .a-lock{z-index:8}
-/* panel usunięty — skróty rozwija wyspa (.island-menu w css/island.css) */
+/* panel usunięty — wyspa morfuje w skróty (css/island.css, .island__face--panel) */
 
 /* ---------------- pasek stanu ---------------- */
 .statusbar{

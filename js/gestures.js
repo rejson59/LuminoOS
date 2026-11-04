@@ -277,17 +277,16 @@
         return !!lock && !lock.classList.contains("is-unlocked");
       };
       /* panel zastąpiony wyspą — zamykamy rozwijane skróty i zdejmujemy cień */
+      const islandEl = screen.querySelector(".island");
       const closePanel = () => {
         if (shade) shade.classList.remove("is-open");
-        const menu = screen.querySelector(".island-menu");
-        const island = screen.querySelector(".island");
-        if (menu) { menu.classList.remove("is-open"); menu.setAttribute("aria-hidden", "true"); }
-        if (island) { island.classList.remove("is-open"); island.setAttribute("aria-expanded", "false"); }
+        if (islandEl) {
+          islandEl.dataset.mode = "idle";
+          islandEl.classList.remove("is-open");
+          islandEl.setAttribute("aria-expanded", "false");
+        }
       };
-      const panelIsOpen = () => {
-        const menu = screen.querySelector(".island-menu");
-        return !!menu && menu.classList.contains("is-open");
-      };
+      const panelIsOpen = () => !!islandEl && islandEl.dataset.mode === "panel";
       const goHome = () => {
         closePanel();
         api.hide();

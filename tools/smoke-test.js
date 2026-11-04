@@ -104,9 +104,14 @@ dom.window.addEventListener("load", async () => {
     assert(!phone.querySelector(".a-panel"));
     assert(!phone.querySelector(".a-shade"));
   });
-  check("klik w wyspę rozwija skróty", () => {
-    phone.querySelector(".island").click();
-    assert(phone.querySelector(".island-menu").classList.contains("is-open"));
+  check("klik w wyspę MORFUJE ją w panel skrótów (ta sama pigułka)", () => {
+    /* klikamy twarz „zegar” — na prawdziwym urządzeniu to ona jest przyciskiem */
+    phone.querySelector(".island__face--idle").click();
+    const isl = phone.querySelector(".island");
+    assert(isl.dataset.mode === "panel", "tryb panel");
+    assert(isl.classList.contains("is-open"));
+    assert(isl.querySelector(".island__face--panel"), "panel jest WEWNĄTRZ wyspy");
+    assert(!phone.querySelector(".island-menu"), "brak osobnego okienka pod wyspą");
   });
   check("skróty przełączają się (ikona bez podpisu)", () => {
     const tile = phone.querySelector('.island-tile[data-qs="saver"]');
@@ -115,9 +120,32 @@ dom.window.addEventListener("load", async () => {
     assert(tile.getAttribute("aria-pressed") === "true");
     assert(!tile.textContent.trim(), "kafel nie ma tekstu — sama ikona");
   });
+  check("powiadomienie MORFUJE wyspę w pasek z treścią", () => {
+    /* panel musi być zamknięty, a ekran odblokowany (tak jak w realnym użyciu) */
+    phone.querySelector(".island-shade").click();
+    phone.lumino.unlock();
+    phone.lumino.notify("messages", "Nowa wiadomość", "Ania: dasz radę dziś?", 60000);
+    const isl = phone.querySelector(".island");
+    assert(isl.dataset.mode === "notif", "tryb notif");
+    assert(isl.querySelector("[data-island-notif-title]").textContent.length > 0);
+    assert(isl.querySelector(".island__notif-img"), "ikona aplikacji w pigułce");
+  });
+  check("muzyka MORFUJE wyspę w mini odtwarzacz", () => {
+    const pl = dom.window.Lumino.player;
+    pl.play(0);
+    const isl = phone.querySelector(".island");
+    assert(isl.dataset.mode === "music", "tryb music");
+    assert(isl.querySelector("[data-island-title]").textContent.trim().length > 0, "tytuł utworu");
+    assert(isl.querySelector(".island__eq"), "equalizer");
+    assert(isl.querySelector("[data-island-play]"), "przycisk play/pause");
+    /* pauza nie może zamykać odtwarzacza w pigułce — wraca zegar */
+    isl.querySelector("[data-island-play]").click();
+    assert(!pl.playing, "pauza działa z pigułki");
+    pl.pause();
+  });
   check("skróty zamykają się klikiem w tło", () => {
     phone.querySelector(".island-shade").click();
-    assert(!phone.querySelector(".island-menu").classList.contains("is-open"));
+    assert(phone.querySelector(".island").dataset.mode !== "panel");
   });
 
   console.log("\n— Android: szuflada —");
@@ -299,13 +327,13 @@ dom.window.addEventListener("load", async () => {
     assert(phone.querySelector(".searchbar"));
   });
   check("skróty w wyspie są ikonami bez tekstu (prostota)", () => {
-    const grid = [...phone.querySelectorAll(".island-grid .island-tile")];
+    const grid = [...phone.querySelectorAll(".island__face--panel .island-grid .island-tile")];
     assert(grid.length === 8);
     assert(grid.every(t => !t.textContent.trim()));
     assert(grid.every(t => t.querySelector("svg.ico")));
   });
   check("wyspa ma stopkę z samymi ikonami (kłódka/szukaj/aplikacje)", () => {
-    const foot = [...phone.querySelectorAll(".island-foot .island-tile")];
+    const foot = [...phone.querySelectorAll(".island__face--panel .island-foot .island-tile")];
     assert(foot.length === 3);
     assert(foot.every(t => !t.textContent.trim() && t.querySelector("svg.ico")));
     assert(phone.querySelector('.island-foot [data-action="lock"]'));

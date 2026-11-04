@@ -37,12 +37,82 @@
           </div>
         </div>
 
-        <!-- PŁYWAJĄCA PIGUŁKA (Dynamic Island) — po lewej, nad aplikacjami -->
-        <button class="island" data-action="panel" aria-label="Wyspa — skróty i status" aria-expanded="false">
+        <!-- PŁYWAJĄCA PIGUŁKA (Dynamic Island) — po lewej, nad aplikacjami.
+             To DIV, nie BUTTON: w HTML nie wolno zagnieżdżać przycisków,
+             a panel skrótów ma własne kafle. Wcześniej zagnieżdżony <button>
+             ZAMYKAŁ pigułkę i panel w ogóle nie trafiał do DOM — stąd brak
+             morfowania. JEDEN element, 4 tryby. -->
+        <div class="island" data-mode="idle" aria-label="Wyspa — skróty, powiadomienia, muzyka" aria-expanded="false">
           <span class="island__cam" aria-hidden="true"></span>
-          <span class="island__time js-time">09:41</span>
-          <span class="island__date js-date-short">4 lis</span>
-        </button>
+
+          <button class="island__face island__face--idle" type="button" data-action="panel"
+                  aria-label="Rozwiń skróty">
+            <span class="island__time js-time">09:41</span>
+            <span class="island__date js-date-short">4 lis</span>
+          </button>
+
+          <button class="island__face island__face--notif" type="button" data-island-notif
+                  aria-label="Powiadomienie">
+            <span class="island__notif-ico" data-island-notif-ico></span>
+            <span class="island__notif-txt">
+              <b data-island-notif-title>Nowa wiadomość</b>
+              <small data-island-notif-text>Ania: dasz radę dziś?</small>
+            </span>
+          </button>
+
+          <div class="island__face island__face--music" role="button" tabindex="0"
+               aria-label="Odtwarzacz — otwórz Spotify">
+            <span class="island__cover" data-island-cover></span>
+            <span class="island__music-txt">
+              <b data-island-title>Nocna Jazda</b>
+              <small data-island-artist>Mira Kova</small>
+            </span>
+            <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+            <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
+          </div>
+
+          <div class="island__face island__face--panel">
+            <span class="island__grip" aria-hidden="true"></span>
+            <div class="island-sliders">
+              <label class="island-slider" title="Jasność" style="--i:0">
+                <span class="island-slider__ico">${icon("i-sun")}</span>
+                <input class="slider island-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
+              </label>
+              <label class="island-slider" title="Głośność" style="--i:1">
+                <span class="island-slider__ico">${icon("i-volume")}</span>
+                <input class="slider island-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
+              </label>
+            </div>
+            <div class="island-grid">
+              ${[
+                ["wifi", "i-wifi", "Internet", true],
+                ["bt", "i-bluetooth", "Bluetooth", true],
+                ["dnd", "i-bell-off", "Nie przeszkadzać", false],
+                ["saver", "i-saver", "Oszczędzanie baterii", false],
+                ["flash", "i-flash", "Latarka", false],
+                ["rotate", "i-rotate", "Auto-obrót", false],
+                ["air", "i-airplane", "Tryb samolotowy", false],
+                ["cast", "i-cast", "Przesyłanie obrazu", false]
+              ].map(([key, ico, label, on], i) => `<button class="island-tile${on ? " on" : ""}"
+                data-qs="${key}" aria-label="${label}" title="${label}"
+                aria-pressed="${on ? "true" : "false"}" style="--i:${i}" type="button">${icon(ico)}</button>`).join("")}
+            </div>
+            <div class="island-bar">
+              <div class="island-foot">
+                <button class="island-tile island-tile--sm" style="--i:8" type="button" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
+                <button class="island-tile island-tile--sm" style="--i:9" type="button" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
+                <button class="island-tile island-tile--sm" style="--i:10" type="button" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
+              </div>
+              <div class="island-notifs">
+                ${notifications.map((n, ni) => {
+                  const a = androidApps.find(x => x.id === n.app);
+                  return `<button class="island-notif" type="button" style="--i:${ni}" title="${n.title} — ${n.text}">
+                    ${iconImg(a.id, "notif__ico")}<span class="island__notif-dot"></span></button>`;
+                }).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="launcher-pages">
           <div class="page">
@@ -166,49 +236,6 @@
         <div class="lock-veil" aria-hidden="true"></div>
       </div>
 
-      <!-- WYSPA: wszystkie skróty (panel usunięty) -->
-      <div class="island-menu" role="dialog" aria-label="Skróty" aria-hidden="true">
-        <div class="island-menu__panel">
-          <div class="island-sliders">
-            <label class="island-slider" title="Jasność" style="--i:0">
-              <span class="island-slider__ico">${icon("i-sun")}</span>
-              <input class="slider island-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
-            </label>
-            <label class="island-slider" title="Głośność" style="--i:1">
-              <span class="island-slider__ico">${icon("i-volume")}</span>
-              <input class="slider island-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
-            </label>
-          </div>
-          <div class="island-grid">
-            ${[
-              ["wifi", "i-wifi", "Internet", true],
-              ["bt", "i-bluetooth", "Bluetooth", true],
-              ["dnd", "i-bell-off", "Nie przeszkadzać", false],
-              ["saver", "i-saver", "Oszczędzanie baterii", false],
-              ["flash", "i-flash", "Latarka", false],
-              ["rotate", "i-rotate", "Auto-obrót", false],
-              ["air", "i-airplane", "Tryb samolotowy", false],
-              ["cast", "i-cast", "Przesyłanie obrazu", false]
-            ].map(([key, ico, label, on], i) => `<button class="island-tile${on ? " on" : ""}"
-              data-qs="${key}" aria-label="${label}" title="${label}"
-              aria-pressed="${on ? "true" : "false"}" style="--i:${i}">${icon(ico)}</button>`).join("")}
-          </div>
-          <div class="island-bar">
-            <div class="island-foot">
-              <button class="island-tile island-tile--sm" style="--i:8" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
-              <button class="island-tile island-tile--sm" style="--i:9" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
-              <button class="island-tile island-tile--sm" style="--i:10" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
-            </div>
-            <div class="island-notifs">
-              ${notifications.map(n => {
-                const a = androidApps.find(x => x.id === n.app);
-                return `<button class="island-notif" style="--i:${notifications.indexOf(n)}" title="${n.title} — ${n.text}">
-                  ${iconImg(a.id, "notif__ico")}<span class="island-notif__dot"></span></button>`;
-              }).join("")}
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="island-shade"></div>
 
 
@@ -219,9 +246,9 @@
 
     /* ---------------- referencje ---------------- */
     const lock = $(".a-lock", root);
-    const islandMenu = $(".island-menu", root);
     const islandShade = $(".island-shade", root);
     const islandBtn = $(".island", root);
+    const islandFaces = $$(".island__face", islandBtn);
     const drawer = $(".a-drawer", root);
     const appsHost = $(".a-apps", root);
     const launcher = $(".a-launcher", root);
@@ -296,31 +323,103 @@
       if (!dragging) unlock();
     });
 
-    /* ---------------- wyspa: rozwijane skróty (panel usunięty) ----------------
-       Ikony bez tekstu — pojedyncze przełączniki i suwaki, wszystko w kółku
-       wokół wyspy. Zamyka się klikiem w tło, ponownym klikiem w wyspę,
-       gestem „wstecz” albo Escape. */
-    function openPanel() {
-      islandMenu.classList.add("is-open");
-      islandMenu.setAttribute("aria-hidden", "false");
-      islandShade.classList.add("is-open");
-      islandBtn.classList.add("is-open");
-      islandBtn.setAttribute("aria-expanded", "true");
-    }
-    function closePanel() {
-      islandMenu.classList.remove("is-open");
-      islandMenu.setAttribute("aria-hidden", "true");
-      islandShade.classList.remove("is-open");
-      islandBtn.classList.remove("is-open");
-      islandBtn.setAttribute("aria-expanded", "false");
-    }
-    const panelOpen = () => islandMenu.classList.contains("is-open");
+    /* ============================================================
+       WYSPA: JEDEN element, który morfuje między trybami
+       idle (zegar) · panel (skróty) · notif (przychodzi powiadomienie)
+       · music (muzyka gra). Panel NIE jest osobnym okienkiem — to ta
+       sama pigułka, która rozciąga się w górę i w dół.
+       ============================================================ */
+    let islandMode = "idle";
+    let modeTimer = 0;
+    const musicOn = () => !!(player && player.playing);
 
-    /* wyspa (pływająca pigułka) rozwija skróty; belka tylko szuka */
-    islandBtn.addEventListener("click", e => {
+    function setMode(mode) {
+      if (mode !== "panel") {
+        /* muzyka i powiadomienia są ważniejsze niż powrót do zegara */
+        if (musicOn() && mode === "idle") mode = "music";
+      }
+      islandMode = mode;
+      islandBtn.dataset.mode = mode;
+      islandBtn.classList.toggle("is-open", mode === "panel");
+      islandBtn.classList.toggle("is-music", mode === "music");
+      islandBtn.classList.toggle("is-notif", mode === "notif");
+      islandBtn.setAttribute("aria-expanded", mode === "panel" ? "true" : "false");
+      islandShade.classList.toggle("is-open", mode === "panel");
+      islandFaces.forEach(f => f.setAttribute("aria-hidden", f.classList.contains(`island__face--${mode}`) ? "false" : "true"));
+    }
+    function openPanel() { setMode("panel"); }
+    function closePanel() { setMode("idle"); }
+    const panelOpen = () => islandMode === "panel";
+
+    /* --- powiadomienie w wyspie: morfuje na ~4,5 s, potem wraca --- */
+    const nIco = $("[data-island-notif-ico]", islandBtn);
+    const nTitle = $("[data-island-notif-title]", islandBtn);
+    const nText = $("[data-island-notif-text]", islandBtn);
+
+    function showNotif(appId, title, text, ms = 4500) {
+      if (islandMode === "panel") return;
+      if (!lock.classList.contains("is-unlocked")) return;   /* nie na blokadzie */
+      if (nIco) nIco.innerHTML = iconImg(appId, "island__notif-img");
+      if (nTitle) nTitle.textContent = title;
+      if (nText) nText.textContent = text;
+      setMode("notif");
+      clearTimeout(modeTimer);
+      modeTimer = setTimeout(() => { if (islandMode === "notif") setMode("idle"); }, ms);
+    }
+
+    /* --- mini odtwarzacz w wyspie --- */
+    const mCover = $("[data-island-cover]", islandBtn);
+    const mTitle = $("[data-island-title]", islandBtn);
+    const mArtist = $("[data-island-artist]", islandBtn);
+    const mPlay = $("[data-island-play]", islandBtn);
+
+    function paintMusic() {
+      const t = player.track;
+      if (mCover) mCover.className = `island__cover ${t.cover}`;
+      if (mTitle) mTitle.textContent = t.title;
+      if (mArtist) mArtist.textContent = t.artist;
+      if (mPlay) mPlay.innerHTML = icon(player.playing ? "i-pause" : "i-play");
+      islandBtn.classList.toggle("is-playing", !!player.playing);
+    }
+    if (player && player.subscribe) {
+      player.subscribe(() => {
+        paintMusic();
+        if (islandMode === "panel") return;              /* panel ma priorytet */
+        if (player.playing) { clearTimeout(modeTimer); setMode("music"); }
+        else if (islandMode === "music") setMode("idle");
+      });
+      paintMusic();
+    }
+    if (mPlay) mPlay.addEventListener("click", e => {
+      e.stopPropagation();
+      player.toggle();
+    });
+    /* zachowanie twarzy wyspy */
+    const faceIdle = $(".island__face--idle", islandBtn);
+    const faceNotif = $("[data-island-notif]", islandBtn);
+    const faceMusic = $(".island__face--music", islandBtn);
+    if (faceIdle) faceIdle.addEventListener("click", e => {
       e.stopPropagation();
       panelOpen() ? closePanel() : openPanel();
     });
+    if (faceNotif) faceNotif.addEventListener("click", e => {
+      e.stopPropagation();
+      setMode("idle");
+    });
+    /* klik w odtwarzacz = otwórz Spotify (poza przyciskiem play) */
+    const openSpotify = e => {
+      if (e.target.closest("[data-island-play]")) return;
+      e.stopPropagation();
+      openApp("spotify");
+    };
+    if (faceMusic) {
+      faceMusic.addEventListener("click", openSpotify);
+      faceMusic.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openSpotify(e); }
+      });
+    }
+
+    /* wyspa (pływająca pigułka) rozwija skróty; belka tylko szuka */
     $(".statusbar", root).addEventListener("click", e => {
       if (e.target.closest('[data-action="search"]')) {
         e.stopPropagation();
@@ -331,6 +430,17 @@
     });
     islandShade.addEventListener("click", closePanel);
     $$("[data-action='close-panel']", root).forEach(b => b.addEventListener("click", closePanel));
+
+    /* ikony powiadomień w panelu: klik „otwiera” powiadomienie w pigułce */
+    $$(".island-notifs .island-notif", root).forEach((b, i) => {
+      const n = notifications[i];
+      if (!n) return;
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        closePanel();
+        showNotif(n.app, n.title, n.text);
+      });
+    });
 
     /* stopka wyspy: kłódka blokuje ekran, pozostałe otwierają szufladę */
     $$(".island-foot [data-action]", root).forEach(b => b.addEventListener("click", e => {
@@ -533,6 +643,11 @@
     /* ---------------- publiczne API ---------------- */
     root.lumino = {
       unlock,
+      /* demo: pokaż powiadomienie w wyspie (używane przez testy i przycisk) */
+      notify: (appId, title, text, ms) => showNotif(appId, title, text, ms),
+      /* nowe powiadomienie „przychodzi” → wyspa morfuje na chwilę */
+      pushNotification: (appId, title, text) => showNotif(appId, title, text),
+      islandMode: () => islandMode,
       lockScreen,
       openApp,
       closeAllApps,

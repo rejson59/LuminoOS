@@ -19,38 +19,42 @@
 }
 
 /* ============================================================
-   PŁYWAJĄCA PIGUŁKA (Dynamic Island) — jak w iOS 26
-   • CZARNA, nie szklana: kryje tło, siedzi NAD aplikacjami
-   • oderwana od góry (top:7px, własny cień) — naprawdę pływa
-   • po lewej: soczewka aparatu · zegar · data
-   • rozwinięcie = morfowanie: pigułka rośnie w szerokość i wysokość,
-     zaokrąglenie się zmniejsza, a pod nią wysuwa się panel skrótów
+   PŁYWAJĄCA PIGUŁKA (Dynamic Island) — JEDEN element, 4 tryby
+   idle · panel (skróty) · notif (powiadomienie) · music (odtwarzacz)
+
+   Morfowanie = zmiana WYSOKOŚCI i SZEROKOŚCI tej samej pigułki
+   (nie osobne okienko pod nią). Wcześniej panel był osobnym
+   elementem `.island-menu`, dlatego „wcale się nie morfował”.
    ============================================================ */
 .island{
   position:absolute;
   top:7px;left:10px;
   z-index:40;
-  display:flex;align-items:center;gap:7px;
-  height:26px;padding:0 12px 0 10px;
+  display:flex;align-items:flex-start;
+  min-width:104px;
+  max-width:calc(100% - 20px);
+  height:26px;
+  padding:0;
   border:0;cursor:pointer;font-family:inherit;
-  border-radius:99px;
+  border-radius:13px;
   color:#fff;
   background:#04050a;
   box-shadow:
     0 0 0 .5px rgba(255,255,255,.10) inset,
     0 8px 20px -8px rgba(0,0,0,.95),
     0 1px 0 rgba(255,255,255,.06) inset;
-  transform-origin:0% 50%;
+  transform-origin:0% 0%;
   transform:scale(1);
+  overflow:hidden;
   transition:
-    transform 460ms cubic-bezier(.34,1.30,.64,1),
+    width 480ms cubic-bezier(.34,1.22,.64,1),
+    height 480ms cubic-bezier(.34,1.22,.64,1),
     border-radius 380ms cubic-bezier(.32,.72,0,1),
-    padding 380ms cubic-bezier(.32,.72,0,1),
-    box-shadow 300ms ease;
-  will-change:transform, border-radius;
+    box-shadow 300ms ease,
+    transform 380ms cubic-bezier(.34,1.30,.64,1);
+  will-change:height, width, border-radius;
   -webkit-tap-highlight-color:transparent;
 }
-/* świeża, „żywa” poświata pod pigułką — bez barwienia treści */
 .island::after{
   content:"";
   position:absolute;inset:-1px;
@@ -60,73 +64,163 @@
   opacity:0;
   transition:opacity 300ms ease;
 }
-.island:hover{transform:scale(1.04)}
+.island:hover{transform:scale(1.025)}
 .island:hover::after{opacity:1}
-.island:active{transform:scale(.96)}
+.island:active{transform:scale(.97)}
 
 .island__cam{
-  width:7px;height:7px;border-radius:50%;flex:none;
+  position:absolute;left:10px;top:9.5px;
+  width:7px;height:7px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%, #25304a 0%, #05070d 72%);
   box-shadow:0 0 0 .5px rgba(140,175,235,.4) inset;
+  transition:opacity 220ms ease;
+}
+.island[data-mode="panel"] .island__cam,
+.island[data-mode="notif"] .island__cam{opacity:0}
+
+/* ---------- twarze wyspy: tylko jedna widoczna naraz ---------- */
+.island__face{
+  position:absolute;inset:0;
+  display:none;
+  opacity:0;
+  /* twarze bywają <button> — zerujemy domyślne style */
+  width:100%;height:100%;
+  margin:0;border:0;padding:0;
+  background:none;color:inherit;font:inherit;text-align:left;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:opacity 180ms ease-out;
+}
+.island__face--panel{cursor:default}
+.island[data-mode="idle"] .island__face--idle,
+.island[data-mode="notif"] .island__face--notif,
+.island[data-mode="music"] .island__face--music,
+.island[data-mode="panel"] .island__face--panel{
+  display:flex;opacity:1;
+}
+
+/* ---------- idle: zegar + data ---------- */
+.island__face--idle{
+  align-items:center;gap:7px;
+  padding:0 12px 0 22px;
 }
 .island__time{
   font-size:12px;font-weight:600;letter-spacing:.2px;
   font-variant-numeric:tabular-nums;
-  transition:letter-spacing 300ms ease;
 }
-.island__date{
-  font-size:9.5px;font-weight:500;
-  color:rgba(255,255,255,.62);
-  transition:opacity 240ms ease;
+.island__date{font-size:9.5px;font-weight:500;color:rgba(255,255,255,.62)}
+
+/* ---------- notif: ikona aplikacji + treść ---------- */
+.island__face--notif{
+  align-items:center;gap:8px;
+  padding:0 12px 0 11px;
+  animation:island-in 320ms cubic-bezier(.34,1.3,.64,1);
+}
+.island__notif-ico{display:grid;place-items:center;flex:none}
+.island__notif-img{--s:17px;width:17px;height:17px;border-radius:5px;background-size:cover}
+.island__notif-txt{display:flex;flex-direction:column;gap:0;min-width:0;text-align:left}
+.island__notif-txt b{font-size:9.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.island__notif-txt small{
+  font-size:8px;color:rgba(255,255,255,.6);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
-/* ROZWINIĘTA PIGUŁKA — morfuje w szerszy, wyższy kapsel */
-.island.is-open{
-  border-radius:22px;
-  padding:0 14px 0 11px;
-  transform:scale(1.02);
-  box-shadow:
-    0 0 0 .5px rgba(255,255,255,.16) inset,
-    0 16px 34px -12px rgba(0,0,0,.98),
-    0 0 0 6px rgba(120,175,255,.06);
+/* ---------- music: okładka, tytuł, equalizer, play ---------- */
+.island__face--music{
+  align-items:center;gap:8px;
+  padding:0 9px 0 9px;
 }
-.island.is-open::after{opacity:1}
-.island.is-open .island__time{letter-spacing:.5px}
-.island.is-open .island__date{opacity:.75}
-
-/* tablet: pigułka większa */
-.android[data-android="tablet"] .island{top:8px;left:14px;height:28px;padding:0 14px 0 11px}
-.android[data-android="tablet"] .island__time{font-size:13px}
-.android[data-android="tablet"] .island__cam{width:8px;height:8px}
-
-/* ---------- prawa strona belki ---------- */
-.statusbar__right{
-  margin-left:auto;
-  display:flex;align-items:center;gap:6px;
+.island__cover{
+  width:18px;height:18px;border-radius:5px;flex:none;
+  background:linear-gradient(140deg,#4a5570,#1c2233);
+  background-size:cover;
+  box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset;
 }
-.statusbar__btn{
-  width:22px;height:22px;border:0;padding:0;cursor:pointer;
-  display:grid;place-items:center;border-radius:7px;
-  color:rgba(255,255,255,.92);
-  background:rgba(255,255,255,.12);
-  box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset;
+.island__music-txt{display:flex;flex-direction:column;min-width:0;text-align:left}
+.island__music-txt b{font-size:9.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88px}
+.island__music-txt small{font-size:8px;color:rgba(255,255,255,.58);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88px}
+.island__eq{display:flex;align-items:flex-end;gap:1.5px;height:11px;flex:none}
+.island__eq i{
+  display:block;width:2px;height:4px;border-radius:1px;
+  background:linear-gradient(#bfe0ff,#7fb6ff);
+  animation:island-eq 900ms ease-in-out infinite;
+}
+.island__eq i:nth-child(2){animation-delay:140ms;height:7px}
+.island__eq i:nth-child(3){animation-delay:280ms;height:5px}
+.island.is-playing .island__eq i{animation-play-state:running}
+.island:not(.is-playing) .island__eq i{animation-play-state:paused;opacity:.5}
+@keyframes island-eq{
+  0%,100%{transform:scaleY(.45)}
+  50%{transform:scaleY(1)}
+}
+.island__play{
+  width:22px;height:22px;border-radius:8px;flex:none;
+  display:grid;place-items:center;
+  border:0;cursor:pointer;color:#fff;
+  background:rgba(255,255,255,.14);
   transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
 }
-.statusbar__btn .ico{width:11px;height:11px}
-.statusbar__btn:hover{background:rgba(255,255,255,.24)}
-.statusbar__btn:active{transform:scale(.9)}
-.statusbar__icons{
-  display:flex;align-items:center;gap:5px;
-  padding-left:2px;
-  opacity:.95;
-}
-.statusbar__icons .ico{width:11px;height:11px}
+.island__play .ico{width:10px;height:10px}
+.island__play:hover{background:rgba(255,255,255,.26)}
+.island__play:active{transform:scale(.9)}
 
-/* tablet: belka szersza, wyspa większa */
-.android[data-android="tablet"] .statusbar{padding:0 16px 0 12px;height:36px}
-.android[data-android="tablet"] .island{height:26px;padding:0 13px 0 11px}
-.android[data-android="tablet"] .island__cam{width:8px;height:8px}
-.android[data-android="tablet"] .island__time{font-size:12.5px}
+/* ---------- panel: ta sama pigułka rozciągnięta w skróty ---------- */
+.island__face--panel{
+  position:relative;inset:auto;
+  flex-direction:column;gap:7px;
+  padding:14px 9px 9px;
+  width:100%;
+}
+.island__grip{
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  width:32px;height:3.5px;border-radius:99px;
+  background:rgba(255,255,255,.28);
+}
+/* wyspa w trybie panelu: szeroka i wysoka, ale nadal JEDEN element */
+.island[data-mode="panel"]{
+  width:calc(100% - 20px);
+  height:auto;
+  border-radius:22px;
+  transform:none;
+  box-shadow:
+    0 0 0 .5px rgba(255,255,255,.16) inset,
+    0 18px 38px -14px rgba(0,0,0,.98),
+    0 0 0 6px rgba(120,175,255,.05);
+}
+.island[data-mode="panel"]::after{opacity:1}
+.island[data-mode="notif"]{
+  width:auto;min-width:calc(100% - 20px);
+  height:34px;border-radius:17px;
+}
+.island[data-mode="music"]{
+  width:auto;min-width:172px;
+  height:34px;border-radius:17px;
+}
+
+/* kaskada elementów panelu (jak w iOS) */
+.island-tile,
+.island-slider,
+.island-notif{
+  opacity:0;
+  transform:translateY(10px) scale(.82);
+  transition:opacity 220ms ease-out, transform 420ms cubic-bezier(.34,1.42,.64,1);
+}
+.island[data-mode="panel"] .island-tile,
+.island[data-mode="panel"] .island-slider,
+.island[data-mode="panel"] .island-notif{
+  opacity:1;
+  transform:none;
+}
+.island[data-mode="panel"] .island-slider{transition-delay:calc(30ms + var(--i, 0) * 26ms)}
+.island[data-mode="panel"] .island-tile{transition-delay:calc(60ms + var(--i, 0) * 24ms)}
+.island[data-mode="panel"] .island-notif{transition-delay:calc(60ms + var(--i, 0) * 24ms + 200ms)}
+.island[data-mode="panel"] .island-tile,
+.island[data-mode="panel"] .island-slider,
+.island[data-mode="panel"] .island-notif{will-change:transform,opacity}
+
+/* tablet: większe proporcje */
+.android[data-android="tablet"] .island{top:8px;left:14px;height:28px;border-radius:14px}
+.android[data-android="tablet"] .island__time{font-size:13px}
+.android[data-android="tablet"] .island__cam{left:12px;top:10.5px;width:8px;height:8px}
 
 /* ============================================================
    WYSPA = JEDYNE CENTRUM STEROWANIA (panel usunięty)
@@ -134,74 +228,9 @@
    • zero podpisów: tylko ikony, suwaki i kropki powiadomień
    • mieści się w 292 px szerokości makiety telefonu
    ============================================================ */
-.island-shade{
-  position:absolute;inset:0;z-index:8;
-  background:rgba(4,6,12,.28);
-  opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity 200ms ease, visibility 200ms ease;
-}
-.island-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}
 
-.island-menu{
-  position:absolute;z-index:39;left:10px;right:10px;top:39px;
-  pointer-events:none;
-}
-.island-menu__panel{
-  display:flex;flex-direction:column;gap:7px;
-  padding:9px;
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(26,30,42,.96), rgba(15,18,27,.97));
-  box-shadow:
-    0 0 0 .5px rgba(255,255,255,.12) inset,
-    0 18px 34px -14px rgba(0,0,0,.9);
-  transform:translateY(-14px) scale(.90);
-  transform-origin:14% -6px;
-  opacity:0;
-  transition:
-    transform 520ms cubic-bezier(.34,1.30,.64,1),
-    opacity 200ms ease-out;
-}
-.island-menu.is-open{pointer-events:auto}
-.island-menu.is-open .island-menu__panel{
-  transform:translateY(0) scale(1);
-  opacity:1;
-}
-
-/* kaskada: kafle „wyskakują” jeden po drugim, jak w iOS */
-.island-tile,
-.island-slider,
-.island-notif{
-  opacity:0;
-  transform:translateY(10px) scale(.82);
-  transition:
-    opacity 220ms ease-out,
-    transform 420ms cubic-bezier(.34,1.42,.64,1);
-}
-.island-menu.is-open .island-tile,
-.island-menu.is-open .island-slider,
-.island-menu.is-open .island-notif{
-  opacity:1;
-  transform:none;
-}
-.island-menu.is-open .island-slider{
-  transition-delay:calc(40ms + var(--i, 0) * 30ms);
-}
-.island-menu.is-open .island-tile{
-  transition-delay:calc(70ms + var(--i, 0) * 26ms);
-}
-.island-menu.is-open .island-notif{
-  transition-delay:calc(70ms + var(--i, 0) * 26ms + 220ms);
-}
-/* przy zamykaniu bez opóźnień — znika natychmiast, bez „ogonów” */
-.island-menu:not(.is-open) .island-tile,
-.island-menu:not(.is-open) .island-slider,
-.island-menu:not(.is-open) .island-notif{
-  transition-delay:0ms;
-  transition-duration:150ms;
-}
-
-/* suwaki: pełna szerokość, cienkie, bez podpisów */
-.island-sliders{display:grid;gap:5px}
+/* ---------- panel skrótów = wnętrze wyspy (bez osobnego okienka) ---------- */
+.island-sliders{display:grid;gap:5px;width:100%}
 .island-slider{
   display:flex;align-items:center;gap:7px;
   height:26px;padding:0 9px;border-radius:10px;
@@ -213,8 +242,7 @@
 .island-slider__range::-webkit-slider-thumb{width:13px;height:13px}
 .island-slider__range::-moz-range-thumb{width:13px;height:13px}
 
-/* 8 przełączników 4×2 — same ikony, kwadraty z zaokrągleniem */
-.island-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.island-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
 .island-tile{
   aspect-ratio:1/1;
   display:grid;place-items:center;
@@ -233,22 +261,14 @@
   background:linear-gradient(155deg,#cfe6ff,#9ccdff);
   box-shadow:0 0 0 .5px rgba(255,255,255,.5) inset;
 }
-
-/* stopka wyspy: kłódka / szukaj / wszystkie aplikacje — same ikony */
-.island-foot{
-  display:flex;gap:6px;align-items:center;
-  padding-top:1px;
-}
+.island-bar{display:flex;align-items:center;gap:8px;padding-top:1px;width:100%}
+.island-foot{display:flex;gap:6px;align-items:center;padding-top:1px}
 .island-foot .island-tile--sm{
-  width:26px;height:26px;aspect-ratio:auto;flex:none;
-  border-radius:9px;
+  width:26px;height:26px;aspect-ratio:auto;flex:none;border-radius:9px;
   background:rgba(255,255,255,.06);
 }
 .island-foot .island-tile--sm .ico{width:13px;height:13px}
 .island-foot .island-tile--sm:hover{background:rgba(255,255,255,.16)}
-
-/* powiadomienia: tylko ikona aplikacji + kropka (mniej tekstu) */
-.island-bar{display:flex;align-items:center;gap:8px;padding-top:1px}
 .island-notifs{display:flex;gap:6px;align-items:center;margin-left:auto}
 .island-notif{
   position:relative;border:0;padding:0;cursor:pointer;background:none;
@@ -257,19 +277,15 @@
 }
 .island-notif:hover{transform:translateY(-1px)}
 .island-notif .notif__ico{--s:22px;border-radius:7px;display:block}
-.island-notif__dot{
+.island__notif-dot{
   position:absolute;right:-2px;top:-2px;width:6px;height:6px;border-radius:50%;
-  background:#7fd0ff;box-shadow:0 0 0 1.5px rgba(12,15,23,.95);
+  background:#7fd0ff;box-shadow:0 0 0 1.5px rgba(8,10,16,.95);
 }
-
-/* tablet: więcej powietrza i większe kafle */
-.android[data-android="tablet"] .island-menu{left:12px;right:12px;top:38px}
-.android[data-android="tablet"] .island-menu__panel{padding:11px;border-radius:20px;gap:8px}
-.android[data-android="tablet"] .island-tile{border-radius:14px}
-.android[data-android="tablet"] .island-tile .ico{width:20px;height:20px}
-.android[data-android="tablet"] .island-slider{height:30px}
-.android[data-android="tablet"] .island-notif,
-.android[data-android="tablet"] .island-notif .notif__ico{--s:26px;width:26px;height:26px}
+/* animacja wejścia nowej treści w pigułce */
+@keyframes island-in{
+  from{opacity:0;transform:translateY(-4px) scale(.94)}
+  to{opacity:1;transform:none}
+}
 
 /* ---------- pole szukania w szufladzie ---------- */
 .drawer-search{cursor:text}
@@ -471,3 +487,14 @@ html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
 }
 /* tablet: gesty tylko telefon (spójnie z js/gestures.js) */
 .android[data-android="tablet"] .gesture-edge{display:none}
+
+/* ============================================================
+   TŁO POD ROZWINIĘTĄ WYSPĄ
+   ============================================================ */
+.island-shade{
+  position:absolute;inset:0;z-index:38;
+  background:rgba(4,6,12,.30);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity 220ms ease, visibility 220ms ease;
+}
+.island-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}

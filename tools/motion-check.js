@@ -39,14 +39,16 @@ dom.window.addEventListener("load", () => setTimeout(() => {
 
   const has = (src, ...parts) => parts.every(p => src.includes(p));
 
-  check("wyspa morfuje przy otwarciu (sprężysta skala + zaokrąglenie)",
-    has(island, ".island.is-open", "transform:scale(1.02)", "border-radius:22px"));
+  check("wyspa morfuje przy otwarciu (rozciąga się w panel)",
+    has(island, '.island[data-mode="panel"]', "height:auto", "border-radius:22px"));
   check("pigułka jest czarna i pływa nad belką (nie szklana)",
     has(island, ".island{", "position:absolute", "background:#04050a"));
-  check("panel wyspy wyjeżdża sprężyście (cubic-bezier > 1)",
-    has(island, ".island-menu__panel", "cubic-bezier(.34,1.30,.64,1)"));
+  check("wyspa morfuje wysokością/szerokością (transition height+width)",
+    has(island, "transition:", "height 480ms", "width 480ms"));
+  check("tryby wyspy: panel / notif / music mają własne rozmiary",
+    has(island, '[data-mode="panel"]', '[data-mode="notif"]', '[data-mode="music"]'));
   check("kafle wyspy mają kaskadę (transition-delay z --i)",
-    island.includes("transition-delay:calc(70ms + var(--i, 0) * 26ms)"));
+    island.includes("transition-delay:calc(60ms + var(--i, 0) * 24ms)"));
   check("karty paska też mają kaskadę",
     activity.includes("transition-delay:calc(var(--i, 0) * 42ms)"));
   check("pasek ma blur (szkło) i jest oderwany od krawędzi",
