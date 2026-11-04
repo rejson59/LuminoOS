@@ -293,7 +293,10 @@ html.is-fullscreen .stage > .device{display:none!important}
 html.is-fullscreen .stage > .device.is-shown{
   display:flex!important;
   margin:0!important;
-  transform:none!important;
+  /* skala liczona w JS (fitFullscreen) — skaluje też czcionki i ikony w środku */
+  transform:scale(var(--zoom, 1));
+  transform-origin:center center;
+  transition:transform 340ms cubic-bezier(.32,.72,0,1);
   max-width:100vw!important;
   max-height:100vh!important;
 }

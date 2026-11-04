@@ -185,26 +185,13 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   W pełnym ekranie widoczne jest **dokładnie jedno urządzenie** (`.is-shown`);
   gdyby JS nie zdążył, reguła awaryjna i tak pokazuje telefon — czarny ekran
   nie jest już możliwy.
-  Makieta jest **rozciągana do okna bez transformu**: `fitFullscreen()` liczy
-  realne piksele i nadpisuje `--phone-w/-h`, `--tablet-w/-h`, `--win-w/-h`,
-  dzięki czemu:
-  - **laptop** zajmuje niemal całe okno (16:10 ekranu Windows + ramka i podstawka),
-  - **telefon** ma do 430 px szerokości i zawsze mieści się w wysokości okna,
-  - **tablet** skaluje się do 4:3 w granicach okna.
-  Wcześniej makieta była skalowana `transform:scale()` na `.device`, co ucinało
-  treść (zwłaszcza okna Windows) i wypychało ją poza ekran. Wyjście z pełnego
-  ekranu przywraca bazowe rozmiary makiet.
-
-### Odblokowanie w stylu iOS 26
-Ekran blokady **podąża za palcem/myszką** (`--lock-drag`, `--lock-p` od 0 do 1):
-- zegar i ikona kłódki „wysysają się” w górę szybciej niż reszta i maleją,
-- powiadomienia odjeżdżają wolniej (efekt paralaksy), dolny pasek opada,
-- tło blokady rozjaśnia się radialną mgłą, a launcher wjeżdża spod spodu,
-- powyżej progu **96 px** ekran odblokowuje się (blokada wysysa się w górę,
-  zaokrągla dolne rogi i znika), poniżej — **sprężysty powrót**
-  (`cubic-bezier(.34,1.42,.64,1)`).
-- Podczas przeciągania wszystkie przejścia są wyłączone, więc ruch idzie 1:1
-  za wskaźnikiem (tak jak w iOS).
+  Makieta jest **skalowana do okna przez `transform: scale(--zoom)`** — i to
+  jest istotne: skalowanie rozmiaru ramki w pikselach nie skaluje czcionek ani
+  ikon w środku (przez to wcześniej w pełnym ekranie „wszystko się pomniejszało”).
+  `fitFullscreen()` zdejmuje skalę, mierzy **naturalny** rozmiar ramki, a potem
+  dobiera największe `k = min((W-2·pad)/w, (H-2·pad)/h)`, więc makieta zajmuje
+  całe okno, a treść rośnie razem z nią. Wyjście (F/Esc/✕) zdejmuje skalę
+  i przywraca zwykłe dopasowanie.
 
 ### Górna belka telefonu/tabletu + wyspa (panel usunięty)
 - **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką

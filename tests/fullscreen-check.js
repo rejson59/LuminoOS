@@ -75,9 +75,8 @@ w.addEventListener("load", () => setTimeout(() => {
   check("w pełnym ekranie jest przycisk wyjścia",
     !!document.querySelector(".fs-exit") &&
     fs_css.includes("html.is-fullscreen .fs-exit{display:grid}"));
-  check("w pełnym ekranie makieta nie jest skalowana transformem (to ucinało treść)",
-    fs_css.includes("transform:none!important") &&
-    !/is-fullscreen[^{}]*\.device\.is-shown[\s\S]{0,200}transform:scale\(/.test(fs_css));
+  check("w pełnym ekranie treść skaluje się przez transform (czcionki też rosną)",
+    /html\.is-fullscreen \.stage > \.device\.is-shown\{[^}]*transform:scale\(var\(--zoom/.test(fs_css));
   check("w pełnym ekranie rozmiar makiety jest liczony w px okna",
     typeof w.Lumino !== "undefined");
   check("zmiana urządzenia w pełnym ekranie przenosi .is-shown", (() => {
@@ -89,13 +88,16 @@ w.addEventListener("load", () => setTimeout(() => {
     fullBtn.click();                       /* wyjdź */
     return ok;
   })());
-  check("wyjście z pełnego ekranu przywraca rozmiary makiety", (() => {
-    const html = document.documentElement;
-    const before = html.style.getPropertyValue("--phone-w");
-    fullBtn.click();          /* wyłącz */
-    const after = html.style.getPropertyValue("--phone-w");
-    fullBtn.click();          /* włącz z powrotem */
-    return before !== "" && after === "";
+  check("wyjście z pełnego ekranu zdejmuje skalę 1:1", (() => {
+    const isFs = () => !!(w.Lumino && w.Lumino.isFullscreen && w.Lumino.isFullscreen());
+    if (isFs()) fullBtn.click();           /* upewnij się, że jesteśmy poza */
+    const dev = document.querySelector(".device.is-shown");
+    fullBtn.click();                       /* wejdź */
+    const zoomIn = dev.style.getPropertyValue("--zoom");
+    fullBtn.click();                       /* wyjdź */
+    const zoomOut = dev.style.getPropertyValue("--zoom");
+    fullBtn.click();                       /* wróć do pełnego ekranu (dalsze testy) */
+    return zoomIn !== "" && zoomOut === "";
   })());
   check("w pełnym ekranie ukryte są WSZYSTKIE nie-wybrane urządzenia (jedno źródło prawdy)",
     fs_css.includes("html.is-fullscreen .stage > .device{display:none!important}") &&

@@ -124,62 +124,54 @@
   }
 
   /* ------------------------------------------------------------
-     Pełny ekran — makieta dokładnie na całe okno, każdy element
-     liczony w pikselach okna (nie w transformie, który ucinał treść).
+     Pełny ekran — makieta wypełnia okno, ale ZAWSZE przez skalę
+     (transform: scale(--zoom)), bo skalowanie ramki w px nie skaluje
+     czcionek i ikon w środku — przez to „wszystko się pomniejszało”.
+     Skala mieści się w oknie, więc nic nie jest ucinane.
      ------------------------------------------------------------ */
   let fullscreen = false;
   let fsZoom = 1;
   const fullBtn = document.getElementById("fullToggle");
 
-  /* W pełnym ekranie makieta jest rozciągnięta na całe okno:
-     usuwamy transform (to on ucinał laptop i powiększał telefon poza ekran)
-     i podajemy realne piksele — dzięki temu treść w środku skaluje się sama. */
   function fitFullscreen() {
-    const html = document.documentElement;
     if (!fullscreen) return;
     const v = currentView() === "all" ? "phone" : currentView();
     const el = stage.querySelector(`.device.device--${v}`);
     if (!el) return;
 
-    fsZoom = 1;
+    /* 1) zdejmij skalę i zmierz NATURALNY rozmiar makiety */
     el.style.removeProperty("--zoom");
-    el.style.setProperty("--zoom", "1");
-    stage.dataset.scale = "";
-
-    const W = window.innerWidth, H = window.innerHeight;
-    const padX = 18, padY = 18;
-
-    if (v === "phone") {
-      const availH = H - padY * 2;
-      const w = Math.min(430, Math.round(availH * (390 / 844) + 18));
-      const h = Math.min(availH, Math.round((w - 18) * (844 / 390) + 18));
-      html.style.setProperty("--phone-w", w + "px");
-      html.style.setProperty("--phone-h", h + "px");
-    } else if (v === "tablet") {
-      const availW = W - padX * 2, availH = H - padY * 2;
-      let w = Math.min(availW, 1400);
-      let h = Math.round((w - 24) * (768 / 1024) + 24);
-      if (h > availH) { h = availH; w = Math.round((h - 24) * (1024 / 768) + 24); }
-      html.style.setProperty("--tablet-w", w + "px");
-      html.style.setProperty("--tablet-h", h + "px");
-    } else {
-      /* laptop: ekran 16:10 + ramka i podstawka */
-      const availW = W - padX * 2, availH = H - padY * 2;
-      const chromeW = 20, chromeH = 10 + 12 + 14 + 3;   /* padding + base + przerwa */
-      let w = Math.min(availW - 40, 1600);
-      let h = Math.round((w - chromeW) * (900 / 1440));
-      if (h + chromeH > availH) {
-        h = availH - chromeH;
-        w = Math.round(h * (1440 / 900) + chromeW);
-      }
-      html.style.setProperty("--win-w", w + "px");
-      html.style.setProperty("--win-h", h + "px");
+    const frame = el.querySelector(".frame, .lid") || el;
+    const r = frame.getBoundingClientRect();
+    let w = r.width, h = r.height;
+    if (!w || !h) {
+      /* brak geometrii (np. testy w jsdom) — liczymy z bazowych rozmiarów */
+      const b = BASE[v] || [400, 400];
+      w = b[0] + (v === "laptop" ? 0 : 20);
+      h = b[1] + (v === "laptop" ? 27 : 20);
     }
+
+    /* 2) policz skalę „na całe okno” (z marginesem na cień i ramkę) */
+    const W = window.innerWidth, H = window.innerHeight;
+    const padX = v === "laptop" ? 30 : 22;
+    const padY = 22;
+    const k = Math.min((W - padX * 2) / w, (H - padY * 2) / h);
+    fsZoom = Math.max(0.4, k);
+
+    el.style.setProperty("--zoom", String(fsZoom.toFixed(4)));
+    el.dataset.realSize = "";
+    stage.dataset.scale = "";
   }
 
   function resetSizeVars() {
     ["--phone-w", "--phone-h", "--tablet-w", "--tablet-h", "--win-w", "--win-h"]
       .forEach(k => document.documentElement.style.removeProperty(k));
+  }
+
+  /* po wyjściu z pełnego ekranu wracamy do zwykłego dopasowania */
+  function el_restore() {
+    devices.forEach(d => d.style.removeProperty("--zoom"));
+    stage.dataset.scale = "";
   }
 
   function setFullscreen(on, native) {
@@ -194,7 +186,7 @@
     /* w pełnym ekranie zawsze dokładnie jedno urządzenie (nigdy czarne tło) */
     if (on && currentView() === "all") setView("phone");
     if (on) { safeBlur(); fitFullscreen(); }
-    else { resetSizeVars(); }
+    else { resetSizeVars(); el_restore(); }
     requestAnimationFrame(fit);
     setTimeout(() => { if (fullscreen) fitFullscreen(); fit(); }, 260);
   }
