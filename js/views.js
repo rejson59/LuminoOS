@@ -27,26 +27,6 @@
     };
   }
 
-  function fit() {
-    const v = currentView();
-    devices.forEach(d => d.style.removeProperty("--zoom"));
-    if (v === "all") { stage.classList.remove("single"); return; }
-    stage.classList.add("single");
-
-    const el = stage.querySelector(`.device.device--${v}`);
-    if (!el) return;
-    // dostępne miejsce
-    const availW = stage.clientWidth - 40;
-    const availH = stage.clientHeight - 34;
-    const base = BASE[v] || [400, 400];
-    const zoom = Math.min(
-      availW / (base[0] + 60),
-      availH / (base[1] + 52),
-      MAX_ZOOM[v] || 1.5
-    );
-    el.style.setProperty("--zoom", String(Math.max(0.55, zoom)));
-  }
-
   /* Makiety, których nie widać, nie animują się i nie malują — to największa
      oszczędność w widoku „wszystkie urządzenia”. */
   function pauseHiddenDevices() {
@@ -65,6 +45,128 @@
       d.style.animationPlayState = on ? "" : "paused";
     });
   }
+
+  /* ------------------------------------------------------------
+     Tryb 1:1 — urządzenie w rzeczywistych proporcjach, przeliczane
+     na piksele zamiast powiększania makiety:
+     telefon 390×844, tablet 1024×768 (4:3), laptop 1440×900.
+     Skala = 1, o ile urządzenie zmieści się w oknie.
+     ------------------------------------------------------------ */
+  const REAL = {
+    phone:  { w: 390,  h: 844 },
+    tablet: { w: 1024, h: 768 },
+    laptop: { w: 1440, h: 900 }
+  };
+
+  let sizeReal = false;
+  const sizeBtn = document.getElementById("sizeToggle");
+
+  function fit() {
+    const v = currentView();
+    devices.forEach(d => {
+      d.style.removeProperty("--zoom");
+      d.style.removeProperty("--real-scale");
+    });
+    if (v === "all") { stage.classList.remove("single"); return; }
+    stage.classList.add("single");
+
+    const el = stage.querySelector(`.device.device--${v}`);
+    if (!el) return;
+
+    /* tryb 1:1 — skalujemy makietę tak, by miała wymiary urządzenia */
+    if (sizeReal) {
+      const frame = el.querySelector(".frame, .lid") || el;
+      const base = frame.getBoundingClientRect();
+      const scale = parseFloat(el.style.getPropertyValue("--zoom")) || 1;
+      const w = base.width / scale, h = base.height / scale;
+      /* dostępne miejsce: całe okno minus marginesy (pełny ekran = więcej) */
+      const pad = fullscreen ? 24 : 90;
+      const availW = Math.max(240, window.innerWidth - pad);
+      const availH = Math.max(300, window.innerHeight - pad * 2);
+      const k = Math.min(1, availW / w, availH / h);   /* 1:1 tylko gdy się mieści */
+      el.style.setProperty("--zoom", String(k));
+      el.dataset.realSize = REAL[v] ? `${REAL[v].w}×${REAL[v].h}` : "";
+      const frameEl = el.querySelector(".frame, .lid");
+      if (frameEl && REAL[v]) frameEl.dataset.realSizeLabel = `${REAL[v].w} × ${REAL[v].h} px`;
+      stage.dataset.scale = k.toFixed(3);
+      return;
+    }
+
+    // dostępne miejsce
+    const availW = stage.clientWidth - 40;
+    const availH = stage.clientHeight - 34;
+    const base = BASE[v] || [400, 400];
+    const zoom = Math.min(
+      availW / (base[0] + 60),
+      availH / (base[1] + 52),
+      MAX_ZOOM[v] || 1.5
+    );
+    el.style.setProperty("--zoom", String(Math.max(0.55, zoom)));
+    stage.dataset.scale = "";
+  }
+
+  /* ------------------------------------------------------------
+     Pełny ekran — makieta na całe okno (Fullscreen API, z awaryjnym
+     trybem „theater”, gdy przeglądarka blokuje pełny ekran)
+     ------------------------------------------------------------ */
+  let fullscreen = false;
+  const fullBtn = document.getElementById("fullToggle");
+
+  function setFullscreen(on) {
+    fullscreen = on;
+    document.documentElement.classList.toggle("is-fullscreen", on);
+    if (fullBtn) {
+      fullBtn.classList.toggle("is-active", on);
+      fullBtn.setAttribute("aria-pressed", String(on));
+    }
+    /* jeśli nie wybrano urządzenia, pokaż telefon (jest najbardziej „1:1”) */
+    if (on && currentView() === "all") setView("phone");
+    requestAnimationFrame(fit);
+    setTimeout(fit, 260);
+  }
+
+  function toggleFullscreen() {
+    if (!fullscreen) {
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (req) {
+        try {
+          const p = req.call(el);
+          if (p && p.catch) p.catch(() => {});
+        } catch (e) { /* np. iframe bez allowfullscreen — tryb theater */ }
+      }
+      setFullscreen(true);
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
+        try { exit.call(document); } catch (e) { /* ignorujemy */ }
+      }
+      setFullscreen(false);
+    }
+  }
+
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && fullscreen) setFullscreen(false);
+  });
+
+  if (sizeBtn) sizeBtn.addEventListener("click", () => {
+    sizeReal = !sizeReal;
+    /* 1:1 ma sens tylko dla jednego urządzenia — przełączamy widok */
+    if (sizeReal && currentView() === "all") setView("phone");
+    sizeBtn.classList.toggle("is-active", sizeReal);
+    sizeBtn.setAttribute("aria-pressed", String(sizeReal));
+    sizeBtn.querySelector("span").textContent = sizeReal ? "1:1 ✓" : "1:1";
+    fit();
+    requestAnimationFrame(fit);
+  });
+  if (fullBtn) fullBtn.addEventListener("click", toggleFullscreen);
+
+  document.addEventListener("keydown", e => {
+    if (e.target.matches("input, textarea")) return;
+    if (e.key === "f" || e.key === "F") toggleFullscreen();
+    if (e.key === "s" || e.key === "S" && sizeBtn) sizeBtn.click();
+    if (e.key === "Escape" && fullscreen) setFullscreen(false);
+  });
 
   function setView(v) {
     stage.dataset.view = v;

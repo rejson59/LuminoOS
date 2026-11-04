@@ -10,7 +10,9 @@
 
   // data skrócona w Windows
   const shortDate = new Date().toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: "numeric" });
-  $$(".js-date-short").forEach(el => { el.textContent = shortDate; });
+  /* krótka data w wyspie telefonu/tabletu: „4 lis” */
+  const islandDate = new Date().toLocaleDateString("pl-PL", { day: "numeric", month: "short" }).replace(".", "");
+  $$(".js-date-short").forEach(el => { el.textContent = islandDate; });
   const longDate = new Date().toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" });
   $$(".js-date-long").forEach(el => { el.textContent = longDate; });
 

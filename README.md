@@ -170,6 +170,23 @@ na właściwościach układu, zmiany `backdrop-filter` na hover i animacje filtr
 Licznik klatek w podglądzie: dopisz `?fps=1` do adresu — w prawym dolnym rogu
 pojawi się FPS, średnia klatka, najgorsza klatka i procent zaciągnięć.
 
+### Podgląd 1:1 i pełny ekran
+Dwa przyciski w belce widoków (skróty: **S** i **F**):
+
+- **1:1** — urządzenie w rzeczywistych proporcjach (telefon 390×844,
+  tablet 1024×768, laptop 1440×900); skala to 1, gdy mieści się w oknie,
+  inaczej proporcjonalnie mniejsza. Aktualna skala jest pokazana w rogu.
+- **Pełny ekran** — makieta na całe okno (Fullscreen API, z trybem awaryjnym
+  „theater", gdy przeglądarka blokuje pełny ekran, np. w iframe).
+
+### Górna belka telefonu/tabletu + panel
+- **Wyspa po lewej** (tam, gdzie była godzina): szklana pigułka z zegarem,
+  krótką datą i kropką aktywności; klik otwiera panel.
+- **Prawa strona**: szukaj (szuflada z filtrowaniem), centrum sterowania
+  i status (zasięg, Wi-Fi, bateria).
+- **Panel**: data + nazwa urządzenia, dwa duże kafle suwaków (jasność,
+  głośność), siatka 8 przełączników, powiadomienia i akcje.
+
 ### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
 Zamiast systemowego ekranu „ostatnich zadań” telefon ma **wysuwany pasek w stylu
 macOS** z ostatnio używanymi aplikacjami (`js/gestures.js` + `css/activity.css`).

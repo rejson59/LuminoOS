@@ -27,11 +27,21 @@
     root.innerHTML = `
       <!-- ===== launcher ===== -->
       <div class="a-layer a-launcher">
-        <div class="statusbar" data-action="panel">
-          <span class="js-time">09:41</span>
-          <span class="statusbar__icons">
-            ${icon("i-signal")}${icon("i-wifi")}<span class="batt">78<span>%</span></span>${icon("i-battery")}
-          </span>
+        <div class="statusbar">
+          <!-- WYSPA: po lewej stronie, tam gdzie wcześniej była godzina -->
+          <button class="island" data-action="panel" aria-label="Panel i skróty">
+            <span class="island__time js-time">09:41</span>
+            <span class="island__date js-date-short">4 lis</span>
+            <span class="island__dot" aria-hidden="true"></span>
+          </button>
+          <!-- PRAWA STRONA: szukaj, centrum sterowania, status -->
+          <div class="statusbar__right">
+            <button class="statusbar__btn" data-action="search" aria-label="Szukaj">${icon("i-search")}</button>
+            <button class="statusbar__btn" data-action="panel" aria-label="Centrum sterowania">${icon("i-sliders")}</button>
+            <span class="statusbar__icons">
+              ${icon("i-signal")}${icon("i-wifi")}<span class="batt">78<span>%</span></span>${icon("i-battery")}
+            </span>
+          </div>
         </div>
 
         <div class="launcher-pages">
@@ -119,7 +129,10 @@
 
         <!-- szuflada aplikacji -->
         <div class="a-drawer">
-          <div class="drawer-search">${icon("i-search")} Wyszukaj aplikacje</div>
+          <label class="drawer-search">
+            ${icon("i-search")}
+            <input class="drawer-search__input" type="search" placeholder="Wyszukaj aplikacje" aria-label="Wyszukaj aplikacje">
+          </label>
           <div class="drawer-grid">
             ${androidApps.map(a => appTile(a)).join("")}
           </div>
@@ -155,11 +168,24 @@
       <div class="a-panel">
         <div class="a-panel__handle"></div>
         <div class="a-panel__top">
-          <span class="js-time">09:41</span>
-          <span style="display:flex;gap:8px;align-items:center">
+          <span class="panel-greet">
+            <b class="js-date">poniedziałek, 4 listopada</b>
+            <small>LuminoOS · telefon</small>
+          </span>
+          <span class="a-panel__status">
             ${icon("i-wifi")}<span class="batt">78<span>%</span></span>${icon("i-battery")}
             <button class="iconbtn" data-action="close-panel" style="width:20px;height:20px;background:rgba(255,255,255,.12)">${icon("i-close")}</button>
           </span>
+        </div>
+        <div class="slider-tiles">
+          <label class="tile-slider">
+            <span class="tile-slider__ico">${icon("i-sun")}</span>
+            <input class="slider tile-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
+          </label>
+          <label class="tile-slider">
+            <span class="tile-slider__ico">${icon("i-volume")}</span>
+            <input class="slider tile-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
+          </label>
         </div>
         <div class="qs-grid">
           <button class="qs qs--wide on" data-qs="wifi">
@@ -168,7 +194,7 @@
           </button>
           <button class="qs qs--wide on" data-qs="bt">
             <span class="qs__ic">${icon("i-bluetooth")}</span>
-            <span class="qs__txt"><b>Bluetooth</b><small>2 urządzenia</small></span>
+            <span class="qs__txt"><b>Bluetooth</b><small>Słuchawki</small></span>
           </button>
           <button class="qs qs--wide" data-qs="dnd">
             <span class="qs__ic">${icon("i-bell-off")}</span>
@@ -182,14 +208,6 @@
           <button class="qs" data-qs="rotate" title="Auto-obrót">${icon("i-rotate")}</button>
           <button class="qs" data-qs="air" title="Tryb samolotowy">${icon("i-airplane")}</button>
           <button class="qs" data-qs="cast" title="Przesyłanie">${icon("i-cast")}</button>
-        </div>
-        <div class="slider-row">
-          <span class="slider-ico">${icon("i-sun")}</span>
-          <input class="slider slider--bright" type="range" min="0" max="100" value="70" aria-label="Jasność">
-        </div>
-        <div class="slider-row">
-          <span class="slider-ico">${icon("i-volume")}</span>
-          <input class="slider slider--vol" type="range" min="0" max="100" value="55" aria-label="Głośność">
         </div>
         <div class="panel-notifs">
           ${notifications.map(n => {
@@ -246,7 +264,16 @@
     function openPanel() { panel.classList.add("is-open"); shade.classList.add("is-open"); }
     function closePanel() { panel.classList.remove("is-open"); shade.classList.remove("is-open"); }
 
-    $(".statusbar", root).addEventListener("click", () => {
+    /* belka: wyspa i przycisk sterowania otwierają panel,
+       lupa otwiera szukanie aplikacji (szuflada z podświetlonym polem) */
+    $(".statusbar", root).addEventListener("click", e => {
+      if (e.target.closest('[data-action="search"]')) {
+        e.stopPropagation();
+        toggleDrawer(true);
+        const input = drawer.querySelector("input");
+        if (input) setTimeout(() => input.focus(), 180);
+        return;
+      }
       panel.classList.contains("is-open") ? closePanel() : openPanel();
     });
     shade.addEventListener("click", closePanel);
@@ -267,6 +294,18 @@
       e.stopPropagation();
       toggleDrawer();
     }));
+
+    /* szukanie aplikacji w szufladzie */
+    const searchInput = $(".drawer-search__input", root);
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        const q = searchInput.value.trim().toLowerCase();
+        $$(".drawer-grid .app", root).forEach(app => {
+          const label = (app.querySelector(".app__label") || {}).textContent || "";
+          app.classList.toggle("is-hidden", !!q && !label.toLowerCase().includes(q));
+        });
+      }, { passive: true });
+    }
 
     /* ---------------- przełączanie stron ---------------- */
     const pages = $(".launcher-pages", root);

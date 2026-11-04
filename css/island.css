@@ -1,0 +1,241 @@
+/* ============================================================
+   LuminoOS — górna belka telefonu/tabletu + nowy panel
+   • WYSPA po lewej: zegar + data na szklanej pigułce (zamiast
+     wyśrodkowanego „dynamic island”)
+   • PRAWA strona: szukaj, centrum sterowania, status
+   • PANEL: data, duże kafle suwaków, siatka przełączników
+   (animacje tylko na transform/opacity — patrz js/perf.js)
+   ============================================================ */
+
+/* ---------- belka ---------- */
+.android .statusbar{
+  height:34px;
+  padding:0 10px 0 8px;
+  align-items:center;
+  gap:8px;
+}
+
+/* ---------- wyspa (lewa strona) ---------- */
+.island{
+  position:relative;
+  display:flex;align-items:center;gap:7px;
+  height:24px;padding:0 11px 0 9px;
+  border:0;cursor:pointer;font-family:inherit;
+  border-radius:99px;
+  color:#fff;
+  background:rgba(16,19,28,.55);
+  box-shadow:
+    0 0 0 .5px rgba(255,255,255,.22) inset,
+    0 6px 16px -10px rgba(0,0,0,.9);
+  -webkit-backdrop-filter:blur(14px) saturate(170%);
+          backdrop-filter:blur(14px) saturate(170%);
+  transition:transform 260ms cubic-bezier(.32,.72,0,1), background-color 200ms ease;
+  flex:none;
+}
+.island:hover{transform:scale(1.03);background:rgba(30,36,50,.68)}
+.island:active{transform:scale(.97)}
+.island__time{
+  font-size:11.5px;font-weight:600;letter-spacing:.2px;
+  font-variant-numeric:tabular-nums;
+}
+.island__date{
+  font-size:9px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.62);
+}
+/* kropka aktywności — sygnalizuje „coś się dzieje” (muzyka, powiadomienie) */
+.island__dot{
+  width:5px;height:5px;border-radius:50%;
+  background:#7fd0ff;flex:none;
+  box-shadow:0 0 0 2px rgba(127,208,255,.22);
+  animation:island-pulse 2.6s ease-in-out infinite;
+}
+@keyframes island-pulse{
+  0%,100%{opacity:.55;transform:scale(.85)}
+  50%{opacity:1;transform:scale(1)}
+}
+/* wyspa „rozszerza się”, gdy panel jest otwarty */
+.a-panel.is-open ~ .a-launcher .island,
+.android:has(.a-panel.is-open) .island{
+  background:rgba(34,40,56,.82);
+  transform:scale(1.04);
+}
+
+/* ---------- prawa strona belki ---------- */
+.statusbar__right{
+  margin-left:auto;
+  display:flex;align-items:center;gap:6px;
+}
+.statusbar__btn{
+  width:22px;height:22px;border:0;padding:0;cursor:pointer;
+  display:grid;place-items:center;border-radius:50%;
+  color:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset;
+  transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
+}
+.statusbar__btn .ico{width:11px;height:11px}
+.statusbar__btn:hover{background:rgba(255,255,255,.24)}
+.statusbar__btn:active{transform:scale(.9)}
+.statusbar__icons{
+  display:flex;align-items:center;gap:5px;
+  padding-left:2px;
+  opacity:.95;
+}
+.statusbar__icons .ico{width:11px;height:11px}
+
+/* tablet: belka szersza, wyspa większa */
+.android[data-android="tablet"] .statusbar{padding:0 16px 0 12px;height:36px}
+.android[data-android="tablet"] .island{height:26px;padding:0 13px 0 11px}
+.android[data-android="tablet"] .island__time{font-size:12.5px}
+
+/* ---------- panel: nowy wygląd ---------- */
+.a-panel{
+  padding:6px 12px 12px;
+  gap:9px;
+  background:linear-gradient(180deg, rgba(26,30,44,.95), rgba(18,21,32,.97));
+  box-shadow:0 24px 48px -14px rgba(0,0,0,.85), 0 0 0 .5px rgba(255,255,255,.10) inset;
+}
+.a-panel__top{
+  align-items:flex-start;
+  padding:2px 2px 0;
+}
+.panel-greet{display:flex;flex-direction:column;gap:1px;min-width:0}
+.panel-greet b{
+  font-size:10.5px;font-weight:600;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.panel-greet small{font-size:8.5px;color:rgba(255,255,255,.55);letter-spacing:.04em}
+.a-panel__status{display:flex;align-items:center;gap:7px;flex:none}
+
+/* duże kafle suwaków (jasność / głośność) */
+.slider-tiles{
+  display:grid;grid-template-columns:1fr 1fr;gap:7px;
+}
+.tile-slider{
+  display:flex;align-items:center;gap:8px;
+  height:38px;padding:0 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.10);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
+  cursor:pointer;
+}
+.tile-slider__ico{display:grid;place-items:center;flex:none;opacity:.9}
+.tile-slider__ico .ico{width:13px;height:13px}
+.tile-slider__range{flex:1;min-width:0}
+
+/* siatka przełączników: 2 kolumny, równe wysokości */
+.a-panel .qs-grid{
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.a-panel .qs{
+  min-height:44px;
+  border-radius:15px;
+  transition:background-color 180ms ease, transform 180ms cubic-bezier(.32,.72,0,1);
+}
+.a-panel .qs:active{transform:scale(.97)}
+.a-panel .qs.on{
+  background:linear-gradient(160deg, rgba(120,190,255,.34), rgba(90,150,255,.24));
+  box-shadow:0 0 0 .5px rgba(160,210,255,.4) inset;
+}
+.a-panel .qs.on .qs__ic{color:#dff0ff}
+.a-panel .qs:not(.qs--wide){
+  min-height:40px;
+  justify-content:center;
+  padding:0;
+}
+
+/* przewijanie panelu: powiadomienia dostają więcej miejsca */
+.a-panel .panel-notifs{gap:6px;padding-top:2px}
+.a-panel .panel-actions{padding-top:0}
+.a-panel .panel-actions button{
+  flex:1;padding:7px 0;border-radius:11px;border:0;cursor:pointer;
+  font:inherit;font-size:10px;color:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.10);
+  transition:background-color 160ms ease;
+}
+.a-panel .panel-actions button:hover{background:rgba(255,255,255,.2)}
+
+/* redukcja ruchu */
+@media (prefers-reduced-motion:reduce){
+  .island,.island__dot,.statusbar__btn{animation:none;transition-duration:.001ms}
+}
+
+/* ---------- pole szukania w szufladzie ---------- */
+.drawer-search{cursor:text}
+.drawer-search__input{
+  flex:1;min-width:0;border:0;outline:none;background:none;
+  font:inherit;font-size:11px;color:#fff;padding:0;
+}
+.drawer-search__input::placeholder{color:rgba(255,255,255,.6)}
+.drawer-search__input::-webkit-search-cancel-button{filter:invert(1) opacity(.6)}
+/* ukrywanie niepasujących aplikacji przy szukaniu */
+.drawer-grid .app.is-hidden{display:none}
+
+/* ============================================================
+   Tryb 1:1 i pełny ekran
+   ============================================================ */
+.viewbar__tools{display:flex;gap:6px;align-items:center}
+.toolbtn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:999px;cursor:pointer;
+  font-family:inherit;font-size:11.5px;font-weight:500;
+  color:var(--txt-2,#b9c3d6);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--line,rgba(255,255,255,.12));
+  transition:background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.toolbtn .ico{width:12px;height:12px}
+.toolbtn:hover{color:#fff;background:rgba(255,255,255,.11)}
+.toolbtn.is-active{
+  color:#08121f;
+  background:linear-gradient(150deg,#a9d5ff,#7cc4ff);
+  border-color:transparent;
+}
+
+/* pełny ekran: chowamy wszystko poza wybranym urządzeniem */
+html.is-fullscreen,html.is-fullscreen body{overflow:hidden}
+html.is-fullscreen .site-header,
+html.is-fullscreen .hero,
+html.is-fullscreen .footer,
+html.is-fullscreen .viewbar__hint,
+html.is-fullscreen .device__caption,
+html.is-fullscreen .stage > .device:not(.is-shown){display:none}
+html.is-fullscreen .stage{
+  position:fixed;inset:0;z-index:900;
+  padding:0;margin:0;
+  display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 0%, #10131c 0%, #05070c 70%);
+}
+html.is-fullscreen .stage > .device{
+  display:flex!important;
+  margin:0;
+}
+html.is-fullscreen .viewbar{
+  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);
+  z-index:901;padding:6px;border-radius:999px;
+  background:rgba(14,18,28,.72);
+  -webkit-backdrop-filter:blur(14px);
+          backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.14);
+  opacity:.55;
+  transition:opacity 220ms ease;
+}
+html.is-fullscreen .viewbar:hover{opacity:1}
+/* w pełnym ekranie skala może być mniejsza — liczy ją JS */
+html.is-fullscreen .stage > .device{transition:transform 320ms cubic-bezier(.32,.72,0,1)}
+
+/* wskaźnik rzeczywistego rozmiaru (1:1) */
+.device[data-real-size]:not([data-real-size=""]) .frame::before,
+.device[data-real-size]:not([data-real-size=""]) .lid::before{
+  content:attr(data-real-size-label);
+  position:absolute;left:10px;top:-22px;
+  font-size:9.5px;letter-spacing:.06em;color:rgba(255,255,255,.55);
+}
+.stage[data-scale]:not([data-scale=""])::after{
+  content:"skala " attr(data-scale);
+  position:fixed;right:14px;bottom:12px;z-index:902;
+  font:600 10px/1 ui-monospace,monospace;
+  color:rgba(255,255,255,.55);
+}
