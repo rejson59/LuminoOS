@@ -60,6 +60,14 @@ dom.window.addEventListener("load", () => setTimeout(() => {
 
   /* --- gesty myszką: cztery uchwyty nad makietą telefonu --- */
   const edges = document.querySelectorAll('[data-android="phone"] .gesture-edge');
+  check("ikony i dock mają sprężyste animacje (transform + sprężysta krzywa)",
+    has(island, ".android .app__icon", "cubic-bezier(.34,1.42,.64,1)") &&
+    has(island, ".android .dock .dock-app", "translateY(-4px)"));
+  check("szuflada ma kaskadę ikon (--i)", island.includes(".drawer-grid .app") &&
+    island.includes("transition-delay:calc(var(--i, 0) * 22ms)"));
+  check("gesty poziome mają feedback (strzałki + odsunięcie launchera)",
+    has(island, ".gesture-tip--left", ".gesture-tip--right") &&
+    has(island, "--swipe-back", "--swipe-home"));
   check("telefon ma 4 uchwyty gestów (góra/dół/lewo/prawo)", edges.length === 4);
   check("uchwyty mają podpowiedzi tekstowe", Array.from(edges).every(e => (e.dataset.hint || "").length > 5));
   check("uchwyty nie przesłaniają treści (są przezroczyste, do 22 px)",

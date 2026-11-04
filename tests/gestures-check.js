@@ -29,6 +29,10 @@ w.addEventListener("load", () => setTimeout(() => {
   });
   check("pasek nie ma już nagłówka z tekstem (styl macOS)", !phone.querySelector(".a-activity__head"));
   check("telefon ma uchwyty gestów dla myszki", phone.querySelectorAll(".gesture-edge").length === 4);
+  check("są strzałki podpowiedzi gestów poziomych", (() => {
+    const tips = phone.querySelectorAll(".gesture-tip");
+    return tips.length === 2 && phone.querySelector(".gesture-tip--left") && phone.querySelector(".gesture-tip--right");
+  })());
   check("tablet nie ma uchwytów (gesty tylko na telefonie)",
     !document.querySelector('[data-android="tablet"] .gesture-edge'));
 
@@ -73,6 +77,21 @@ w.addEventListener("load", () => setTimeout(() => {
         act.hide();
       }
 
+      /* --- gest w LEWO ze środka ekranu = ekran główny --- */
+      {
+        const fire = (type, cx, cy) => phone.dispatchEvent(new w.PointerEvent(type, {
+          bubbles: true, clientX: cx, clientY: cy, pointerType: "touch"
+        }));
+        phone.lumino.unlock();          /* gesty działają dopiero po odblokowaniu */
+        phone.querySelector('.app[data-app="gallery"]').dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+        const wasOpen = !!phone.querySelector(".a-app.is-open");
+        fire("pointerdown", 200, 300);
+        fire("pointermove", 140, 302);
+        fire("pointerup", 100, 304);
+        check("gest w lewo z dowolnego miejsca = ekran główny",
+          wasOpen && !phone.querySelector(".a-app.is-open"));
+      }
+
   /* --- gesty: przesunięcie w górę od dolnej krawędzi --- */
       act.hide();
       const r = phone.getBoundingClientRect();
@@ -81,11 +100,13 @@ w.addEventListener("load", () => setTimeout(() => {
       const fire = (type, cx, cy) => phone.dispatchEvent(new w.PointerEvent(type, {
         bubbles: true, clientX: cx, clientY: cy, pointerType: "touch"
       }));
-      fire("pointerdown", x, bottom - 6);
-      fire("pointermove", x, bottom - 60);
-      fire("pointerup", x, bottom - 100);
+      phone.lumino.unlock();
+      fire("pointerdown", x, bottom - 2);
+      fire("pointermove", x, bottom - 70);
+      fire("pointerup", x, bottom - 120);
       setTimeout(() => {
         check("gest w górę od dołu wysuwa pasek", bar.classList.contains("is-open"));
+
 
         /* --- gest w górę NA pasku → ekran główny
            (symulujemy palec poza kartą: jsdom nie zna układu, więc cel może

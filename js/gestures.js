@@ -71,6 +71,7 @@
 
     /* stan paska */
     let open = false;
+    let openedAt = 0;    /* kiedy pasek się otworzył (ms) */
     let offset = 0;      /* przesunięcie toru w px (ujemne = w prawo) */
     let maxOffset = 0;
 
@@ -122,6 +123,7 @@
       open = true;
       render();                       /* karty w DOM przed wejściem klasy */
       bar.classList.add("is-open");   /* synchronicznie — bez opóźnienia animacji */
+      openedAt = performance.now();
       return true;
     }
     function hide() {
@@ -220,7 +222,8 @@
 
     window.addEventListener("resize", () => { if (open) measure(); });
 
-    return { bar, show, hide, isOpen, render, scrollToCard, measure, track };
+    return { bar, show, hide, isOpen, render, scrollToCard, measure, track,
+             openedAt: () => openedAt };
   }
 
   /* ---------------- montaż ---------------- */
@@ -331,7 +334,11 @@
            kliknięciu (jedno źródło prawdy — bez podwójnego dopisywania) */
         new MutationObserver(muts => {
           muts.forEach(m => m.addedNodes && m.addedNodes.forEach(n => {
-            if (n.nodeType === 1 && n.classList && n.classList.contains("a-app")) api.hide();
+            if (!(n.nodeType === 1 && n.classList && n.classList.contains("a-app"))) return;
+            /* nie zamykaj paska z powodu aplikacji dodanej PRZED jego otwarciem
+               (obserwator DOM potrafi zadziałać już po geście) */
+            if (performance.now() - api.openedAt() < 300) return;
+            api.hide();
           }));
         }).observe(appsHost, { childList: true });
       }
@@ -342,7 +349,22 @@
       function pdown(e) {
         if (e.pointerType === "mouse" && e.button !== 0) return;
         if (isLocked()) return;
-        g = { kind: null, x: e.clientX, y: e.clientY, t: performance.now() };
+        /* gest z uchwytu startuje pierwszy — nie nadpisujemy go drugim
+           nasłuchem (wcześniej gubił się forceEdge i gest „nie działał”) */
+        if (g && g.forceEdge && g.pointerId === e.pointerId) return;
+        g = {
+          kind: null,
+          x: e.clientX, y: e.clientY,
+          t: performance.now(),
+          pointerId: e.pointerId,
+          target: e.target
+        };
+      }
+
+      /* miejsca, w których poziomy ruch ma inne znaczenie (suwaki, karuzela) */
+      function horizontalSafe(target) {
+        if (!target || !target.closest) return true;
+        return !target.closest("input[type=range], .slider, .launcher-pages, .a-activity__track, .sp-track");
       }
 
       function pmove(e) {
@@ -371,21 +393,33 @@
           if (d < -8) api.bar.classList.add("is-following");
           api.bar.style.setProperty("--follow", `${Math.max(d, -120).toFixed(0)}px`);
         }
-        if (g.kind === "left" && g.edge < EDGE) {
-          const back = Math.max(0, Math.min(1, dx / 90));
-          screen.style.setProperty("--edge-back", back.toFixed(3));
+        /* wizualne podążanie: w prawo = „wstecz', w lewo = „ekran główny'.
+           Pokazujemy je ZAWSZE (nie tylko z krawędzi), żeby gest był czytelny. */
+        if (g.kind === "right") {
+          const p = Math.max(0, Math.min(1, dx / 110));
+          screen.style.setProperty("--swipe-back", p.toFixed(3));
+          screen.classList.toggle("is-swiping-back", p > 0.04);
+        } else if (g.kind === "left") {
+          const p = Math.max(0, Math.min(1, -dx / 110));
+          screen.style.setProperty("--swipe-home", p.toFixed(3));
+          screen.classList.toggle("is-swiping-home", p > 0.04);
         }
       }
 
       function pup(e) {
         if (!g) return;
+        /* kończymy TYLKO gest rozpoczęty tym samym wskaźnikiem */
+        if (e.pointerId !== undefined && g.pointerId !== undefined && e.pointerId !== g.pointerId) return;
         const dx = e.clientX - g.x, dy = e.clientY - g.y;
         const dt = Math.max(1, performance.now() - g.t);
         const vx = dx / dt, vy = dy / dt;
         const kind = g.kind;
         const edge = g.edge;
+        const g0 = g;
         g = null;
-        screen.style.removeProperty("--edge-back");
+        screen.style.removeProperty("--swipe-back");
+        screen.style.removeProperty("--swipe-home");
+        screen.classList.remove("is-swiping-back", "is-swiping-home");
         api.bar.classList.remove("is-following");
         api.bar.style.removeProperty("--follow");
 
@@ -407,16 +441,21 @@
           if (far && api.isOpen()) api.hide();
           return;
         }
-        /* --- od lewej krawędzi → wstecz --- */
+        /* --- w prawo → wstecz (z krawędzi wystarczy krótszy ruch) --- */
         if (kind === "right") {
-          const far = (dx > TRIGGER || vx > VELOCITY) && edge < EDGE;
-          if (far) goBack();
+          const near = edge < EDGE;
+          const far = near ? (dx > 44 || vx > 0.32)
+                           : (dx > TRIGGER || vx > VELOCITY);
+          if (far && horizontalSafe(g0.target)) goBack();
           return;
         }
-        /* --- od prawej krawędzi → ekran główny --- */
+        /* --- w lewo → ekran główny --- */
         if (kind === "left") {
-          const far = (-dx > TRIGGER || vx < -VELOCITY) && edge < EDGE;
-          if (far) goHome();
+          const near = edge < EDGE;
+          const far = near ? (-dx > 44 || vx < -0.32)
+                           : (-dx > TRIGGER || vx < -VELOCITY);
+          if (far && horizontalSafe(g0.target)) goHome();
+          return;
         }
       }
 
@@ -440,6 +479,15 @@
         return el;
       }) : [];
 
+      /* strzałki pokazujące kierunek gestu (widoczne w trakcie przeciągania) */
+      ["left", "right"].forEach(side => {
+        const tip = document.createElement("div");
+        tip.className = `gesture-tip gesture-tip--${side}`;
+        tip.textContent = side === "left" ? "‹" : "›";
+        tip.setAttribute("aria-hidden", "true");
+        screen.appendChild(tip);
+      });
+
       handles.forEach(el => {
         el.addEventListener("pointerdown", e => {
           /* gest startuje z konkretnej krawędzi — nie zgadujemy po geometrii */
@@ -460,7 +508,9 @@
         g = null;
         api.bar.classList.remove("is-following");
         api.bar.style.removeProperty("--follow");
-        screen.style.removeProperty("--edge-back");
+        screen.style.removeProperty("--swipe-back");
+        screen.style.removeProperty("--swipe-home");
+        screen.classList.remove("is-swiping-back", "is-swiping-home");
       });
       if (window.LUMINO_DEBUG) window.__luLast = () => ({ kind: "attached", g: !!g });
       screen.addEventListener("pointercancel", () => { g = null; api.bar.classList.remove("is-following"); });

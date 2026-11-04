@@ -515,3 +515,112 @@ html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
   transition:opacity 220ms ease, visibility 220ms ease;
 }
 .island-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}
+
+/* ============================================================
+   FEEDBACK GESTÓW POZIOMYCH (w prawo = wstecz, w lewo = ekran główny)
+   • launcher lekko „odsysa się” w stronę gestu i przygasa
+   • przy krawędzi zapala się strzałka, żeby gest był oczywisty
+   ============================================================ */
+.android[data-android="phone"] .a-launcher{
+  --swipe-back:0;
+  --swipe-home:0;
+  transform:
+    translate3d(calc(var(--swipe-back) * 26px - var(--swipe-home) * 20px), 0, 0)
+    scale(calc(1 - var(--swipe-back) * .012));
+  transition:transform 420ms cubic-bezier(.32,.72,0,1);
+  will-change:transform;
+}
+.android[data-android="phone"] .a-launcher .page,
+.android[data-android="phone"] .a-launcher .app-grid{
+  opacity:calc(1 - var(--swipe-home) * .18);
+  transition:opacity 300ms ease-out;
+}
+.android[data-android="phone"] .a-app.is-open{
+  --swipe-back:0;
+  transform:translate3d(calc(var(--swipe-back, 0) * 96px), 0, 0);
+  transition:transform 300ms cubic-bezier(.32,.72,0,1);
+}
+.android[data-android="phone"] .a-app.is-open,
+.android[data-android="phone"] .a-launcher{
+  will-change:transform;
+}
+/* strzałka podpowiedzi przy krawędziach — pokazuje się tylko w trakcie gestu */
+.gesture-tip{
+  position:absolute;top:50%;z-index:44;
+  width:22px;height:64px;
+  display:grid;place-items:center;
+  border-radius:11px;
+  background:rgba(10,14,22,.72);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.16) inset;
+  color:#fff;font:600 14px/1 ui-sans-serif,system-ui,sans-serif;
+  opacity:0;pointer-events:none;
+  transition:opacity 220ms ease, transform 300ms cubic-bezier(.32,.72,0,1);
+}
+.gesture-tip--left{left:6px;transform:translate(-8px,-50%)}
+.gesture-tip--right{right:6px;transform:translate(8px,-50%)}
+.android.is-swiping-back .gesture-tip--left{opacity:1;transform:translate(0,-50%)}
+.android.is-swiping-home .gesture-tip--right{opacity:1;transform:translate(0,-50%)}
+
+/* ============================================================
+   DOPRACOWANIE ANIMACJI CAŁEJ POWŁOKI
+   Wszystko na transform/opacity, sprężyste krzywe, spójne czasy.
+   ============================================================ */
+/* ikony aplikacji: sprężyste podniesienie i mocniejsze dociśnięcie */
+.android .app__icon{
+  transition:
+    transform 320ms cubic-bezier(.34,1.42,.64,1),
+    filter 220ms ease-out;
+  will-change:transform;
+}
+.android .app:hover .app__icon{transform:translateY(-3px) scale(1.06)}
+.android .app:active .app__icon{transform:scale(.90)}
+.android .app__label{
+  transition:opacity 220ms ease-out, transform 260ms cubic-bezier(.32,.72,0,1);
+}
+.android .app:active .app__label{transform:translateY(1px);opacity:.75}
+
+/* dock: sprężysty „skok" kafelków, jak w iOS */
+.android .dock{padding:6px 8px}
+.android .dock .dock-app{
+  transition:transform 300ms cubic-bezier(.34,1.42,.64,1), background-color 200ms ease;
+}
+.android .dock .dock-app:hover{transform:translateY(-4px) scale(1.07)}
+.android .dock .dock-app:active{transform:scale(.92)}
+
+/* widgety: miękkie uniesienie */
+.android .widget{
+  transition:transform 320ms cubic-bezier(.32,.72,0,1), background-color 220ms ease;
+}
+.android .widget:hover{transform:translateY(-2px) scale(1.008)}
+
+/* szuflada: sprężyste wysunięcie + kaskada ikon */
+.android .a-drawer .drawer-grid .app{
+  opacity:0;
+  transform:translateY(14px) scale(.9);
+  transition:
+    opacity 220ms ease-out,
+    transform 420ms cubic-bezier(.34,1.38,.64,1);
+}
+.android .a-drawer.is-open .drawer-grid .app{
+  opacity:1;transform:none;
+  transition-delay:calc(var(--i, 0) * 22ms);
+}
+.android .a-drawer{transition:transform 520ms cubic-bezier(.2,.9,.24,1), opacity 260ms ease-out}
+
+/* pasek stanu: delikatne pojawienie się przy odblokowaniu */
+.android .statusbar{
+  transition:opacity 320ms ease-out, transform 420ms cubic-bezier(.32,.72,0,1);
+}
+.android:has(.a-lock:not(.is-unlocked)) .statusbar{opacity:0;transform:translateY(-6px)}
+
+/* twardsze, „gumowe" sprężyny dla elementów dotykanych palcem */
+.android .island-tile:active,
+.android .island-notif:active,
+.android .a-card:active{transform:scale(.92);transition-duration:90ms}
+
+/* mniejsze zużycie klatek: nie animujemy cieni w trakcie ruchu */
+@media (prefers-reduced-motion:reduce){
+  .android .app__icon,.android .dock .dock-app,.android .widget,
+  .android .a-drawer,.android .a-drawer .drawer-grid .app,
+  .android .statusbar,.island,.island__face{transition-duration:.001ms!important}
+}

@@ -214,7 +214,7 @@
             <input class="drawer-search__input" type="search" placeholder="Wyszukaj aplikacje" aria-label="Wyszukaj aplikacje">
           </label>
           <div class="drawer-grid">
-            ${androidApps.map(a => appTile(a)).join("")}
+            ${androidApps.map((a, i) => appTile(a).replace('class="app"', `class="app" style="--i:${i}"`)).join("")}
           </div>
         </div>
       </div>

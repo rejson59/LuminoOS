@@ -249,6 +249,12 @@ kursorem, z podpisem):
 | lewy | w prawo | wstecz (zamyka aplikację / skróty) |
 | prawy | w lewo | ekran główny |
 
+**Gesty poziome działają teraz z dowolnego miejsca ekranu** (nie tylko z 20 px
+przy krawędzi) — z krawędzi wystarczy krótszy ruch (44 px), ze środka 64 px.
+Podczas przeciągania launcher odsuwa się w stronę gestu i przygasa, a przy
+krawędzi zapala się strzałka `‹` / `›`, więc od razu widać, co się stanie.
+Ruch w lewo/prawo jest ignorowany na suwakach, karuzeli stron i pasku aplikacji.
+
 Przeciąganie działa też wtedy, gdy kursor wyjedzie poza makietę (ruch i
 puszczenie nasłuchiwane są na `window`). Pasek można dodatkowo otwierać
 klikiem w pasek gestów u dołu — a także przeciągać go w poziomie myszką.
