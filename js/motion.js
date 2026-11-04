@@ -22,6 +22,44 @@
     ".chip", ".win-tab", ".navpill", ".navbar__pill"
   ].join(",");
 
+  /* ---------------- płynny „pill" pod aktywną zakładką ---------------- */
+  /* Jedna szklana pigułka, która przejeżdża między zakładkami (transform),
+     zamiast migającego tła na każdym przycisku. */
+  function buildViewPill() {
+    const group = document.querySelector(".viewbar__group");
+    if (!group || typeof group.appendChild !== "function") return;
+    if (group.querySelector(".viewbar__pill")) return;
+    const pill = document.createElement("span");
+    pill.className = "viewbar__pill";
+    pill.setAttribute("aria-hidden", "true");
+    group.prepend(pill);
+
+    const move = (animate) => {
+      const active = group.querySelector(".viewbtn.is-active");
+      if (!active || !active.offsetWidth) { pill.style.opacity = "0"; return; }
+      const g = group.getBoundingClientRect();
+      const a = active.getBoundingClientRect();
+      pill.style.opacity = "1";
+      pill.style.width = a.width + "px";
+      pill.style.height = a.height + "px";
+      if (!animate) pill.style.transition = "none";
+      pill.style.transform =
+        `translate(${(a.left - g.left).toFixed(1)}px, ${(a.top - g.top).toFixed(1)}px)`;
+      if (!animate) {
+        /* wymuś klatkę, żeby powrót do transition był animowany */
+        void pill.offsetWidth;
+        pill.style.transition = "";
+      }
+    };
+
+    move(false);
+    group.querySelectorAll(".viewbtn").forEach(b => {
+      b.addEventListener("click", () => requestAnimationFrame(() => move(true)));
+    });
+    window.addEventListener("resize", () => move(false), { passive: true });
+  }
+  buildViewPill();
+
   /* ---------------- ripple ---------------- */
   function ripple(host, ev) {
     if (host.dataset.noRipple !== undefined) return;
@@ -75,6 +113,21 @@
 
   /* ---------------- sprężyste wejście kart i list ---------------- */
   const POP_SEL = ".app, .dock-app, .qs, .notif, .row, .start-app, .recent, .file, .sp-track, .win-desk-icon";
+
+  /* ---------------- okna: zamykanie i minimalizacja płyną ---------------- */
+  /* WAAPI nie nadpisuje CSS-owej animacji wyjścia (ta jest w windows.js),
+     ale minimalizacja dostaje „wdech" — okno najpierw lekko rośnie ku górze. */
+  document.addEventListener("click", e => {
+    const btn = e.target.closest(".win-ctrl button");
+    if (!btn || !btn.closest(".win-window")) return;
+    const win = btn.closest(".win-window");
+    if (btn.classList.contains("min") && typeof win.animate === "function") {
+      win.animate(
+        [{ transform: "none" }, { transform: "translateY(-4px) scale(1.008)", offset: .3 }, { transform: "none" }],
+        { duration: 260, easing: EASE }
+      );
+    }
+  }, true);
 
   function popIn(root) {
     const items = Array.from(root.querySelectorAll(POP_SEL)).filter(el => !el.dataset.popped);
@@ -145,36 +198,69 @@
     });
   });
 
-  /* ---------------- magnetyczne podświetlenie pod kursorem ---------------- */
-  /* geometria elementu liczona RAZ przy wejściu kursora; ruch kursora tylko
-     przelicza macierz transformacji — zero wymuszonych przeliczeń layoutu */
-  let magEl = null, magRect = null, magRaf = 0, magEv = null;
+  /* ---------------- magnetyczne podświetlenie pod kursorem ----------------
+     Kursorem „przyciągamy” tylko ikonę wewnątrz kafla (.app__icon), a nie cały
+     kafel — wcześniej nadpisywaliśmy transform kafla i psuło to jego własne
+     animacje (hover/active z CSS). Ruch jest wygładzany (lerp) w jednej pętli
+     rAF, więc nie ma „szarpania” i nie ma wymuszonych przeliczeń layoutu. */
+  let magHost = null, magTarget = null, magRect = null, magRaf = 0, magEv = null;
+  let magCur = { x: 0, y: 0 }, magGoal = { x: 0, y: 0 };
+
+  /* tylko wewnętrzna ikona — nigdy sam kafel (jego transform należy do CSS) */
+  function magPick(el) {
+    if (!el) return null;
+    return el.querySelector(".app__icon, .ico, .bi");
+  }
+
+  const MAG_SEL = ".app, .dock-app, .tb-icon, .start-app, .win-desk-icon";
 
   document.addEventListener("pointerover", e => {
-    const el = e.target.closest(".app, .tb-icon, .qs, .start-app");
-    if (el === magEl) return;
-    if (magEl) magEl.style.transform = "";
-    magEl = el;
-    magRect = el ? el.getBoundingClientRect() : null;
+    const host = e.target.closest(MAG_SEL);
+    if (host === magHost) return;
+    if (magTarget) magTarget.style.transform = "";
+    magHost = host;
+    magTarget = host ? magPick(host) : null;
+    magRect = host && magTarget ? host.getBoundingClientRect() : null;
+    magCur = { x: 0, y: 0 };
+    magGoal = { x: 0, y: 0 };
   }, { passive: true });
 
   document.addEventListener("pointermove", e => {
-    if (!magEl || !magRect) return;
+    if (!magHost || !magRect) return;
     magEv = e;
-    if (!magRaf) magRaf = requestAnimationFrame(() => {
-      magRaf = 0;
-      if (!magEl || !magRect || !magEv) return;
-      const px = (magEv.clientX - magRect.left) / magRect.width - .5;
-      const py = (magEv.clientY - magRect.top) / magRect.height - .5;
-      magEl.style.transform = `perspective(420px) rotateX(${(-py * 6).toFixed(2)}deg) rotateY(${(px * 8).toFixed(2)}deg) translateY(-2px)`;
-    });
+    if (!magRaf) magRaf = requestAnimationFrame(magTick);
   }, { passive: true });
 
+  function magTick() {
+    magRaf = 0;
+    if (!magHost || !magRect || !magTarget || !magEv) return;
+    const px = (magEv.clientX - magRect.left) / magRect.width - .5;
+    const py = (magEv.clientY - magRect.top) / magRect.height - .5;
+    /* wygładzenie (0.22 = miękkie, ale responsywne) */
+    magGoal = { x: px, y: py };
+    magCur.x += (magGoal.x - magCur.x) * .22;
+    magCur.y += (magGoal.y - magCur.y) * .22;
+    magTarget.style.transform =
+      `perspective(420px) rotateX(${(-magCur.y * 7).toFixed(2)}deg) ` +
+      `rotateY(${(magCur.x * 9).toFixed(2)}deg) translateY(-2px) scale(1.04)`;
+    /* dopóki jest różnica, animujemy dalej (płynne wyhamowanie) */
+    if (Math.abs(magGoal.x - magCur.x) > .002 || Math.abs(magGoal.y - magCur.y) > .002) {
+      magRaf = requestAnimationFrame(magTick);
+    }
+  }
+
+  function magReset() {
+    if (magTarget) magTarget.style.transform = "";
+    magHost = null; magTarget = null; magRect = null;
+  }
   document.addEventListener("pointerout", e => {
-    const el = e.target.closest(".app, .tb-icon, .qs, .start-app");
-    if (!el) return;
-    if (el === magEl) { magEl.style.transform = ""; magEl = null; magRect = null; }
+    const host = e.target.closest(MAG_SEL);
+    if (!host || host !== magHost) return;
+    magReset();
   }, { passive: true });
+  /* kursor opuścił okno — ikona musi wrócić na miejsce */
+  document.addEventListener("pointerleave", magReset, { passive: true });
+  window.addEventListener("blur", magReset);
 
   /* ---------------- płynne otwieranie aplikacji Androida ---------------- */
   // warstwy .a-app mają już transition w CSS; tu dodajemy efekt „skali z ikony”

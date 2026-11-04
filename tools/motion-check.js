@@ -68,6 +68,37 @@ dom.window.addEventListener("load", () => setTimeout(() => {
   check("gesty poziome mają feedback (strzałki + odsunięcie launchera)",
     has(island, ".gesture-tip--left", ".gesture-tip--right") &&
     has(island, "--swipe-back", "--swipe-home"));
+  /* --- etap 8: spójna warstwa ruchu (css/motion.css) --- */
+  const motion = css("motion.css");
+  check("arkusz motion.css jest podpięty", !!document.querySelector('link[href*="motion.css"]'));
+  check("okna Windows mają sprężyste otwieranie",
+    has(motion, ".win-window", "transform 420ms var(--mo-spring)"));
+  check("menu Start wysuwa się sprężyście z kaskadą kafelków",
+    has(motion, ".start-menu.is-open", "translate(-50%, 0)", "transition-delay:calc(var(--i, 0) * 18ms"));
+  check("pasek zadań ma sprężysty wskaźnik uruchomionej aplikacji",
+    has(motion, ".tb-icon.is-running::after", "var(--mo-spring)"));
+  check("pełny ekran ma animację wejścia makiety",
+    has(motion, "@keyframes mo-fullscreen-in"));
+  check("zmiana widoku animuje makiety kaskadowo",
+    has(motion, "@keyframes mo-device-in", ".stage[data-view=\"all\"]"));
+  check("mikrointerakcje respektują prefers-reduced-motion",
+    motion.includes("@media (prefers-reduced-motion:reduce)"));
+  const motionJs = fs.readFileSync(path.join(root, "js/motion.js"), "utf8");
+  check("magnetyczne ikony wygładzane w rAF (bez nadpisywania kafla)",
+    motionJs.includes("magTick") && motionJs.includes('querySelector(".app__icon, .ico, .bi")'));
+  check("magnetyka obejmuje też ikony docka", motionJs.includes('".app, .dock-app, .tb-icon, .start-app, .win-desk-icon"'));
+  check("zakładki mają przesuwającą się pigułkę (bez migającego tła)",
+    motionJs.includes("buildViewPill") &&
+    has(motion, ".viewbar__pill", "transform 420ms var(--mo-spring)") &&
+    has(motion, ".viewbtn.is-active{", "background:none"));
+  check("okna zamykają się animacją wyjścia (is-closing)",
+    has(motion, ".win-window.is-closing", "opacity:0") &&
+    fs.readFileSync(path.join(root, "js/windows.js"), "utf8").includes('classList.add("is-closing")'));
+  check("maksymalizacja używa FLIP (animowany tylko transform)",
+    fs.readFileSync(path.join(root, "js/windows.js"), "utf8").includes("maximizeWithFlip"));
+  check("audyt płynności nie widzi animacji width/height w motion.css",
+    !/transition\s*:\s*[^;}]*\b(width|height|left|top)\b\s*\d/.test(motion));
+
   check("telefon ma 4 uchwyty gestów (góra/dół/lewo/prawo)", edges.length === 4);
   check("uchwyty mają podpowiedzi tekstowe", Array.from(edges).every(e => (e.dataset.hint || "").length > 5));
   check("uchwyty nie przesłaniają treści (są przezroczyste, do 22 px)",

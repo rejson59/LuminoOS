@@ -113,8 +113,8 @@
         <div class="start-scroll">
           <div class="start-head"><span>Przypięte</span><span class="start-all">Wszystkie aplikacje ›</span></div>
           <div class="start-grid">
-            ${START_APPS.map(([id, name, ic]) => `
-              <button class="start-app" data-open="${id}" data-name="${name.toLowerCase()}">
+            ${START_APPS.map(([id, name, ic], si) => `
+              <button class="start-app" data-open="${id}" data-name="${name.toLowerCase()}" style="--i:${si}">
                 ${iconImg(ic)}
                 <span>${name}</span>
               </button>`).join("")}
@@ -291,8 +291,7 @@
       $(".min", el).addEventListener("click", e => { e.stopPropagation(); minimize(id); });
       $(".max", el).addEventListener("click", e => {
         e.stopPropagation();
-        el.classList.toggle("is-maximized");
-        focusWindow(id);
+        toggleMaximize(id);
       });
       $(".close", el).addEventListener("click", e => { e.stopPropagation(); closeWindow(id); });
 
@@ -313,9 +312,53 @@
         if (typeof w.cleanup === "function") w.cleanup();
         else if (w.cleanup.dispose) w.cleanup.dispose();
       }
-      w.el.remove();
+      const el = w.el;
       openWindows.delete(id);
       updateTaskbar();
+      /* animacja wyjścia: okno „zapada się" w pasek zadań (tylko transform/opacity) */
+      el.classList.add("is-closing");
+      const done = () => el.remove();
+      if (typeof el.animate === "function") {
+        const anim = el.animate(
+          [
+            { opacity: 1, transform: "none" },
+            { opacity: 0, transform: "translateY(14px) scale(.94)" }
+          ],
+          { duration: 240, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }
+        );
+        anim.onfinish = done;
+        anim.oncancel = done;
+      } else {
+        done();
+      }
+    }
+
+    /* Maksymalizacja animowana przez FLIP (First–Last–Invert–Play):
+       mierzymy prostokąt przed i po zmianie klasy, potem animujemy tylko
+       transform. Dzięki temu nie animujemy left/top/width/height — cała praca
+       zostaje na kompozytorze (60–120 fps), a układ przelicza się raz. */
+    function maximizeWithFlip(el) {
+      const before = el.getBoundingClientRect();
+      el.classList.toggle("is-maximized");
+      const after = el.getBoundingClientRect();
+      if (typeof el.animate !== "function" || !before.width || !after.width) return;
+      el.animate(
+        [
+          {
+            transformOrigin: "top left",
+            transform: `translate(${(before.left - after.left).toFixed(1)}px, ${(before.top - after.top).toFixed(1)}px) ` +
+                       `scale(${(before.width / after.width).toFixed(4)}, ${(before.height / after.height).toFixed(4)})`
+          },
+          { transformOrigin: "top left", transform: "none" }
+        ],
+        { duration: 420, easing: "cubic-bezier(.22,1,.36,1)" }
+      );
+    }
+    function toggleMaximize(id) {
+      const w = openWindows.get(id);
+      if (!w) return;
+      maximizeWithFlip(w.el);
+      focusWindow(id);
     }
 
     function minimize(id) {

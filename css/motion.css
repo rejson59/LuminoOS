@@ -1,0 +1,214 @@
+/* ============================================================
+   LuminoOS — warstwa „dopracowanego ruchu" (etap 8)
+   Wszystko wyłącznie na transform / opacity (kompozytor, 60–120 fps).
+   Zasady:
+   • jedna rodzina krzywych (sprężysta, „gumowa", wyjście)
+   • krótkie czasy wejścia, dłuższe wyjścia (jak w iOS 26 / Windows 11)
+   • kaskady przez --i (bez JS, bez przeliczania layoutu)
+   • zero animacji na width/height/filter w pętli
+   ============================================================ */
+
+:root{
+  --mo-spring:cubic-bezier(.34,1.42,.64,1);      /* gumowa sprężyna */
+  --mo-soft-spring:cubic-bezier(.34,1.18,.64,1);
+  --mo-out:cubic-bezier(.22,1,.36,1);            /* długie wyjście */
+  --mo-in-out:cubic-bezier(.4,0,.2,1);
+  --mo-fast:160ms;
+  --mo-mid:320ms;
+  --mo-slow:520ms;
+}
+
+/* ============================================================
+   1. WINDOWS (laptop)
+   ============================================================ */
+
+/* okna: sprężyste otwieranie i miękkie minimalizowanie */
+.win-window{
+  transition:
+    box-shadow 240ms ease-out,
+    opacity 200ms ease-out,
+    transform 420ms var(--mo-spring),
+    border-radius 260ms ease-out;
+  will-change:transform, opacity;
+}
+.win-window.is-minimized{
+  transform:translateY(34px) scale(.94);
+  opacity:0;
+  transition:transform 340ms var(--mo-in-out), opacity 220ms ease-out;
+}
+
+/* maksymalizacja: przejście robi FLIP w JS (tylko transform), więc CSS nie
+   animuje left/top/width/height — układ przelicza się raz, bez klatkowania */
+.win-window.is-maximized{transition:none}
+
+/* zamykanie: okno „zapada się" w pasek zadań (motion.js dokłada animację) */
+.win-window.is-closing{
+  pointer-events:none;
+  transition:opacity 200ms ease-in, transform 240ms var(--mo-in-out);
+  transform:translateY(14px) scale(.94);
+  opacity:0;
+}
+
+/* menu Start: wysuwa się spod paska zadań, kaskada kafelków */
+.start-menu{
+  transform:translate(-50%, 16px) scale(.97);
+  transform-origin:50% 100%;
+  transition:
+    opacity 200ms ease-out,
+    transform 460ms var(--mo-spring),
+    visibility 0s linear 460ms;
+}
+.start-menu.is-open{
+  transform:translate(-50%, 0) scale(1);
+  transition:
+    opacity 180ms ease-out,
+    transform 460ms var(--mo-spring),
+    visibility 0s;
+}
+/* kafelki Startu: kaskada przy otwarciu */
+.start-menu .start-app{
+  opacity:0;
+  transform:translateY(10px) scale(.86);
+  transition:
+    opacity 200ms ease-out,
+    transform 380ms var(--mo-spring);
+}
+.start-menu.is-open .start-app{
+  opacity:1;
+  transform:none;
+  transition-delay:calc(var(--i, 0) * 18ms + 40ms);
+}
+
+/* kafelki paska zadań: sprężysty wskaźnik „uruchomiona" */
+.tb-icon{
+  transition:
+    background-color 160ms ease-out,
+    transform 260ms var(--mo-spring);
+}
+.tb-icon:hover{transform:translateY(-2px)}
+.tb-icon:active{transform:scale(.92)}
+.tb-icon.is-running::after{
+  transition:transform 340ms var(--mo-spring), opacity 220ms ease-out;
+}
+.tb-icon:not(.is-running)::after{transform:translateX(-50%) scaleX(0);opacity:0}
+
+/* menu kontekstowe / tacka / toast */
+.win-toast{
+  transform:translateX(120%) scale(.98);
+  transition:transform 480ms var(--mo-spring), opacity 260ms ease-out;
+}
+.win-toast.is-open{transform:none;opacity:1}
+
+/* przyciski okna: szybsze, wyraźniejsze sprzężenie */
+.win-ctrl button{
+  transition:background-color 120ms ease-out, color 120ms ease-out, transform 160ms var(--mo-spring);
+}
+.win-ctrl button:active{transform:scale(.86)}
+
+/* przełączniki w Ustawieniach */
+.win .switch::after{transition:transform 320ms var(--mo-spring)}
+.win .switch{transition:background-color 200ms ease-out}
+
+/* ============================================================
+   2. STRONA Z PODGLĄDAMI (przejścia widoków)
+   ============================================================ */
+
+/* zmiana widoku: makieta wjeżdża sprężyście, stare wyjeżdża szybko */
+.stage > .device{
+  transition:transform 520ms var(--mo-spring), opacity 260ms ease-out;
+}
+.stage[data-view="all"] > .device{
+  animation:mo-device-in 520ms var(--mo-spring) both;
+}
+.stage[data-view="all"] > .device:nth-of-type(2){animation-delay:60ms}
+.stage[data-view="all"] > .device:nth-of-type(3){animation-delay:120ms}
+@keyframes mo-device-in{
+  from{opacity:0;transform:translateY(18px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+
+/* przełącznik widoków: jedna szklana „pigułka", która przejeżdża między
+   zakładkami (transform z JS) — brak migającego tła na każdym przycisku */
+.viewbar__group{position:relative;isolation:isolate}
+.viewbar__pill{
+  position:absolute;left:0;top:0;z-index:-1;
+  border-radius:999px;
+  background:linear-gradient(150deg,#a9d5ff,#7cc4ff);
+  box-shadow:0 4px 12px rgba(124,196,255,.30);
+  opacity:0;
+  /* tylko transform/opacity w ruchu — rozmiar ustawiamy raz na klik */
+  transition:transform 420ms var(--mo-spring), opacity 200ms ease-out;
+  will-change:transform;
+}
+.viewbtn{
+  position:relative;
+  transition:color 180ms ease-out, transform 200ms var(--mo-spring);
+}
+.viewbtn:active{transform:scale(.96)}
+.viewbtn:hover{background:transparent}
+.viewbtn.is-active{
+  background:none;
+  box-shadow:none;
+  transition:color 160ms ease-out;
+}
+
+/* narzędzia (1:1 / pełny ekran) */
+.toolbtn{transition:background-color 180ms ease-out, color 180ms ease-out, transform 220ms var(--mo-spring)}
+.toolbtn:active{transform:scale(.95)}
+
+/* — przejście do pełnego ekranu: makieta „rośnie" z animacją — */
+html.is-fullscreen .stage > .device.is-shown{
+  animation:mo-fullscreen-in 520ms var(--mo-spring) both;
+}
+@keyframes mo-fullscreen-in{
+  from{opacity:.6;transform:scale(.94)}
+  to{opacity:1;transform:scale(var(--zoom, 1))}
+}
+/* wyjście (po zdjęciu klasy) */
+html:not(.is-fullscreen) .stage.single > .device.is-shown{
+  animation:mo-device-in 420ms var(--mo-spring) both;
+}
+
+/* pasek trybów w pełnym ekranie: pojawia się miękko, znika po chwili */
+html.is-fullscreen .viewbar{
+  animation:mo-bar-in 520ms var(--mo-out) both;
+  transition:opacity 260ms ease-out;
+}
+@keyframes mo-bar-in{
+  from{opacity:0;transform:translate(-50%, 10px)}
+  to{opacity:.3;transform:translate(-50%, 0)}
+}
+
+/* ============================================================
+   3. MIKROINTERAKCJE WSPÓLNE
+   ============================================================ */
+
+/* karty, kafle, wiersze — jedno miejsce, spójne czasy */
+.a-card,.app,.tb-icon,.start-app,.q2,.row{
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* podświetlenie pod kursorem: krótkie wejście, dłuższe wyjście */
+.app:hover .app__wrap,
+.start-app:hover{
+  transition-duration:180ms;
+}
+
+/* ripple (z motion.js) ma teraz stałe, spokojniejsze tempo */
+.lu-ripple{will-change:transform, opacity}
+
+/* ============================================================
+   4. BEZPIECZNIKI
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .win-window,.start-menu,.start-menu .start-app,.tb-icon,.tb-icon::after,
+  .win-toast,.win-ctrl button,.win .switch,.win .switch::after,
+  .stage > .device,.viewbtn,.toolbtn,html.is-fullscreen .viewbar{
+    transition-duration:.001ms!important;
+    animation-duration:.001ms!important;
+  }
+}
+/* na urządzeniach dotykowych nie „przyklejamy" hoverów */
+@media (hover:none){
+  .app:hover .app__icon,.dock .dock-app:hover{transform:none}
+}

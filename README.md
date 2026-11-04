@@ -71,6 +71,7 @@ index.html          – scena z trzema urządzeniami + sprite ikon SVG
 css/base.css        – strona, ramki urządzeń, wspólne kafelki ikon
 css/android.css     – Android: blokada, launcher, wyspa (skróty), aplikacje, Spotify
 css/windows.css     – Windows: okna, pasek zadań, Start, aplikacje
+css/motion.css      – warstwa ruchu: krzywe --mo-*, kaskady --i, przejścia widoków
 js/core.js          – dane przykładowe (utwory, aplikacje, powiadomienia) + wspólny odtwarzacz
 js/apps.js          – treść aplikacji (Android i Windows)
 js/android.js       – powłoka Androida (telefon + tablet)
@@ -270,6 +271,33 @@ klikiem w pasek gestów u dołu — a także przeciągać go w poziomie myszką.
 - **Aplikacje**: sprężyste wejście 500 ms bez skoku `visibility`.
 - Wszystkie animacje idą wyłącznie na `transform`/`opacity` (kompozytor),
   więc nie ruszają layoutem i trzymają 60–120 fps.
+
+### Warstwa ruchu — `css/motion.css` (etap 13)
+Cały „dopracowany ruch” jest w jednym arkuszu, podpiętym po pozostałych CSS-ach:
+
+- **Jedna rodzina krzywych** (zmienne CSS): `--mo-spring` `cubic-bezier(.34,1.42,.64,1)`
+  (gumowa sprężyna), `--mo-soft-spring` `(.34,1.18,.64,1)`, `--mo-out` `(.22,1,.36,1)`
+  (długie wyhamowanie), `--mo-in-out` `(.4,0,.2,1)`; czasy `--mo-fast` 160 ms,
+  `--mo-mid` 320 ms, `--mo-slow` 520 ms.
+- **Windows**: okna otwierają się sprężyście (420 ms) i „zapadają się” w pasek
+  przy zamykaniu (`is-closing`, 240 ms), minimalizacja ma krótki wdech, a
+  **maksymalizacja to FLIP w JS** — mierzymy prostokąt przed/po zmianie klasy
+  i animujemy wyłącznie `transform`, więc `left/top/width/height` nie są animowane.
+- **Menu Start**: wysuwa się spod paska (460 ms sprężyna), a kafelki wchodzą
+  kaskadą `transition-delay: calc(var(--i) * 18ms + 40ms)` — bez ani jednej linijki JS.
+- **Pasek zadań**: wskaźnik uruchomionej aplikacji rozciąga się z `scaleX(0)`
+  (`is-running`), ikony podnoszą się o 2 px pod kursorem.
+- **Zakładki podglądów**: jedna szklana pigułka (`.viewbar__pill`) przejeżdża
+  między zakładkami (`transform`, 420 ms sprężyna) zamiast migającego tła.
+- **Zmiana widoku**: makiety wjeżdżają kaskadowo (`mo-device-in`, opóźnienia
+  60/120 ms), pełny ekran ma własne wejście (`mo-fullscreen-in` + `--zoom`).
+- **Mikrointerakcje**: przełączniki (`.switch::after`), przyciski okien, toasty,
+  korektor odtwarzacza — wszystko na `transform`/`opacity`.
+- **Magnetyka ikon** (`js/motion.js`): kursorem „przyciągamy” tylko wewnętrzną
+  ikonę (`.app__icon`, `.ico`, `.bi`), nigdy cały kafel — transform kafla należy
+  do CSS. Ruch wygładza lerp `0.22` w jednej pętli `requestAnimationFrame`.
+- **Bezpieczniki**: `@media (prefers-reduced-motion:reduce)` zeruje czasy animacji,
+  a `@media (hover:none)` nie „przykleja” hoverów na dotyku.
 
 ### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
 Zamiast systemowego ekranu „ostatnich zadań” telefon ma **pływający, szklany
