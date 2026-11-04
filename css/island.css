@@ -694,3 +694,22 @@ node tools/cssparse.js | tail -1
    kaskadę (opacity/transform) i muszą się animować po morfowaniu */
 /* wyspa morfuje od lewego górnego rogu (pigułka rośnie tak jak w iOS) */
 .island{transform-origin:0% 0%;will-change:width,height,border-radius}
+
+/* ============================================================
+   WYSPA NA EKRANIE BLOKADY
+   Wyspa nie jest już dzieckiem launchera, więc sama nie chowa się
+   pod blokadą. Na blokadzie zostaje tylko kropka aparatu — zegar
+   blokady ma pełną przestrzeń, a pigułka nie nachodzi na datę.
+   Po odblokowaniu wyspa wraca płynnie (opacity + transform).
+   ============================================================ */
+/* szerokość NIE jest animowana (zakaz animowania układu) — zmiana zachodzi
+   pod przesuwającą się blokadą, więc jest niewidoczna; animują się tylko
+   opacity/transform twarzy */
+.island.is-locked-out{
+  height:26px;
+  min-width:44px;
+  width:44px;
+  border-radius:13px;
+}
+.island.is-locked-out .island__face{opacity:0;pointer-events:none;transition:opacity 160ms ease-out}
+.island.is-locked-out .island__cam{left:18.5px;opacity:1;transition:opacity 220ms ease}

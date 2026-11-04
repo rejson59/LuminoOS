@@ -41,7 +41,13 @@
 .android .a-lock{z-index:8}
 .android .a-apps{z-index:6}
 .android .island,.android .statusbar{z-index:40}
+/* wyspa jest bezpośrednim dzieckiem powłoki (nie launchera), więc jej
+   z-index działa w kontekście całej makiety — musi być NAD przyciemnieniem
+   panelu (38) i NAD aplikacjami (6). Reguła obejmuje OBA urządzenia:
+   wcześniejszy selektor celował tylko w telefon, więc na tablecie wyspa
+   zostawała pod warstwami. */
 .android .island{z-index:41}
+.android[data-android] .island{z-index:41}
 /* Windows: własna warstwa przyciemnienia (z-index 0 pod pulpitem) */
 .win .lum-dim{
   position:absolute;inset:0;z-index:0;pointer-events:none;

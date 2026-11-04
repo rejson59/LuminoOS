@@ -43,71 +43,6 @@
           </div>
         </div>
 
-        <!-- PŁYWAJĄCA PIGUŁKA (Dynamic Island) — po lewej, nad aplikacjami.
-             To DIV, nie BUTTON: w HTML nie wolno zagnieżdżać przycisków,
-             a panel skrótów ma własne kafle. Wcześniej zagnieżdżony <button>
-             ZAMYKAŁ pigułkę i panel w ogóle nie trafiał do DOM — stąd brak
-             morfowania. JEDEN element, 4 tryby. -->
-        <div class="island" data-mode="idle" aria-label="Wyspa — skróty, powiadomienia, muzyka" aria-expanded="false">
-          <span class="island__cam" aria-hidden="true"></span>
-
-          <button class="island__face island__face--idle" type="button" data-action="panel"
-                  aria-label="Rozwiń skróty">
-            <span class="island__time js-time">09:41</span>
-            <span class="island__date js-date-short">4 lis</span>
-          </button>
-
-          <button class="island__face island__face--notif" type="button" data-island-notif
-                  aria-label="Powiadomienie">
-            <span class="island__notif-ico" data-island-notif-ico></span>
-            <span class="island__notif-txt">
-              <b data-island-notif-title>Nowa wiadomość</b>
-              <small data-island-notif-text>Ania: dasz radę dziś?</small>
-            </span>
-          </button>
-
-          <div class="island__face island__face--music" role="button" tabindex="0"
-               aria-label="Odtwarzacz — otwórz Spotify">
-            <span class="island__cover" data-island-cover></span>
-            <span class="island__music-txt">
-              <b data-island-title>Nocna Jazda</b>
-              <small data-island-artist>Mira Kova</small>
-            </span>
-            <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
-            <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
-          </div>
-
-          <div class="island__face island__face--panel">
-            <span class="island__grip" aria-hidden="true"></span>
-            <!-- „teraz gra": muzyka i skróty jednocześnie -->
-            <div class="island__now">
-              <span class="island__cover" data-island-cover></span>
-              <span class="island__music-txt">
-                <b data-island-title>Nocna Jazda</b>
-                <small data-island-artist>Mira Kova</small>
-              </span>
-              <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
-              <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
-            </div>
-            <div class="island-sliders">${qsSliders()}</div>
-            <div class="island-grid">${qsGrid("island-tile")}</div>
-            <div class="island-bar">
-              <div class="island-foot">
-                <button class="island-tile island-tile--sm" style="--i:8" type="button" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
-                <button class="island-tile island-tile--sm" style="--i:9" type="button" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
-                <button class="island-tile island-tile--sm" style="--i:10" type="button" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
-              </div>
-              <div class="island-notifs">
-                ${notifications.map((n, ni) => {
-                  const a = androidApps.find(x => x.id === n.app);
-                  return `<button class="island-notif" type="button" style="--i:${ni}" title="${n.title} — ${n.text}">
-                    ${iconImg(a.id, "notif__ico")}<span class="island__notif-dot"></span></button>`;
-                }).join("")}
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="launcher-pages">
           <div class="page">
             ${isTablet ? `
@@ -231,6 +166,77 @@
       </div>
 
       <div class="island-shade"></div>
+
+      <!-- PŁYWAJĄCA PIGUŁKA (Dynamic Island) — MUSI być bezpośrednim
+           dzieckiem powłoki, nie launchera. Launcher ma własny kontekst
+           warstw (transform + z-index), więc wyspa w nim była rysowana
+           POD przyciemnieniem panelu i POD aplikacjami: kafle nie dały
+           się kliknąć, a po otwarciu aplikacji wyspa znikała. -->
+      <!-- PŁYWAJĄCA PIGUŁKA (Dynamic Island) — po lewej, nad aplikacjami.
+           To DIV, nie BUTTON: w HTML nie wolno zagnieżdżać przycisków,
+           a panel skrótów ma własne kafle. Wcześniej zagnieżdżony <button>
+           ZAMYKAŁ pigułkę i panel w ogóle nie trafiał do DOM — stąd brak
+           morfowania. JEDEN element, 4 tryby. -->
+      <div class="island" data-mode="idle" aria-label="Wyspa — skróty, powiadomienia, muzyka" aria-expanded="false">
+        <span class="island__cam" aria-hidden="true"></span>
+
+        <button class="island__face island__face--idle" type="button" data-action="panel"
+                aria-label="Rozwiń skróty">
+          <span class="island__time js-time">09:41</span>
+          <span class="island__date js-date-short">4 lis</span>
+        </button>
+
+        <button class="island__face island__face--notif" type="button" data-island-notif
+                aria-label="Powiadomienie">
+          <span class="island__notif-ico" data-island-notif-ico></span>
+          <span class="island__notif-txt">
+            <b data-island-notif-title>Nowa wiadomość</b>
+            <small data-island-notif-text>Ania: dasz radę dziś?</small>
+          </span>
+        </button>
+
+        <div class="island__face island__face--music" role="button" tabindex="0"
+             aria-label="Odtwarzacz — otwórz Spotify">
+          <span class="island__cover" data-island-cover></span>
+          <span class="island__music-txt">
+            <b data-island-title>Nocna Jazda</b>
+            <small data-island-artist>Mira Kova</small>
+          </span>
+          <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+          <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
+        </div>
+
+        <div class="island__face island__face--panel">
+          <span class="island__grip" aria-hidden="true"></span>
+          <!-- „teraz gra": muzyka i skróty jednocześnie -->
+          <div class="island__now">
+            <span class="island__cover" data-island-cover></span>
+            <span class="island__music-txt">
+              <b data-island-title>Nocna Jazda</b>
+              <small data-island-artist>Mira Kova</small>
+            </span>
+            <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+            <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
+          </div>
+          <div class="island-sliders">${qsSliders()}</div>
+          <div class="island-grid">${qsGrid("island-tile")}</div>
+          <div class="island-bar">
+            <div class="island-foot">
+              <button class="island-tile island-tile--sm" style="--i:8" type="button" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
+              <button class="island-tile island-tile--sm" style="--i:9" type="button" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
+              <button class="island-tile island-tile--sm" style="--i:10" type="button" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
+            </div>
+            <div class="island-notifs">
+              ${notifications.map((n, ni) => {
+                const a = androidApps.find(x => x.id === n.app);
+                return `<button class="island-notif" type="button" style="--i:${ni}" title="${n.title} — ${n.text}">
+                  ${iconImg(a.id, "notif__ico")}<span class="island__notif-dot"></span></button>`;
+              }).join("")}
+            </div>
+          </div>
+        </div>
+      </div>
+
 
 
       <!-- ===== aplikacje ===== -->
@@ -479,7 +485,12 @@
       if (h) islandBtn.style.setProperty("--panel-h", h + "px");
     }, { passive: true });
 
-    function openPanel() { setMode("panel"); }
+    function openPanel() {
+      /* na blokadzie pigułka jest tylko kropką aparatu — panel nie może
+         wyskoczyć nad ekranem blokady */
+      if (!lock.classList.contains("is-unlocked")) return;
+      setMode("panel");
+    }
     /* zamknięcie panelu: wracamy do odtwarzacza, jeśli muzyka nadal gra */
     function closePanel() { setMode(musicOn() ? "music" : "idle"); }
     const panelOpen = () => islandMode === "panel";
@@ -555,6 +566,24 @@
       faceMusic.addEventListener("keydown", e => {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onMusicFace(e); }
       });
+    }
+
+    /* --- WYSPA NA EKRANIE BLOKADY (iOS 26) -------------------------------
+       Wyspa jest teraz dzieckiem powłoki (a nie launchera), więc nie znika
+       razem z launcherem pod blokadą — trzeba ją ukryć świadomie, inaczej
+       zegar blokady i pigułka z zegarem nachodzą na siebie.
+       Na blokadzie pigułka pokazuje tylko kropkę aparatu; panel zostaje
+       zablokowany, a po odblokowaniu wyspa wraca płynnie. */
+    const lockEl = $(".a-lock", root);
+    const paintLockIsland = () => {
+      const locked = !lockEl.classList.contains("is-unlocked");
+      islandBtn.classList.toggle("is-locked-out", locked);
+      if (locked && islandMode === "panel") closePanel();
+    };
+    paintLockIsland();
+    if (typeof MutationObserver === "function") {
+      new MutationObserver(paintLockIsland)
+        .observe(lockEl, { attributes: true, attributeFilter: ["class"] });
     }
 
     /* wyspa (pływająca pigułka) rozwija skróty; belka tylko szuka */

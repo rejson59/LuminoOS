@@ -190,6 +190,29 @@ dom.window.addEventListener("load", () => setTimeout(async () => {
   check("tablet ma te same gesty i pasek ostatnich aplikacji co telefon",
     !!tablet.lumino.activity && tablet.querySelectorAll(".gesture-edge").length === 4);
 
+  /* ------------------------------------------------------------------
+     Regresja: wyspa MUSI być bezpośrednim dzieckiem powłoki.
+     Gdy siedzi w `.a-launcher`, ten tworzy własny kontekst warstw —
+     `z-index:41` wyspy działa wtedy tylko wewnątrz launchera, więc panel
+     ląduje POD przyciemnieniem (.island-shade, 38) i POD aplikacjami (6).
+     Objawy: kafelka nie da się kliknąć, a po otwarciu aplikacji wyspa
+     znika. jsdom nie liczy warstw, więc sprawdzamy strukturę.
+     ------------------------------------------------------------------ */
+  [phone, tablet].forEach(scr => {
+    const isl = scr.querySelector(".island");
+    check(`${scr.dataset.android}: wyspa jest poza warstwą launchera (własny kontekst warstw)`,
+      !!isl && isl.parentElement === scr && !scr.querySelector(".a-launcher .island"));
+  });
+  check("wyspa jest nad przyciemnieniem panelu i nad aplikacjami (z-index)",
+    (() => {
+      const fs = require("fs"), path = require("path");
+      const read = f => fs.readFileSync(path.join(__dirname, "..", "css", f), "utf8");
+      const os = read("os.css"), island = read("island.css");
+      return /\.android\s+\.island\s*\{[^}]*z-index:\s*4[1-9]/s.test(os) &&
+             /\.island-shade\s*\{[^}]*z-index:\s*3[0-9]/s.test(island) &&
+             /\.android\s+\.a-apps\s*\{[^}]*z-index:\s*[1-6]/s.test(os);
+    })());
+
   check("brak błędów wykonania", errs.length === 0);
 
   console.log(`\nSystem: ${pass} OK, ${fail} błędów\n`);

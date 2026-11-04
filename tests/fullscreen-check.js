@@ -17,9 +17,12 @@ w.addEventListener("load", () => setTimeout(() => {
   /* --- nowa belka --- */
   const phone = document.querySelector('[data-android="phone"]');
   const bar = phone.querySelector(".statusbar");
-  const island = phone.querySelector(".a-launcher > .island");
+  const island = phone.querySelector(".island");
   check("wyspa pływa poza belką (nad aplikacjami, po lewej)",
     !!island && !bar.contains(island));
+  /* regresja: wyspa w środku launchera = panel pod przyciemnieniem i aplikacjami */
+  check("wyspa jest bezpośrednim dzieckiem powłoki (własny kontekst warstw)",
+    !!island && island.parentElement === phone && phone.querySelector(".a-launcher .island") === null);
   check("belka nie zawiera już zegara po lewej (wyspa go zastąpiła)",
     !bar.querySelector(".js-time"));
   check("wyspa pokazuje zegar i datę", !!island.querySelector(".island__time") && !!island.querySelector(".island__date"));
@@ -49,6 +52,8 @@ w.addEventListener("load", () => setTimeout(() => {
   check("kafle to kwadraty z zaokrągleniem (nie koła)",
     /island-tile\{[\s\S]*?border-radius:\s*12px/.test(fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
 
+  /* panel otwiera się po odblokowaniu (na blokadzie pigułka to sama kropka) */
+  if (phone.lumino.isLocked()) phone.lumino.unlock();
   island.querySelector(".island__face--idle").click();
   check("klik w wyspę morfuje ją w panel", island.dataset.mode === "panel" &&
     island.classList.contains("is-open") && island.getAttribute("aria-expanded") === "true");
