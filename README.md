@@ -74,6 +74,8 @@ css/windows.css     – Windows: okna, pasek zadań, Start, aplikacje
 css/motion.css      – warstwa ruchu: krzywe --mo-*, kaskady --i, przejścia widoków
 css/os.css          – „jeden system”: wspólne tokeny, pasek systemu, panel zasobnika
 js/os.js            – spinacz stanu: sys → wyspa/panel zasobnika/Ustawienia, pasek systemu
+js/continuity.js    – przenoszenie aplikacji między urządzeniami + Pulse (dziennik zdarzeń)
+css/continuity.css  – unosząca się ikona, strefy upuszczenia, iskra, Pulse, wspólna sesja
 js/core.js          – dane przykładowe (utwory, aplikacje, powiadomienia) + wspólny odtwarzacz
 js/apps.js          – treść aplikacji (Android i Windows)
 js/android.js       – powłoka Androida (telefon + tablet)
@@ -273,6 +275,28 @@ klikiem w pasek gestów u dołu — a także przeciągać go w poziomie myszką.
 - **Aplikacje**: sprężyste wejście 500 ms bez skoku `visibility`.
 - Wszystkie animacje idą wyłącznie na `transform`/`opacity` (kompozytor),
   więc nie ruszają layoutem i trzymają 60–120 fps.
+
+### Continuity + Pulse (etap 15) — aplikacje płyną między urządzeniami
+
+Nowa warstwa, która wykorzystuje to, że telefon, tablet i laptop to **jedna
+sesja**, a nie trzy kopie:
+
+- **Przeciągnij aplikację na inne urządzenie.** Łapiesz ikonę (pulpit, dock,
+  Start, pasek zadań) i przeciągasz ją na inną makietę — ikona unosi się pod
+  kursorem, makieta docelowa podświetla się etykietą „upuść tutaj”, a aplikacja
+  otwiera się tam, gdzie ją puścisz. Nazwy są tłumaczone w obie strony
+  (`Chrome ↔ Edge`, `Pliki ↔ Eksplorator`, `Notatki ↔ Notatnik`), więc
+  „ta sama aplikacja” naprawdę znaczy ta sama. `Esc` anuluje przeciąganie.
+- **Pulse** (przycisk w belce): dziennik zdarzeń **całego** systemu — otwarcia
+  aplikacji na każdym ekranie, zmiany stanu (Wi‑Fi, Nie przeszkadzać…),
+  muzyka, przeniesienia. Nic nie trzeba dopisywać do powłok: Pulse słucha
+  tych samych zdarzeń, które system i tak emituje.
+- **Znacznik wspólnej sesji**: gdy ta sama aplikacja jest otwarta na dwóch
+  urządzeniach, w pasku stanu (Android) i w pasku zadań (Windows) pojawia się
+  mały, spokojny znacznik „⟳ Notatki”.
+- Pliki: `js/continuity.js`, `css/continuity.css`, test `tests/continuity-check.js`
+  (23 asercje). Wszystko na `transform`/`opacity`, z obsługą
+  `prefers-reduced-motion`.
 
 ### Jeden system na trzech urządzeniach (etap 14)
 

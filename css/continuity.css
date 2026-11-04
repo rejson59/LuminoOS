@@ -1,0 +1,184 @@
+/* ============================================================
+   css/continuity.css — CONTINUITY + PULSE (etap 15)
+   • przeciąganie aplikacji między urządzeniami: unosząca się ikona,
+     podświetlona strefa upuszczenia, iskra po przeniesieniu
+   • Pulse: wspólny dziennik zdarzeń całego systemu
+   Wszystko na transform/opacity — kompozytor.
+   ============================================================ */
+
+/* ---------- unosząca się ikona aplikacji ---------- */
+.cont-ghost{
+  position:fixed;left:0;top:0;z-index:10000;
+  pointer-events:none;
+  display:grid;place-items:center;
+  margin:-18px 0 0 -18px;
+  border-radius:22%;
+  background-size:contain;background-position:center;background-repeat:no-repeat;
+  filter:drop-shadow(0 16px 26px rgba(0,0,0,.55));
+  will-change:transform,opacity;
+  transition:transform 60ms linear;
+}
+.cont-ghost .app__icon,
+.cont-ghost .ico{
+  width:100%;height:100%;
+  background-size:contain;background-position:center;background-repeat:no-repeat;
+  border-radius:22%;
+}
+.cont-ghost .ico{color:#eef1f7}
+body.is-cont-drag{cursor:grabbing}
+body.is-cont-drag *{cursor:grabbing!important}
+/* podczas przeciągania wyłączamy „magnetykę" ikon — inaczej obraz drga */
+body.is-cont-drag .app__icon{transform:none!important}
+
+/* ---------- strefa upuszczenia ---------- */
+.device.is-drop-target .frame,
+.device.is-drop-target .lid{
+  box-shadow:
+    0 0 0 2px rgba(160,205,255,.85),
+    0 0 40px 6px rgba(124,196,255,.35),
+    0 34px 70px -22px rgba(0,0,0,.9);
+  transition:box-shadow 220ms ease-out;
+}
+.device.is-drop-target::after{
+  content:"upuść tutaj";
+  position:absolute;left:50%;bottom:calc(100% + 8px);
+  transform:translate(-50%, 4px);
+  font:600 10px/1 var(--font, system-ui);
+  letter-spacing:.06em;text-transform:uppercase;
+  color:#08121f;background:#a9d5ff;
+  padding:6px 10px;border-radius:999px;
+  box-shadow:0 8px 20px -8px rgba(0,0,0,.7);
+  animation:cont-label-in 240ms cubic-bezier(.34,1.42,.64,1) both;
+}
+@keyframes cont-label-in{
+  from{opacity:0;transform:translate(-50%, 10px) scale(.9)}
+  to{opacity:1;transform:translate(-50%, 0) scale(1)}
+}
+
+/* ---------- iskra po przeniesieniu aplikacji ---------- */
+.cont-spark{
+  position:fixed;z-index:9999;pointer-events:none;
+  width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;
+  background:radial-gradient(circle, rgba(190,225,255,.95), rgba(124,196,255,.35) 45%, transparent 70%);
+  animation:cont-spark 680ms cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes cont-spark{
+  from{opacity:.95;transform:scale(.4)}
+  to{opacity:0;transform:scale(7)}
+}
+
+/* ============================================================
+   PULSE — dziennik zdarzeń systemu (jedno miejsce dla 3 ekranów)
+   ============================================================ */
+.pulse{
+  position:fixed;right:16px;bottom:16px;z-index:130;
+  width:290px;max-width:calc(100vw - 32px);
+  padding:10px 12px 11px;border-radius:16px;
+  background:rgba(18,21,30,.90);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 24px 50px -20px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.06) inset;
+  backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+  color:#eef1f7;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(12px) scale(.97);
+  transform-origin:100% 100%;
+  transition:opacity 200ms ease-out, transform 420ms cubic-bezier(.34,1.42,.64,1),
+             visibility 0s linear 420ms;
+}
+.pulse.is-visible{
+  opacity:1;visibility:visible;pointer-events:auto;transform:none;
+  transition:opacity 180ms ease-out, transform 420ms cubic-bezier(.34,1.42,.64,1), visibility 0s;
+}
+.pulse__head{
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:#aeb7ca;
+  margin-bottom:8px;
+}
+.pulse__head .ico{width:12px;height:12px;color:#a9d5ff}
+.pulse__live{
+  margin-left:auto;display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;letter-spacing:.04em;color:#8ee6a8;text-transform:none;
+}
+.pulse__live::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:#8ee6a8;
+  box-shadow:0 0 0 0 rgba(142,230,168,.6);
+  animation:pulse-dot 2.4s ease-out infinite;
+}
+@keyframes pulse-dot{
+  0%{box-shadow:0 0 0 0 rgba(142,230,168,.55)}
+  70%{box-shadow:0 0 0 7px rgba(142,230,168,0)}
+  100%{box-shadow:0 0 0 0 rgba(142,230,168,0)}
+}
+.pulse__feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.pulse__row{
+  display:flex;align-items:center;gap:7px;
+  font-size:10.5px;line-height:1.3;color:#dfe6f5;
+  animation:pulse-row 320ms cubic-bezier(.34,1.42,.64,1) both;
+}
+@keyframes pulse-row{
+  from{opacity:0;transform:translateY(-6px)}
+  to{opacity:1;transform:none}
+}
+.pulse__txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pulse__at{font-size:9px;color:#7d869b;font-variant-numeric:tabular-nums}
+.pulse__dot{width:6px;height:6px;border-radius:50%;flex:none;background:#9aa3b7}
+.pulse__dot--open{background:#7cc4ff}
+.pulse__dot--sys{background:#b98cff}
+.pulse__dot--media{background:#1ed760}
+.pulse__dot--move{background:#ffd166}
+
+/* przycisk „Pulse" w belce narzędzi */
+#pulseToggle .pulse-ico{
+  width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle, #a9d5ff, #7cc4ff);
+  box-shadow:0 0 10px rgba(124,196,255,.7);
+  animation:pulse-dot 2.6s ease-out infinite;
+}
+
+/* ============================================================
+   WSKAZÓWKA „przeciągnij mnie" — raz, po pierwszym odblokowaniu
+   ============================================================ */
+.device.cont-hint .app__icon{
+  animation:cont-hint 1.6s cubic-bezier(.34,1.42,.64,1) 2;
+}
+@keyframes cont-hint{
+  0%,100%{transform:none}
+  40%{transform:translateY(-6px) scale(1.06)}
+}
+
+/* ============================================================
+   BEZPIECZNIKI
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .cont-ghost,.cont-spark,.pulse,.pulse__row,.device.is-drop-target::after{
+    animation-duration:.001ms!important;
+    transition-duration:.001ms!important;
+  }
+}
+@media (max-width:780px){
+  .pulse{right:10px;bottom:10px;width:calc(100vw - 20px)}
+}
+
+/* ============================================================
+   „TA SAMA SESJA" — znacznik ciągłości w pasku stanu / zadan
+   Mały, spokojny element: mówi, że aplikacja jest otwarta
+   także na innym urządzeniu (jedna sesja, nie dwie kopie).
+   ============================================================ */
+.cont-shared{
+  display:inline-flex;align-items:center;gap:3px;
+  max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  padding:2px 6px;border-radius:999px;
+  font-size:8px;font-weight:600;letter-spacing:.02em;
+  color:#cfe4ff;background:rgba(124,196,255,.16);
+  box-shadow:0 0 0 .5px rgba(160,205,255,.35) inset;
+  animation:cont-shared-in 380ms cubic-bezier(.34,1.42,.64,1) both;
+}
+.cont-shared--win{
+  font-size:8.5px;color:#dbe9ff;background:rgba(124,196,255,.14);
+  max-width:150px;
+}
+@keyframes cont-shared-in{
+  from{opacity:0;transform:translateY(-4px) scale(.88)}
+  to{opacity:1;transform:none}
+}
