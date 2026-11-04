@@ -266,8 +266,7 @@
 
       const launcher = screen.querySelector(".a-launcher");
       const appsHost = screen.querySelector(".a-apps");
-      const panel = screen.querySelector(".a-panel");
-      const shade = screen.querySelector(".a-shade");
+      const shade = screen.querySelector(".island-shade");
 
       /* --- co jest teraz na wierzchu --- */
       const topApp = () => {
@@ -278,9 +277,17 @@
         const lock = screen.querySelector(".a-lock");
         return !!lock && !lock.classList.contains("is-unlocked");
       };
+      /* panel zastąpiony wyspą — zamykamy rozwijane skróty i zdejmujemy cień */
       const closePanel = () => {
-        if (panel) panel.classList.remove("is-open");
         if (shade) shade.classList.remove("is-open");
+        const menu = screen.querySelector(".island-menu");
+        const island = screen.querySelector(".island");
+        if (menu) { menu.classList.remove("is-open"); menu.setAttribute("aria-hidden", "true"); }
+        if (island) { island.classList.remove("is-open"); island.setAttribute("aria-expanded", "false"); }
+      };
+      const panelIsOpen = () => {
+        const menu = screen.querySelector(".island-menu");
+        return !!menu && menu.classList.contains("is-open");
       };
       const goHome = () => {
         closePanel();
@@ -299,7 +306,7 @@
       };
       const goBack = () => {
         if (api.isOpen()) { api.hide(); return; }
-        if (panel && panel.classList.contains("is-open")) { closePanel(); return; }
+        if (panelIsOpen()) { closePanel(); return; }
         const app = topApp();
         if (app) {
           const back = app.querySelector("[data-back]");

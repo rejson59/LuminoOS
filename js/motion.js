@@ -99,7 +99,7 @@
     muts.forEach(m => {
       m.addedNodes && m.addedNodes.forEach(node => {
         if (node.nodeType !== 1) return;
-        if (node.matches && (node.matches(".a-app, .a-panel, .a-drawer, .win-window, .start-menu") ||
+        if (node.matches && (node.matches(".a-app, .island-menu, .a-drawer, .win-window, .start-menu") ||
             node.querySelector && node.querySelector(".app, .qs, .sp-track"))) {
           popIn(node);
           if (node.matches(".a-app, .win-window")) {

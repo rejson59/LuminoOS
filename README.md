@@ -69,7 +69,7 @@ npm test
 ```
 index.html          – scena z trzema urządzeniami + sprite ikon SVG
 css/base.css        – strona, ramki urządzeń, wspólne kafelki ikon
-css/android.css     – Android: blokada, launcher, panel, aplikacje, Spotify
+css/android.css     – Android: blokada, launcher, wyspa (skróty), aplikacje, Spotify
 css/windows.css     – Windows: okna, pasek zadań, Start, aplikacje
 js/core.js          – dane przykładowe (utwory, aplikacje, powiadomienia) + wspólny odtwarzacz
 js/apps.js          – treść aplikacji (Android i Windows)
@@ -176,24 +176,30 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
 - **1:1** — urządzenie w rzeczywistych proporcjach (telefon 390×844,
   tablet 1024×768, laptop 1440×900); skala to 1, gdy mieści się w oknie,
   inaczej proporcjonalnie mniejsza. Aktualna skala jest pokazana w rogu.
-- **Pełny ekran** — makieta na całe okno (Fullscreen API, z trybem awaryjnym
-  „theater", gdy przeglądarka blokuje pełny ekran, np. w iframe).
+- **Pełny ekran** — **prawdziwy fullscreen przeglądarki** (`requestFullscreen`,
+  więc na laptopie znika pasek adresu i systemowe ramki), a makieta skaluje się
+  do całego okna. Gdy przeglądarka odmówi (np. podgląd w iframe), pojawia się
+  czytelny komunikat z prośbą o otwarcie podglądu w osobnej karcie — nie
+  udajemy już pełnego ekranu. Wyjście: **F**, **Esc** albo przycisk w rogu.
 
-### Górna belka telefonu/tabletu + panel
+### Górna belka telefonu/tabletu + wyspa (panel usunięty)
 - **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką
-  aparatu, zegarem i krótką datą; klik otwiera panel. Bez animowanej kropki
-  i bez `backdrop-filter` — czytelność daje ciemna mgła, zgodnie z zasadą
+  aparatu, zegarem i krótką datą. Bez animowanej kropki i bez
+  `backdrop-filter` — czytelność daje ciemna mgła, zgodnie z zasadą
   „blur tylko w ikonach aplikacji”.
+- **Klik w wyspę rozwija skróty** — wyspa jest teraz **jedynym centrum
+  sterowania**, panel powiadomień został usunięty w całości
+  (`.a-panel`, `.a-shade`, `.qs`, `.notif` w panelu). Rozwinięcie zawiera:
+  - dwa cienkie suwaki (jasność, głośność) — tylko ikona + pasek,
+  - **8 przełączników 4×2 jako same ikony** (Wi-Fi, Bluetooth, nie
+    przeszkadzać, oszczędzanie, latarka, auto-obrót, samolot, przesyłanie),
+    bez podpisów: włączony = wypełniony jasny kwadrat,
+  - pasek powiadomień jako **same ikony aplikacji z kropką** (treść w tooltipie).
+- Cała rozwijanka ma ~130 px wysokości i mieści się w 292 px szerokości
+  makiety telefonu; zamyka ją klik w tło, ponowny klik w wyspę, gest
+  „wstecz” (od lewej krawędzi) albo **Esc**.
 - **Prawa strona**: szukaj (szuflada z filtrowaniem) i status
-  (zasięg, Wi-Fi, bateria). Przycisk „centrum sterowania” usunięty —
-  panel otwiera wyspa, a krzyżyk w nagłówku panelu go zamyka.
-- **Panel** — zaprojektowany pod realne **292×600 px** makiety telefonu:
-  uchwyt, nagłówek („Centrum sterowania” + data + ✕), **przewijalna treść**
-  (`a-panel__body`: 2 kafle suwaków → 2×2 duże przełączniki → rząd
-  4 skrótów → powiadomienia) i **akcje przypięte na dole**
-  („Wyczyść wszystko”, „Zablokuj”). Treść ma ~318 px przy ~385 px
-  dostępnych, więc nic nie jest przycinane; przy mniejszych makietach
-  włącza się przewijanie.
+  (zasięg, Wi-Fi, bateria).
 
 ### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
 Zamiast systemowego ekranu „ostatnich zadań” telefon ma **wysuwany pasek w stylu
@@ -204,7 +210,7 @@ macOS** z ostatnio używanymi aplikacjami (`js/gestures.js` + `css/activity.css`
 | przesunięcie **w górę od dolnej krawędzi** | wysuwa się pasek ostatnich aplikacji (podąża za palcem) |
 | przesunięcie **w górę na pasku** | ekran główny |
 | przesunięcie **w dół** | schowanie paska |
-| przesunięcie **od lewej krawędzi** | wstecz (zamyka aplikację / panel) |
+| przesunięcie **od lewej krawędzi** | wstecz (zamyka aplikację / skróty wyspy) |
 | przesunięcie **od prawej krawędzi** | ekran główny |
 | kółko / przeciąganie / strzałki ‹ › | przewijanie paska w poziomie |
 | ✕ na karcie | zamknięcie aplikacji + **„Cofnij”** (4 s) |

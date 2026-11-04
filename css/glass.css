@@ -93,15 +93,6 @@
 }
 .widget:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
 
-/* panel powiadomień — szkło premium + sprężyste wejście */
-.a-panel{
-  background:rgba(28,30,44,.62);
-  box-shadow:0 30px 60px -22px rgba(0,0,0,.75), 0 0 0 .5px rgba(255,255,255,.18) inset;
-  transform:translateY(-102%) scale(.98);
-  transition:transform var(--t-slow) var(--ease-ios), border-radius var(--t-mid) var(--ease-soft);
-}
-.a-panel.is-open{transform:translateY(0) scale(1);border-radius:0 0 28px 28px}
-
 .qs{
   background:rgba(255,255,255,.10);
   box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset;

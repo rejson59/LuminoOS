@@ -36,7 +36,6 @@ html.lu-busy .qs{
 
 /* ---------- 3. tanie, płynne przewijanie ---------- */
 .launcher-pages,
-.panel-notifs,
 .start-scroll,
 .win-body,
 .side,
@@ -46,7 +45,7 @@ html.lu-busy .qs{
   scroll-behavior:smooth;
 }
 @media (prefers-reduced-motion:reduce){
-  .launcher-pages,.panel-notifs,.start-scroll,.win-body,.side,.list{scroll-behavior:auto}
+  .launcher-pages,.start-scroll,.win-body,.side,.list{scroll-behavior:auto}
 }
 
 /* ---------- 4. brak „przyklejania” i migotania przy przewijaniu ---------- */

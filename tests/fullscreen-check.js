@@ -30,19 +30,31 @@ w.addEventListener("load", () => setTimeout(() => {
   check("belka nie jest już wyśrodkowana (brak justyfikacji space-between na czas)",
     !bar.hasAttribute("data-action"));
 
-  /* --- panel --- */
-  const panel = phone.querySelector(".a-panel");
-  check("panel ma duże kafle suwaków", panel.querySelectorAll(".tile-slider").length === 2);
-  check("panel: uchwyt, nagłówek, przewijalna treść, akcje na dole",
-    !!panel.querySelector(".a-panel__grip") && !!panel.querySelector(".a-panel__head") &&
-    !!panel.querySelector(".a-panel__body") && !!panel.querySelector(".panel-actions"));
-  check("panel: treść przewijalna (nic nie jest przycinane)", !!panel.querySelector(".a-panel__body") &&
-    /a-panel__body[\s\S]*?overflow-y\s*:\s*auto/.test(
-      fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
-  check("panel: rząd okrągłych skrótów", panel.querySelectorAll(".qs-row .qs--round").length === 4);
-  check("panel: zamknięcie w nagłówku", !!panel.querySelector(".a-panel__head [data-action='close-panel']"));
-  check("panel ma siatkę 8 przełączników", panel.querySelectorAll(".qs").length === 8);
-  check("panel ma powiadomienia i akcje", panel.querySelectorAll(".notif").length >= 3 && !!panel.querySelector(".panel-actions"));
+  /* --- wyspa zamiast panelu --- */
+  const menu = phone.querySelector(".island-menu");
+  check("panel powiadomień usunięty (brak .a-panel i .a-shade)",
+    !phone.querySelector(".a-panel") && !phone.querySelector(".a-shade"));
+  check("wyspa ma rozwijane skróty", !!menu && !!phone.querySelector(".island-shade"));
+  check("skróty: 8 kafli + 2 suwaki + powiadomienia jako ikony",
+    menu.querySelectorAll(".island-tile").length === 8 &&
+    menu.querySelectorAll(".island-slider").length === 2 &&
+    menu.querySelectorAll(".island-notif").length >= 3);
+  check("skróty to same ikony — bez podpisów tekstowych",
+    [...menu.querySelectorAll(".island-tile")].every(t => !t.textContent.trim()) &&
+    [...menu.querySelectorAll(".island-tile")].every(t => t.querySelector("svg.ico")));
+  check("kafle to kwadraty z zaokrągleniem (nie koła)",
+    /island-tile\{[\s\S]*?border-radius:\s*12px/.test(fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
+
+  island.click();
+  check("klik w wyspę rozwija skróty", menu.classList.contains("is-open") &&
+    island.classList.contains("is-open") && island.getAttribute("aria-expanded") === "true");
+  const tile = menu.querySelector('.island-tile[data-qs="dnd"]');   /* domyślnie wyłączony */
+  tile.click();
+  check("kafel przełącza stan i aria-pressed", tile.classList.contains("on") && tile.getAttribute("aria-pressed") === "true");
+  tile.click();
+  check("kafel wyłącza się ponownym klikiem", !tile.classList.contains("on") && tile.getAttribute("aria-pressed") === "false");
+  phone.querySelector(".island-shade").click();
+  check("tło zamyka skróty", !menu.classList.contains("is-open") && menu.getAttribute("aria-hidden") === "true");
 
   /* --- 1:1 --- */
   const sizeBtn = document.getElementById("sizeToggle");
@@ -56,6 +68,8 @@ w.addEventListener("load", () => setTimeout(() => {
   /* --- pełny ekran (tryb awaryjny „theater” w jsdom) --- */
   fullBtn.click();
   check("pełny ekran włącza klasę na <html>", document.documentElement.classList.contains("is-fullscreen"));
+  check("bez Fullscreen API nie udajemy trybu natywnego (brak .is-native w jsdom)",
+    !document.documentElement.classList.contains("is-native"));
   check("pełny ekran ustawia aria-pressed", fullBtn.getAttribute("aria-pressed") === "true");
   fullBtn.click();
   check("pełny ekran wyłącza się", !document.documentElement.classList.contains("is-fullscreen"));

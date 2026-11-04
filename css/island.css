@@ -46,10 +46,9 @@
   color:rgba(255,255,255,.66);
 }
 
-/* wyspa „rozszerza się”, gdy panel jest otwarty */
-.a-panel.is-open ~ .a-launcher .island,
-.android:has(.a-panel.is-open) .island{
-  background:rgba(34,40,56,.82);
+/* wyspa „rozszerza się”, gdy skróty są rozwinięte */
+.island.is-open{
+  background:linear-gradient(180deg, rgba(34,40,56,.95), rgba(20,25,38,.96));
   transform:scale(1.04);
 }
 
@@ -83,121 +82,95 @@
 .android[data-android="tablet"] .island__time{font-size:12.5px}
 
 /* ============================================================
-   PANEL — dopasowany do realnego ekranu makiety (292×600 px)
-   • nagłówek + przewijalna treść + akcje przypięte na dole
-   • 2 duże kafle suwaków, 2×2 duże przełączniki, rząd okrągłych skrótów
+   WYSPA = JEDYNE CENTRUM STEROWANIA (panel usunięty)
+   • klik w wyspę rozwija pod nią kompaktowy panel ikon
+   • zero podpisów: tylko ikony, suwaki i kropki powiadomień
+   • mieści się w 292 px szerokości makiety telefonu
    ============================================================ */
-.a-panel{
-  padding:0;
-  gap:0;
-  display:flex;flex-direction:column;
-  max-height:78%;
-  border-radius:0 0 26px 26px;
-  background:linear-gradient(180deg, rgba(30,34,48,.97), rgba(17,20,30,.98));
-  box-shadow:0 26px 50px -16px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.10) inset;
-  overflow:hidden;
+.island-shade{
+  position:absolute;inset:0;z-index:8;
+  background:rgba(4,6,12,.28);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity 200ms ease, visibility 200ms ease;
 }
-.a-panel__grip{
-  width:34px;height:4px;border-radius:99px;
-  margin:6px auto 4px;flex:none;
-  background:rgba(255,255,255,.28);
-}
-.a-panel__head{
-  flex:none;
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  padding:2px 12px 8px;
-}
-.panel-greet{display:flex;flex-direction:column;gap:1px;min-width:0}
-.panel-greet b{font-size:11px;font-weight:600;color:#fff;letter-spacing:.01em}
-.panel-greet small{
-  font-size:8.5px;color:rgba(255,255,255,.5);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-/* przewijalna treść panelu — nic nie jest przycinane */
-.a-panel__body{
-  flex:1 1 auto;min-height:0;
-  overflow-y:auto;overscroll-behavior:contain;
-  padding:0 12px 10px;
-  display:flex;flex-direction:column;gap:8px;
-  scrollbar-width:none;
-}
-.a-panel__body::-webkit-scrollbar{width:0}
+.island-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}
 
-/* duże kafle suwaków */
-.slider-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.tile-slider{
-  display:flex;align-items:center;gap:6px;
-  height:36px;padding:0 9px;
-  border-radius:13px;
-  background:rgba(255,255,255,.10);
-  box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
-  cursor:pointer;
+.island-menu{
+  position:absolute;z-index:9;left:8px;right:8px;top:36px;
+  pointer-events:none;
 }
-.tile-slider__ico{display:grid;place-items:center;flex:none;opacity:.9}
-.tile-slider__ico .ico{width:12px;height:12px}
-.tile-slider__range{flex:1;min-width:0}
+.island-menu__panel{
+  display:flex;flex-direction:column;gap:7px;
+  padding:9px;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(26,30,42,.96), rgba(15,18,27,.97));
+  box-shadow:
+    0 0 0 .5px rgba(255,255,255,.12) inset,
+    0 18px 34px -14px rgba(0,0,0,.9);
+  transform:translateY(-8px) scale(.97);
+  transform-origin:12% 0;
+  opacity:0;
+  transition:transform 240ms cubic-bezier(.32,.72,0,1), opacity 180ms ease;
+}
+.island-menu.is-open{pointer-events:auto}
+.island-menu.is-open .island-menu__panel{transform:translateY(0) scale(1);opacity:1}
 
-/* 2×2 duże przełączniki */
-.qs-grid--big{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.a-panel .qs{
-  border-radius:14px;
-  transition:background-color 180ms ease, transform 180ms cubic-bezier(.32,.72,0,1);
-}
-.a-panel .qs:active{transform:scale(.97)}
-.a-panel .qs--big{
-  flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;
-  min-height:52px;padding:8px 9px;
+/* suwaki: pełna szerokość, cienkie, bez podpisów */
+.island-sliders{display:grid;gap:5px}
+.island-slider{
+  display:flex;align-items:center;gap:7px;
+  height:26px;padding:0 9px;border-radius:10px;
   background:rgba(255,255,255,.08);
 }
-.a-panel .qs--big .qs__ic{
-  width:22px;height:22px;border-radius:7px;
-  background:rgba(255,255,255,.14);
-}
-.a-panel .qs--big .qs__ic .ico{width:13px;height:13px}
-.a-panel .qs--big .qs__txt b{font-size:9.5px;display:block;line-height:1.15}
-.a-panel .qs--big .qs__txt small{font-size:8px;color:rgba(255,255,255,.55)}
-.a-panel .qs.on{
-  background:linear-gradient(155deg, rgba(126,196,255,.42), rgba(64,132,255,.34));
-  box-shadow:0 0 0 .5px rgba(170,215,255,.5) inset;
-}
-.a-panel .qs.on .qs__ic{color:#fff}
+.island-slider__ico{display:grid;place-items:center;flex:none;color:rgba(255,255,255,.85)}
+.island-slider__ico .ico{width:11px;height:11px}
+.island-slider__range{flex:1;min-width:0;height:18px}
+.island-slider__range::-webkit-slider-thumb{width:13px;height:13px}
+.island-slider__range::-moz-range-thumb{width:13px;height:13px}
 
-/* rząd okrągłych skrótów */
-.qs-row{display:flex;gap:6px}
-.qs-row .qs--round{
-  flex:1;height:34px;padding:0;justify-content:center;
-  border-radius:12px;background:rgba(255,255,255,.08);
+/* 8 przełączników 4×2 — same ikony, kwadraty z zaokrągleniem */
+.island-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.island-tile{
+  aspect-ratio:1/1;
+  display:grid;place-items:center;
+  border:0;padding:0;cursor:pointer;
+  border-radius:12px;
+  color:rgba(255,255,255,.82);
+  background:rgba(255,255,255,.09);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.08) inset;
+  transition:background-color 160ms ease, color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
 }
-.qs-row .qs--round .ico{width:14px;height:14px}
-
-/* powiadomienia w panelu */
-.a-panel .panel-notifs{gap:6px}
-.a-panel .notif{border-radius:13px;padding:7px 9px;gap:7px}
-.a-panel .notif b{font-size:9px}
-.a-panel .notif p{font-size:8px;line-height:1.3}
-.a-panel .notif small{font-size:7.5px}
-
-/* akcje przypięte na dole */
-.a-panel .panel-actions{
-  flex:none;
-  display:flex;gap:6px;
-  padding:8px 12px 10px;
-  border-top:1px solid rgba(255,255,255,.08);
+.island-tile .ico{width:16px;height:16px}
+.island-tile:hover{background:rgba(255,255,255,.16)}
+.island-tile:active{transform:scale(.93)}
+.island-tile.on{
+  color:#08121f;
+  background:linear-gradient(155deg,#cfe6ff,#9ccdff);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.5) inset;
 }
-.a-panel .panel-actions button{
-  flex:1;padding:8px 0;border-radius:11px;border:0;cursor:pointer;
-  font:inherit;font-size:9.5px;color:rgba(255,255,255,.9);
-  background:rgba(255,255,255,.10);
-  transition:background-color 160ms ease;
-}
-.a-panel .panel-actions button:hover{background:rgba(255,255,255,.2)}
 
-/* tablet: więcej miejsca, większe kafle */
-.android[data-android="tablet"] .a-panel{max-height:70%}
-.android[data-android="tablet"] .qs-grid{grid-template-columns:repeat(4,1fr)}
-.android[data-android="tablet"] .qs-grid--big{grid-template-columns:repeat(4,1fr)}
-.android[data-android="tablet"] .a-panel .qs--big{min-height:58px}
-.android[data-android="tablet"] .panel-greet b{font-size:12px}
+/* powiadomienia: tylko ikona aplikacji + kropka (mniej tekstu) */
+.island-notifs{display:flex;gap:6px;align-items:center;padding:1px 2px 0}
+.island-notif{
+  position:relative;border:0;padding:0;cursor:pointer;background:none;
+  width:22px;height:22px;flex:none;border-radius:7px;overflow:visible;
+  transition:transform 160ms cubic-bezier(.32,.72,0,1);
+}
+.island-notif:hover{transform:translateY(-1px)}
+.island-notif .notif__ico{--s:22px;border-radius:7px;display:block}
+.island-notif__dot{
+  position:absolute;right:-2px;top:-2px;width:6px;height:6px;border-radius:50%;
+  background:#7fd0ff;box-shadow:0 0 0 1.5px rgba(12,15,23,.95);
+}
+
+/* tablet: więcej powietrza i większe kafle */
+.android[data-android="tablet"] .island-menu{left:12px;right:12px;top:38px}
+.android[data-android="tablet"] .island-menu__panel{padding:11px;border-radius:20px;gap:8px}
+.android[data-android="tablet"] .island-tile{border-radius:14px}
+.android[data-android="tablet"] .island-tile .ico{width:20px;height:20px}
+.android[data-android="tablet"] .island-slider{height:30px}
+.android[data-android="tablet"] .island-notif,
+.android[data-android="tablet"] .island-notif .notif__ico{--s:26px;width:26px;height:26px}
 
 /* ---------- pole szukania w szufladzie ---------- */
 .drawer-search{cursor:text}
@@ -211,7 +184,9 @@
 .drawer-grid .app.is-hidden{display:none}
 
 /* ============================================================
-   Tryb 1:1 i pełny ekran
+   Tryb 1:1 i PRAWDZIWY pełny ekran
+   • html.is-fullscreen = makieta na całe okno
+   • html.is-native      = dodatkowo przeglądarka w trybie fullscreen API
    ============================================================ */
 .viewbar__tools{display:flex;gap:6px;align-items:center}
 .toolbtn{
@@ -231,48 +206,82 @@
   border-color:transparent;
 }
 
-/* pełny ekran: chowamy wszystko poza wybranym urządzeniem */
-html.is-fullscreen,html.is-fullscreen body{overflow:hidden}
+/* ---------- pełny ekran: pełne okno, zero układu strony ---------- */
+html.is-fullscreen,html.is-fullscreen body{
+  overflow:hidden!important;
+  height:100%!important;
+  margin:0!important;padding:0!important;
+  background:#05070c;
+}
 html.is-fullscreen .site-header,
 html.is-fullscreen .hero,
 html.is-fullscreen .footer,
+html.is-fullscreen .site-footer,
 html.is-fullscreen .viewbar__hint,
 html.is-fullscreen .device__caption,
-html.is-fullscreen .stage > .device:not(.is-shown){display:none}
+html.is-fullscreen .stage > .device:not(.is-shown){display:none!important}
+
+/* stage zajmuje dokładnie obszar okna (także w prawdziwym fullscreenie) */
 html.is-fullscreen .stage{
-  position:fixed;inset:0;z-index:900;
-  padding:0;margin:0;
-  display:grid;place-items:center;
-  background:radial-gradient(120% 120% at 50% 0%, #10131c 0%, #05070c 70%);
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;height:100vh!important;
+  margin:0!important;padding:0!important;
+  display:grid!important;
+  place-items:center;
+  z-index:900;
+  background:radial-gradient(120% 120% at 50% 0%, #10131c 0%, #05070c 72%);
 }
+html.is-native .stage{background:#000}
 html.is-fullscreen .stage > .device{
   display:flex!important;
+  margin:0!important;
+  transform:scale(var(--zoom,1));
+  transform-origin:center center;
+  transition:transform 320ms cubic-bezier(.32,.72,0,1);
+}
+
+/* pasek trybów w pełnym ekranie — dyskretny overlay, znika po chwili */
+html.is-fullscreen .viewbar{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+  z-index:901;padding:5px;
+  border-radius:999px;
+  background:rgba(10,13,20,.72);
+  border:1px solid rgba(255,255,255,.12);
+  opacity:.28;
+  transition:opacity 220ms ease;
   margin:0;
 }
-html.is-fullscreen .viewbar{
-  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);
-  z-index:901;padding:6px;border-radius:999px;
-  background:rgba(14,18,28,.72);
-  -webkit-backdrop-filter:blur(14px);
-          backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.14);
-  opacity:.55;
-  transition:opacity 220ms ease;
-}
-html.is-fullscreen .viewbar:hover{opacity:1}
-/* w pełnym ekranie skala może być mniejsza — liczy ją JS */
-html.is-fullscreen .stage > .device{transition:transform 320ms cubic-bezier(.32,.72,0,1)}
+html.is-fullscreen .viewbar:hover,html.is-fullscreen .viewbar:focus-within{opacity:1}
+html.is-fullscreen .viewbar__hint{display:none}
+html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
 
-/* wskaźnik rzeczywistego rozmiaru (1:1) */
-.device[data-real-size]:not([data-real-size=""]) .frame::before,
-.device[data-real-size]:not([data-real-size=""]) .lid::before{
-  content:attr(data-real-size-label);
-  position:absolute;left:10px;top:-22px;
-  font-size:9.5px;letter-spacing:.06em;color:rgba(255,255,255,.55);
-}
+/* wskaźnik skali (prawy dolny róg) */
 .stage[data-scale]:not([data-scale=""])::after{
   content:"skala " attr(data-scale);
   position:fixed;right:14px;bottom:12px;z-index:902;
   font:600 10px/1 ui-monospace,monospace;
-  color:rgba(255,255,255,.55);
+  color:rgba(255,255,255,.5);
+  pointer-events:none;
 }
+.device[data-real-size]:not([data-real-size=""]) .frame::before,
+.device[data-real-size]:not([data-real-size=""]) .lid::before{
+  content:attr(data-real-size-label);
+  position:absolute;left:10px;top:-22px;
+  font-size:9.5px;letter-spacing:.06em;color:rgba(255,255,255,.5);
+}
+
+/* komunikat, gdy przeglądarka odmówi prawdziwego pełnego ekranu */
+.fs-hint{
+  position:fixed;left:50%;bottom:20px;transform:translate(-50%,12px);
+  z-index:9998;max-width:min(420px,86vw);
+  padding:10px 14px;border-radius:12px;
+  font:500 11.5px/1.45 ui-sans-serif,system-ui,sans-serif;
+  color:#e8eefb;
+  background:rgba(20,24,36,.94);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 16px 34px -16px rgba(0,0,0,.9);
+  opacity:0;pointer-events:none;
+  transition:opacity 200ms ease, transform 240ms cubic-bezier(.32,.72,0,1);
+}
+.fs-hint.is-visible{opacity:1;transform:translate(-50%,0)}

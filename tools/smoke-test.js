@@ -52,19 +52,25 @@ dom.window.addEventListener("load", async () => {
     assert(!phone.lumino.isLocked());
   });
 
-  console.log("\n— Android: panel powiadomień —");
-  check("pasek stanu otwiera panel", () => {
-    phone.querySelector(".statusbar").dispatchEvent(new dom.window.Event("click", { bubbles: true }));
-    assert(phone.querySelector(".a-panel").classList.contains("is-open"));
+  console.log("\n— Android: wyspa ze skrótami (panel usunięty) —");
+  check("nie ma już panelu powiadomień ani cienia panelu", () => {
+    assert(!phone.querySelector(".a-panel"));
+    assert(!phone.querySelector(".a-shade"));
   });
-  check("szybkie ustawienia się przełączają", () => {
-    const qs = phone.querySelector('.qs[data-qs="saver"]');
-    qs.click();
-    assert(qs.classList.contains("on"));
+  check("klik w wyspę rozwija skróty", () => {
+    phone.querySelector(".island").click();
+    assert(phone.querySelector(".island-menu").classList.contains("is-open"));
   });
-  check("panel zamyka się", () => {
-    phone.querySelector('.a-panel [data-action="close-panel"]').click();
-    assert(!phone.querySelector(".a-panel").classList.contains("is-open"));
+  check("skróty przełączają się (ikona bez podpisu)", () => {
+    const tile = phone.querySelector('.island-tile[data-qs="saver"]');
+    tile.click();
+    assert(tile.classList.contains("on"));
+    assert(tile.getAttribute("aria-pressed") === "true");
+    assert(!tile.textContent.trim(), "kafel nie ma tekstu — sama ikona");
+  });
+  check("skróty zamykają się klikiem w tło", () => {
+    phone.querySelector(".island-shade").click();
+    assert(!phone.querySelector(".island-menu").classList.contains("is-open"));
   });
 
   console.log("\n— Android: szuflada —");
@@ -245,8 +251,11 @@ dom.window.addEventListener("load", async () => {
     assert(phone.querySelector(".glance"));
     assert(phone.querySelector(".searchbar"));
   });
-  check("panel ma kafelki z opisem (Internet/Bluetooth)", () => {
-    assert(phone.querySelector(".qs__txt b"));
+  check("skróty w wyspie są ikonami bez tekstu (prostota)", () => {
+    const tiles = [...phone.querySelectorAll(".island-tile")];
+    assert(tiles.length === 8);
+    assert(tiles.every(t => !t.textContent.trim()));
+    assert(tiles.every(t => t.querySelector("svg.ico")));
   });
   check("Windows: menu Start ma 6 kolumn i 18 aplikacji", () => {
     assert(win.querySelectorAll(".start-app").length === 18);

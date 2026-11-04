@@ -162,70 +162,40 @@
         </div>
       </div>
 
-      <!-- ===== panel powiadomień ===== -->
-      <div class="a-shade"></div>
-      <div class="a-panel">
-        <div class="a-panel__grip" aria-hidden="true"></div>
-        <div class="a-panel__head">
-          <span class="panel-greet">
-            <b>Centrum sterowania</b>
-            <small class="js-date">poniedziałek, 4 listopada</small>
-          </span>
-          <button class="iconbtn" data-action="close-panel" aria-label="Zamknij" style="width:22px;height:22px;background:rgba(255,255,255,.12)">${icon("i-close")}</button>
-        </div>
-
-        <div class="a-panel__body">
-          <div class="slider-tiles">
-            <label class="tile-slider">
-              <span class="tile-slider__ico">${icon("i-sun")}</span>
-              <input class="slider tile-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
+      <!-- WYSPA: wszystkie skróty (panel usunięty) -->
+      <div class="island-menu" role="dialog" aria-label="Skróty" aria-hidden="true">
+        <div class="island-menu__panel">
+          <div class="island-sliders">
+            <label class="island-slider" title="Jasność">
+              <span class="island-slider__ico">${icon("i-sun")}</span>
+              <input class="slider island-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
             </label>
-            <label class="tile-slider">
-              <span class="tile-slider__ico">${icon("i-volume")}</span>
-              <input class="slider tile-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
+            <label class="island-slider" title="Głośność">
+              <span class="island-slider__ico">${icon("i-volume")}</span>
+              <input class="slider island-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
             </label>
           </div>
-
-          <div class="qs-grid qs-grid--big">
-            <button class="qs qs--big on" data-qs="wifi">
-              <span class="qs__ic">${icon("i-wifi")}</span>
-              <span class="qs__txt"><b>Internet</b><small>Lumino_5G</small></span>
-            </button>
-            <button class="qs qs--big on" data-qs="bt">
-              <span class="qs__ic">${icon("i-bluetooth")}</span>
-              <span class="qs__txt"><b>Bluetooth</b><small>Słuchawki</small></span>
-            </button>
-            <button class="qs qs--big" data-qs="dnd">
-              <span class="qs__ic">${icon("i-bell-off")}</span>
-              <span class="qs__txt"><b>Nie przeszkadzać</b><small>Wyłączone</small></span>
-            </button>
-            <button class="qs qs--big" data-qs="saver">
-              <span class="qs__ic">${icon("i-saver")}</span>
-              <span class="qs__txt"><b>Oszczędzanie</b><small>Wyłączone</small></span>
-            </button>
+          <div class="island-grid">
+            <button class="island-tile on" data-qs="wifi" aria-label="Internet" aria-pressed="true">${icon("i-wifi")}</button>
+            <button class="island-tile on" data-qs="bt" aria-label="Bluetooth" aria-pressed="true">${icon("i-bluetooth")}</button>
+            <button class="island-tile" data-qs="dnd" aria-label="Nie przeszkadzać">${icon("i-bell-off")}</button>
+            <button class="island-tile" data-qs="saver" aria-label="Oszczędzanie baterii">${icon("i-saver")}</button>
+            <button class="island-tile" data-qs="flash" aria-label="Latarka">${icon("i-flash")}</button>
+            <button class="island-tile" data-qs="rotate" aria-label="Auto-obrót">${icon("i-rotate")}</button>
+            <button class="island-tile" data-qs="air" aria-label="Tryb samolotowy">${icon("i-airplane")}</button>
+            <button class="island-tile" data-qs="cast" aria-label="Przesyłanie obrazu">${icon("i-cast")}</button>
           </div>
-
-          <div class="qs-row">
-            <button class="qs qs--round" data-qs="flash" title="Latarka">${icon("i-flash")}</button>
-            <button class="qs qs--round" data-qs="rotate" title="Auto-obrót">${icon("i-rotate")}</button>
-            <button class="qs qs--round" data-qs="air" title="Tryb samolotowy">${icon("i-airplane")}</button>
-            <button class="qs qs--round" data-qs="cast" title="Przesyłanie">${icon("i-cast")}</button>
-          </div>
-
-          <div class="panel-notifs">
+          <div class="island-notifs">
             ${notifications.map(n => {
               const a = androidApps.find(x => x.id === n.app);
-              return `<div class="notif">${iconImg(a.id, "notif__ico")}
-                <div><b>${n.title}</b><p>${n.text}</p></div><small>${n.time}</small></div>`;
+              return `<button class="island-notif" title="${n.title} — ${n.text}">
+                ${iconImg(a.id, "notif__ico")}<span class="island-notif__dot"></span></button>`;
             }).join("")}
           </div>
         </div>
-
-        <div class="panel-actions">
-          <button data-action="close-panel">Wyczyść wszystko</button>
-          <button data-action="lock">Zablokuj</button>
-        </div>
       </div>
+      <div class="island-shade"></div>
+
 
       <!-- ===== aplikacje ===== -->
       <div class="a-apps"></div>
@@ -234,8 +204,9 @@
 
     /* ---------------- referencje ---------------- */
     const lock = $(".a-lock", root);
-    const shade = $(".a-shade", root);
-    const panel = $(".a-panel", root);
+    const islandMenu = $(".island-menu", root);
+    const islandShade = $(".island-shade", root);
+    const islandBtn = $(".island", root);
     const drawer = $(".a-drawer", root);
     const appsHost = $(".a-apps", root);
     const launcher = $(".a-launcher", root);
@@ -263,12 +234,28 @@
       dragStartY = null;
     });
 
-    /* ---------------- panel powiadomień ---------------- */
-    function openPanel() { panel.classList.add("is-open"); shade.classList.add("is-open"); }
-    function closePanel() { panel.classList.remove("is-open"); shade.classList.remove("is-open"); }
+    /* ---------------- wyspa: rozwijane skróty (panel usunięty) ----------------
+       Ikony bez tekstu — pojedyncze przełączniki i suwaki, wszystko w kółku
+       wokół wyspy. Zamyka się klikiem w tło, ponownym klikiem w wyspę,
+       gestem „wstecz” albo Escape. */
+    function openPanel() {
+      islandMenu.classList.add("is-open");
+      islandMenu.setAttribute("aria-hidden", "false");
+      islandShade.classList.add("is-open");
+      islandBtn.classList.add("is-open");
+      islandBtn.setAttribute("aria-expanded", "true");
+    }
+    function closePanel() {
+      islandMenu.classList.remove("is-open");
+      islandMenu.setAttribute("aria-hidden", "true");
+      islandShade.classList.remove("is-open");
+      islandBtn.classList.remove("is-open");
+      islandBtn.setAttribute("aria-expanded", "false");
+    }
+    const panelOpen = () => islandMenu.classList.contains("is-open");
 
-    /* belka: wyspa i przycisk sterowania otwierają panel,
-       lupa otwiera szukanie aplikacji (szuflada z podświetlonym polem) */
+    /* belka: wyspa rozwija skróty, lupa otwiera szukanie aplikacji
+       (szuflada z podświetlonym polem) */
     $(".statusbar", root).addEventListener("click", e => {
       if (e.target.closest('[data-action="search"]')) {
         e.stopPropagation();
@@ -277,12 +264,21 @@
         if (input) setTimeout(() => input.focus(), 180);
         return;
       }
-      panel.classList.contains("is-open") ? closePanel() : openPanel();
+      panelOpen() ? closePanel() : openPanel();
     });
-    shade.addEventListener("click", closePanel);
+    islandShade.addEventListener("click", closePanel);
     $$("[data-action='close-panel']", root).forEach(b => b.addEventListener("click", closePanel));
 
-    $$(".qs", root).forEach(b => b.addEventListener("click", () => b.classList.toggle("on")));
+    /* przełączniki: ikona wypełnia się na włączonym, bez podpisów */
+    $$(".island-tile", root).forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      const on = b.classList.toggle("on");
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    }));
+    /* Escape / klawisz zamykają wyspę także w podglądzie na desktopie */
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && panelOpen()) closePanel();
+    });
     $$(".slider", root).forEach(s => {
       const update = () => s.style.setProperty("--v", s.value + "%");
       s.addEventListener("input", update); update();
@@ -465,6 +461,7 @@
       openApp,
       closeAllApps,
       closePanel,
+      isPanelOpen: panelOpen,
       isLocked: () => !lock.classList.contains("is-unlocked")
     };
   }

@@ -68,7 +68,7 @@
 
   /* ---------------- inercyjne przewijanie (kółko myszy) ---------------- */
   /* dodaje „ciężar” i wygładzenie do przewijania list, jak w macOS */
-  const SCROLL_SEL = ".launcher-pages,.panel-notifs,.start-scroll,.win-body,.side,.list";
+  const SCROLL_SEL = ".launcher-pages,.start-scroll,.win-body,.side,.list";
   function smoothScroll(el) {
     if (el.dataset.luSmooth) return;
     el.dataset.luSmooth = "1";

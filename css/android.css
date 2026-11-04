@@ -37,10 +37,7 @@
 .a-layer{position:absolute;inset:0;display:flex;flex-direction:column}
 .a-launcher{z-index:1}
 .a-lock{z-index:8}
-.a-panel{z-index:10}
-.a-shade{z-index:9;background:rgba(0,0,0,.42);
-  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s, visibility .2s}
-.a-shade.is-open{opacity:1;visibility:visible;pointer-events:auto}
+/* panel usunięty — skróty rozwija wyspa (.island-menu w css/island.css) */
 
 /* ---------------- pasek stanu ---------------- */
 .statusbar{
@@ -206,44 +203,7 @@
 .widget--player .wp-btn{margin-left:auto;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
   background:#1ed760;color:#04150a;border:0;cursor:pointer;font-size:13px}
 
-/* ================= PANEL POWIADOMIEŃ ================= */
-.a-panel{
-  top:0;height:auto;max-height:88%;
-  background:rgba(22,25,38,.92);
-  
-  border-radius:0 0 24px 24px;
-  box-shadow:0 22px 44px -12px rgba(0,0,0,.7);
-  transform:translateY(-102%);
-  transition:transform .3s cubic-bezier(.2,.8,.2,1);
-  padding:8px 12px 12px;overflow:hidden;
-  display:flex;flex-direction:column;gap:10px;
-}
-.a-panel.is-open{transform:translateY(0)}
-.a-panel__top{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.75)}
-.a-panel__top .ico{width:12px;height:12px}
-.qs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
-.android[data-android="tablet"] .qs-grid{grid-template-columns:repeat(4,1fr)}
-.qs{
-  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:16px;
-  background:rgba(255,255,255,.10);border:0;color:#fff;font-family:inherit;font-size:10px;
-  cursor:pointer;text-align:left;transition:background .16s;
-  box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
-}
-.qs .ico{width:14px;height:14px;flex:none}
-.qs.on{background:#a8c7fa;color:#08142c}
-.qs.on .ico{color:#08142c}
-.qs span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.slider-row{display:flex;align-items:center;gap:8px;padding:2px 4px}
-.slider-row .ico{width:13px;height:13px;opacity:.8}
-.slider{
-  -webkit-appearance:none;appearance:none;height:22px;flex:1;border-radius:99px;
-  background:rgba(255,255,255,.16);outline:none;cursor:pointer;
-}
-.slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.slider::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:#fff}
-
-.panel-notifs{display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:0}
+/* ================= POWIADOMIENIA (wyspa + blokada) ================= */
 .notif{
   display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:16px;
   background:rgba(255,255,255,.08);cursor:pointer;
@@ -254,13 +214,6 @@
 .notif b{display:block;font-size:9.5px;font-weight:600}
 .notif p{margin:1px 0 0;font-size:9px;color:rgba(255,255,255,.72);line-height:1.35}
 .notif small{font-size:8px;color:rgba(255,255,255,.45);flex:none}
-.panel-actions{display:flex;justify-content:space-between;gap:8px;padding-top:2px}
-.panel-actions button{
-  flex:1;padding:7px;border-radius:12px;border:0;background:rgba(255,255,255,.10);
-  color:#fff;font-family:inherit;font-size:9.5px;cursor:pointer;
-}
-.panel-actions button:hover{background:rgba(255,255,255,.16)}
-.a-panel__handle{width:34px;height:3.5px;border-radius:99px;background:rgba(255,255,255,.5);margin:0 auto 2px}
 
 /* ================= SZUFLADA APLIKACJI ================= */
 .a-drawer{

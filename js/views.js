@@ -79,10 +79,12 @@
       const base = frame.getBoundingClientRect();
       const scale = parseFloat(el.style.getPropertyValue("--zoom")) || 1;
       const w = base.width / scale, h = base.height / scale;
-      /* dostępne miejsce: całe okno minus marginesy (pełny ekran = więcej) */
-      const pad = fullscreen ? 24 : 90;
-      const availW = Math.max(240, window.innerWidth - pad);
-      const availH = Math.max(300, window.innerHeight - pad * 2);
+      /* dostępne miejsce: całe okno minus marginesy (pełny ekran = całe okno) */
+      const native = document.documentElement.classList.contains("is-native");
+      const padX = fullscreen ? (native ? 0 : 32) : 72;
+      const padY = fullscreen ? (native ? 0 : 56) : 128;
+      const availW = Math.max(240, window.innerWidth - padX);
+      const availH = Math.max(300, window.innerHeight - padY);
       const k = Math.min(1, availW / w, availH / h);   /* 1:1 tylko gdy się mieści */
       el.style.setProperty("--zoom", String(k));
       el.dataset.realSize = REAL[v] ? `${REAL[v].w}×${REAL[v].h}` : "";
@@ -92,15 +94,20 @@
       return;
     }
 
-    // dostępne miejsce
-    const availW = stage.clientWidth - 40;
-    const availH = stage.clientHeight - 34;
+    // dostępne miejsce (pełny ekran: mierzymy okno, nie przewijany stage)
+    const availW = (fullscreen ? window.innerWidth : stage.clientWidth) - (fullscreen ? 24 : 40);
+    const availH = (fullscreen ? window.innerHeight : stage.clientHeight) - (fullscreen ? 24 : 34);
     const base = BASE[v] || [400, 400];
-    const zoom = Math.min(
+    let zoom = Math.min(
       availW / (base[0] + 60),
       availH / (base[1] + 52),
       MAX_ZOOM[v] || 1.5
     );
+    /* w pełnym ekranie makieta musi zmieścić się w oknie bez przewijania */
+    if (fullscreen) {
+      const w = (base[0] + 60) * zoom, h = (base[1] + 52) * zoom;
+      if (w > availW || h > availH) zoom = Math.min(availW / (base[0] + 60), availH / (base[1] + 52));
+    }
     el.style.setProperty("--zoom", String(Math.max(0.55, zoom)));
     stage.dataset.scale = "";
   }
@@ -112,9 +119,11 @@
   let fullscreen = false;
   const fullBtn = document.getElementById("fullToggle");
 
-  function setFullscreen(on) {
+  function setFullscreen(on, native) {
     fullscreen = on;
-    document.documentElement.classList.toggle("is-fullscreen", on);
+    const html = document.documentElement;
+    html.classList.toggle("is-fullscreen", on);
+    html.classList.toggle("is-native", on && !!native);
     if (fullBtn) {
       fullBtn.classList.toggle("is-active", on);
       fullBtn.setAttribute("aria-pressed", String(on));
@@ -129,13 +138,16 @@
     if (!fullscreen) {
       const el = document.documentElement;
       const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      let native = false;
       if (req) {
         try {
           const p = req.call(el);
+          native = !!p;
           if (p && p.catch) p.catch(() => {});
         } catch (e) { /* np. iframe bez allowfullscreen — tryb theater */ }
       }
-      setFullscreen(true);
+      setFullscreen(true, native);
+      if (!native) showFullscreenHint();
     } else {
       const exit = document.exitFullscreen || document.webkitExitFullscreen;
       if (exit && (document.fullscreenElement || document.webkitFullscreenElement)) {
@@ -145,9 +157,32 @@
     }
   }
 
-  document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement && fullscreen) setFullscreen(false);
-  });
+  /* Jeśli przeglądarka odmówi prawdziwego pełnego ekranu (np. podgląd w iframe),
+     mówimy o tym wprost zamiast udawać, że to pełny ekran. */
+  let hintEl = null, hintTimer = null;
+  function showFullscreenHint() {
+    if (!hintEl) {
+      hintEl = document.createElement("div");
+      hintEl.className = "fs-hint";
+      hintEl.innerHTML = "Przeglądarka zablokowała pełny ekran. Otwórz podgląd w osobnej karcie i naciśnij <b>F</b>.";
+      document.body.appendChild(hintEl);
+    }
+    hintEl.classList.add("is-visible");
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => hintEl.classList.remove("is-visible"), 5200);
+  }
+
+  function syncFullscreen() {
+    const native = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    if (native && !fullscreen) setFullscreen(true, true);
+    if (!native && fullscreen && document.documentElement.classList.contains("is-native")) {
+      setFullscreen(false, false);
+    }
+    requestAnimationFrame(fit);
+    setTimeout(fit, 260);
+  }
+  document.addEventListener("fullscreenchange", syncFullscreen);
+  document.addEventListener("webkitfullscreenchange", syncFullscreen);
 
   if (sizeBtn) sizeBtn.addEventListener("click", () => {
     sizeReal = !sizeReal;
@@ -161,11 +196,16 @@
   });
   if (fullBtn) fullBtn.addEventListener("click", toggleFullscreen);
 
+  /* wyjście z pełnego ekranu skrótem z podglądu (przycisk w rogu) */
+  window.Lumino = window.Lumino || {};
+  window.Lumino.isFullscreen = () => fullscreen;
+  window.Lumino.toggleFullscreen = toggleFullscreen;
+
   document.addEventListener("keydown", e => {
     if (e.target.matches("input, textarea")) return;
-    if (e.key === "f" || e.key === "F") toggleFullscreen();
-    if (e.key === "s" || e.key === "S" && sizeBtn) sizeBtn.click();
-    if (e.key === "Escape" && fullscreen) setFullscreen(false);
+    if (e.key === "f" || e.key === "F") { toggleFullscreen(); return; }
+    if (e.key === "s" || e.key === "S") { if (sizeBtn) sizeBtn.click(); return; }
+    if (e.key === "Escape" && fullscreen) { toggleFullscreen(); return; }
   });
 
   function setView(v) {
