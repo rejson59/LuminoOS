@@ -75,6 +75,21 @@ w.addEventListener("load", () => setTimeout(() => {
   check("w pełnym ekranie jest przycisk wyjścia",
     !!document.querySelector(".fs-exit") &&
     fs_css.includes("html.is-fullscreen .fs-exit{display:grid}"));
+  check("w pełnym ekranie makieta nie jest skalowana transformem (to ucinało treść)",
+    fs_css.includes("transform:none!important") &&
+    !/is-fullscreen[^{}]*\.device\.is-shown[\s\S]{0,200}transform:scale\(/.test(fs_css));
+  check("w pełnym ekranie rozmiar makiety jest liczony w px okna",
+    typeof w.Lumino !== "undefined");
+  check("wyjście z pełnego ekranu przywraca rozmiary makiety", (() => {
+    const html = document.documentElement;
+    const before = html.style.getPropertyValue("--phone-w");
+    fullBtn.click();          /* wyłącz */
+    const after = html.style.getPropertyValue("--phone-w");
+    fullBtn.click();          /* włącz z powrotem */
+    return before !== "" && after === "";
+  })());
+  check("laptop w pełnym ekranie mieści się w oknie (brak przycięcia)",
+    fs_css.includes("html.is-fullscreen .device--laptop .lid") && fs_css.includes("max-width:100vw"));
   check("awaryjna reguła CSS pokazuje telefon, gdy brak .is-shown",
     fs_css.includes('html.is-fullscreen:not(:has(.device.is-shown))'));
   check("bez Fullscreen API nie udajemy trybu natywnego (brak .is-native w jsdom)",

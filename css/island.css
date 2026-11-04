@@ -288,6 +288,13 @@ html.is-fullscreen .device__caption,
 html.is-fullscreen .stage > .device:not(.is-shown){display:none!important}
 
 /* stage zajmuje dokładnie obszar okna (także w prawdziwym fullscreenie) */
+html.is-fullscreen .device--phone .frame,
+html.is-fullscreen .device--tablet .frame{
+  max-height:100vh;
+}
+html.is-fullscreen .device--laptop .lid{
+  max-width:100vw;
+}
 html.is-fullscreen .stage{
   position:fixed!important;
   inset:0!important;
@@ -298,13 +305,15 @@ html.is-fullscreen .stage{
   z-index:900;
   background:radial-gradient(130% 120% at 50% 0%, #161c2a 0%, #0b0f18 70%);
 }
-/* wybrane urządzenie zawsze widoczne — to jego brak dawał czarny ekran */
-html.is-fullscreen .stage > .device.is-shown{
+/* wybrane urządzenie zawsze widoczne — bez transformu!
+   (transform na .device ucinał treść i skalował ją poza ekran) */
+html.is-fullscreen .stage > .device.is-shown,
+html.is-fullscreen .stage > .device{
   display:flex!important;
   margin:0!important;
-  transform:scale(var(--zoom,1));
-  transform-origin:center center;
-  transition:transform 320ms cubic-bezier(.32,.72,0,1);
+  transform:none!important;
+  max-width:100vw!important;
+  max-height:100vh!important;
 }
 /* awaryjnie: jeśli JS nie zdążył nadać .is-shown, pokazujemy urządzenie
    z aktualnego widoku (nigdy „czarny ekran”) */

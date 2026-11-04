@@ -185,6 +185,15 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   W pełnym ekranie widoczne jest **dokładnie jedno urządzenie** (`.is-shown`);
   gdyby JS nie zdążył, reguła awaryjna i tak pokazuje telefon — czarny ekran
   nie jest już możliwy.
+  Makieta jest **rozciągana do okna bez transformu**: `fitFullscreen()` liczy
+  realne piksele i nadpisuje `--phone-w/-h`, `--tablet-w/-h`, `--win-w/-h`,
+  dzięki czemu:
+  - **laptop** zajmuje niemal całe okno (16:10 ekranu Windows + ramka i podstawka),
+  - **telefon** ma do 430 px szerokości i zawsze mieści się w wysokości okna,
+  - **tablet** skaluje się do 4:3 w granicach okna.
+  Wcześniej makieta była skalowana `transform:scale()` na `.device`, co ucinało
+  treść (zwłaszcza okna Windows) i wypychało ją poza ekran. Wyjście z pełnego
+  ekranu przywraca bazowe rozmiary makiet.
 
 ### Górna belka telefonu/tabletu + wyspa (panel usunięty)
 - **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką

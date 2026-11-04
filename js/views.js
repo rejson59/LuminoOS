@@ -63,6 +63,8 @@
 
   function fit() {
     const v = currentView();
+    /* w pełnym ekranie rozmiar liczy fitFullscreen() — tu nic nie zmieniamy */
+    if (fullscreen) return;
     devices.forEach(d => {
       d.style.removeProperty("--zoom");
       d.style.removeProperty("--real-scale");
@@ -115,11 +117,63 @@
   }
 
   /* ------------------------------------------------------------
-     Pełny ekran — makieta na całe okno (Fullscreen API, z awaryjnym
-     trybem „theater”, gdy przeglądarka blokuje pełny ekran)
+     Pełny ekran — makieta dokładnie na całe okno, każdy element
+     liczony w pikselach okna (nie w transformie, który ucinał treść).
      ------------------------------------------------------------ */
   let fullscreen = false;
+  let fsZoom = 1;
   const fullBtn = document.getElementById("fullToggle");
+
+  /* W pełnym ekranie makieta jest rozciągnięta na całe okno:
+     usuwamy transform (to on ucinał laptop i powiększał telefon poza ekran)
+     i podajemy realne piksele — dzięki temu treść w środku skaluje się sama. */
+  function fitFullscreen() {
+    const html = document.documentElement;
+    if (!fullscreen) return;
+    const v = currentView() === "all" ? "phone" : currentView();
+    const el = stage.querySelector(`.device.device--${v}`);
+    if (!el) return;
+
+    fsZoom = 1;
+    el.style.removeProperty("--zoom");
+    el.style.setProperty("--zoom", "1");
+    stage.dataset.scale = "";
+
+    const W = window.innerWidth, H = window.innerHeight;
+    const padX = 18, padY = 18;
+
+    if (v === "phone") {
+      const availH = H - padY * 2;
+      const w = Math.min(430, Math.round(availH * (390 / 844) + 18));
+      const h = Math.min(availH, Math.round((w - 18) * (844 / 390) + 18));
+      html.style.setProperty("--phone-w", w + "px");
+      html.style.setProperty("--phone-h", h + "px");
+    } else if (v === "tablet") {
+      const availW = W - padX * 2, availH = H - padY * 2;
+      let w = Math.min(availW, 1400);
+      let h = Math.round((w - 24) * (768 / 1024) + 24);
+      if (h > availH) { h = availH; w = Math.round((h - 24) * (1024 / 768) + 24); }
+      html.style.setProperty("--tablet-w", w + "px");
+      html.style.setProperty("--tablet-h", h + "px");
+    } else {
+      /* laptop: ekran 16:10 + ramka i podstawka */
+      const availW = W - padX * 2, availH = H - padY * 2;
+      const chromeW = 20, chromeH = 10 + 12 + 14 + 3;   /* padding + base + przerwa */
+      let w = Math.min(availW - 40, 1600);
+      let h = Math.round((w - chromeW) * (900 / 1440));
+      if (h + chromeH > availH) {
+        h = availH - chromeH;
+        w = Math.round(h * (1440 / 900) + chromeW);
+      }
+      html.style.setProperty("--win-w", w + "px");
+      html.style.setProperty("--win-h", h + "px");
+    }
+  }
+
+  function resetSizeVars() {
+    ["--phone-w", "--phone-h", "--tablet-w", "--tablet-h", "--win-w", "--win-h"]
+      .forEach(k => document.documentElement.style.removeProperty(k));
+  }
 
   function setFullscreen(on, native) {
     fullscreen = on;
@@ -132,8 +186,10 @@
     }
     /* w pełnym ekranie zawsze dokładnie jedno urządzenie (nigdy czarne tło) */
     if (on && currentView() === "all") setView("phone");
+    if (on) { fitFullscreen(); }
+    else { resetSizeVars(); }
     requestAnimationFrame(fit);
-    setTimeout(fit, 260);
+    setTimeout(() => { if (fullscreen) fitFullscreen(); fit(); }, 260);
   }
 
   function toggleFullscreen() {
@@ -236,6 +292,7 @@
       /* np. przy otwarciu z file:// — pomijamy zapis w adresie */
     }
     pauseHiddenDevices();
+    if (fullscreen) fitFullscreen();
     // natychmiast, a potem jeszcze po ustabilizowaniu layoutu
     fit();
     requestAnimationFrame(fit);
@@ -254,7 +311,10 @@
   });
 
   let t;
-  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(fit, 120); });
+  window.addEventListener("resize", () => {
+    clearTimeout(t);
+    t = setTimeout(() => { if (fullscreen) fitFullscreen(); fit(); }, 120);
+  });
 
   window.Lumino = window.Lumino || {};
   window.Lumino.setView = setView;
