@@ -53,14 +53,16 @@
 .a-lock{
   align-items:center;justify-content:space-between;
   padding:34px 20px 14px;
-  background:
-    radial-gradient(80% 60% at 30% 18%, rgba(90,140,255,.55), transparent 62%),
-    radial-gradient(70% 60% at 82% 30%, rgba(160,80,255,.45), transparent 60%),
-    radial-gradient(90% 70% at 50% 105%, rgba(0,220,190,.30), transparent 62%),
-    #070a16;
+  background:#0a0716 url("../assets/wallpaper-phone-lock.jpg") center/cover no-repeat;
   transition:transform .38s cubic-bezier(.2,.8,.2,1), opacity .3s;
 }
 .android[data-device="phone"] .a-lock{padding-top:56px}
+.a-lock::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(6,4,18,.42) 0%, rgba(6,4,18,.06) 26%, rgba(6,4,18,.10) 62%, rgba(6,4,18,.55) 100%);
+}
+.a-lock > *{position:relative;z-index:1}
 .a-lock.is-unlocked{transform:translateY(-100%);opacity:0;pointer-events:none}
 
 .lock-clock{text-align:center;margin-top:8px;flex:none}
