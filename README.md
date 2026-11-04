@@ -180,12 +180,20 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   „theater", gdy przeglądarka blokuje pełny ekran, np. w iframe).
 
 ### Górna belka telefonu/tabletu + panel
-- **Wyspa po lewej** (tam, gdzie była godzina): szklana pigułka z zegarem,
-  krótką datą i kropką aktywności; klik otwiera panel.
-- **Prawa strona**: szukaj (szuflada z filtrowaniem), centrum sterowania
-  i status (zasięg, Wi-Fi, bateria).
-- **Panel**: data + nazwa urządzenia, dwa duże kafle suwaków (jasność,
-  głośność), siatka 8 przełączników, powiadomienia i akcje.
+- **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką
+  aparatu, zegarem i krótką datą; klik otwiera panel. Bez animowanej kropki
+  i bez `backdrop-filter` — czytelność daje ciemna mgła, zgodnie z zasadą
+  „blur tylko w ikonach aplikacji”.
+- **Prawa strona**: szukaj (szuflada z filtrowaniem) i status
+  (zasięg, Wi-Fi, bateria). Przycisk „centrum sterowania” usunięty —
+  panel otwiera wyspa, a krzyżyk w nagłówku panelu go zamyka.
+- **Panel** — zaprojektowany pod realne **292×600 px** makiety telefonu:
+  uchwyt, nagłówek („Centrum sterowania” + data + ✕), **przewijalna treść**
+  (`a-panel__body`: 2 kafle suwaków → 2×2 duże przełączniki → rząd
+  4 skrótów → powiadomienia) i **akcje przypięte na dole**
+  („Wyczyść wszystko”, „Zablokuj”). Treść ma ~318 px przy ~385 px
+  dostępnych, więc nic nie jest przycinane; przy mniejszych makietach
+  włącza się przewijanie.
 
 ### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
 Zamiast systemowego ekranu „ostatnich zadań” telefon ma **wysuwany pasek w stylu

@@ -30,14 +30,13 @@
         <div class="statusbar">
           <!-- WYSPA: po lewej stronie, tam gdzie wcześniej była godzina -->
           <button class="island" data-action="panel" aria-label="Panel i skróty">
+            <span class="island__cam" aria-hidden="true"></span>
             <span class="island__time js-time">09:41</span>
             <span class="island__date js-date-short">4 lis</span>
-            <span class="island__dot" aria-hidden="true"></span>
           </button>
           <!-- PRAWA STRONA: szukaj, centrum sterowania, status -->
           <div class="statusbar__right">
             <button class="statusbar__btn" data-action="search" aria-label="Szukaj">${icon("i-search")}</button>
-            <button class="statusbar__btn" data-action="panel" aria-label="Centrum sterowania">${icon("i-sliders")}</button>
             <span class="statusbar__icons">
               ${icon("i-signal")}${icon("i-wifi")}<span class="batt">78<span>%</span></span>${icon("i-battery")}
             </span>
@@ -166,56 +165,62 @@
       <!-- ===== panel powiadomień ===== -->
       <div class="a-shade"></div>
       <div class="a-panel">
-        <div class="a-panel__handle"></div>
-        <div class="a-panel__top">
+        <div class="a-panel__grip" aria-hidden="true"></div>
+        <div class="a-panel__head">
           <span class="panel-greet">
-            <b class="js-date">poniedziałek, 4 listopada</b>
-            <small>LuminoOS · telefon</small>
+            <b>Centrum sterowania</b>
+            <small class="js-date">poniedziałek, 4 listopada</small>
           </span>
-          <span class="a-panel__status">
-            ${icon("i-wifi")}<span class="batt">78<span>%</span></span>${icon("i-battery")}
-            <button class="iconbtn" data-action="close-panel" style="width:20px;height:20px;background:rgba(255,255,255,.12)">${icon("i-close")}</button>
-          </span>
+          <button class="iconbtn" data-action="close-panel" aria-label="Zamknij" style="width:22px;height:22px;background:rgba(255,255,255,.12)">${icon("i-close")}</button>
         </div>
-        <div class="slider-tiles">
-          <label class="tile-slider">
-            <span class="tile-slider__ico">${icon("i-sun")}</span>
-            <input class="slider tile-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
-          </label>
-          <label class="tile-slider">
-            <span class="tile-slider__ico">${icon("i-volume")}</span>
-            <input class="slider tile-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
-          </label>
+
+        <div class="a-panel__body">
+          <div class="slider-tiles">
+            <label class="tile-slider">
+              <span class="tile-slider__ico">${icon("i-sun")}</span>
+              <input class="slider tile-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
+            </label>
+            <label class="tile-slider">
+              <span class="tile-slider__ico">${icon("i-volume")}</span>
+              <input class="slider tile-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
+            </label>
+          </div>
+
+          <div class="qs-grid qs-grid--big">
+            <button class="qs qs--big on" data-qs="wifi">
+              <span class="qs__ic">${icon("i-wifi")}</span>
+              <span class="qs__txt"><b>Internet</b><small>Lumino_5G</small></span>
+            </button>
+            <button class="qs qs--big on" data-qs="bt">
+              <span class="qs__ic">${icon("i-bluetooth")}</span>
+              <span class="qs__txt"><b>Bluetooth</b><small>Słuchawki</small></span>
+            </button>
+            <button class="qs qs--big" data-qs="dnd">
+              <span class="qs__ic">${icon("i-bell-off")}</span>
+              <span class="qs__txt"><b>Nie przeszkadzać</b><small>Wyłączone</small></span>
+            </button>
+            <button class="qs qs--big" data-qs="saver">
+              <span class="qs__ic">${icon("i-saver")}</span>
+              <span class="qs__txt"><b>Oszczędzanie</b><small>Wyłączone</small></span>
+            </button>
+          </div>
+
+          <div class="qs-row">
+            <button class="qs qs--round" data-qs="flash" title="Latarka">${icon("i-flash")}</button>
+            <button class="qs qs--round" data-qs="rotate" title="Auto-obrót">${icon("i-rotate")}</button>
+            <button class="qs qs--round" data-qs="air" title="Tryb samolotowy">${icon("i-airplane")}</button>
+            <button class="qs qs--round" data-qs="cast" title="Przesyłanie">${icon("i-cast")}</button>
+          </div>
+
+          <div class="panel-notifs">
+            ${notifications.map(n => {
+              const a = androidApps.find(x => x.id === n.app);
+              return `<div class="notif">${iconImg(a.id, "notif__ico")}
+                <div><b>${n.title}</b><p>${n.text}</p></div><small>${n.time}</small></div>`;
+            }).join("")}
+          </div>
         </div>
-        <div class="qs-grid">
-          <button class="qs qs--wide on" data-qs="wifi">
-            <span class="qs__ic">${icon("i-wifi")}</span>
-            <span class="qs__txt"><b>Internet</b><small>Lumino_5G</small></span>
-          </button>
-          <button class="qs qs--wide on" data-qs="bt">
-            <span class="qs__ic">${icon("i-bluetooth")}</span>
-            <span class="qs__txt"><b>Bluetooth</b><small>Słuchawki</small></span>
-          </button>
-          <button class="qs qs--wide" data-qs="dnd">
-            <span class="qs__ic">${icon("i-bell-off")}</span>
-            <span class="qs__txt"><b>Nie przeszkadzać</b><small>Wyłączone</small></span>
-          </button>
-          <button class="qs qs--wide" data-qs="saver">
-            <span class="qs__ic">${icon("i-saver")}</span>
-            <span class="qs__txt"><b>Oszczędzanie</b><small>Wyłączone</small></span>
-          </button>
-          <button class="qs" data-qs="flash" title="Latarka">${icon("i-flash")}</button>
-          <button class="qs" data-qs="rotate" title="Auto-obrót">${icon("i-rotate")}</button>
-          <button class="qs" data-qs="air" title="Tryb samolotowy">${icon("i-airplane")}</button>
-          <button class="qs" data-qs="cast" title="Przesyłanie">${icon("i-cast")}</button>
-        </div>
-        <div class="panel-notifs">
-          ${notifications.map(n => {
-            const a = androidApps.find(x => x.id === n.app);
-            return `<div class="notif">${iconImg(a.id, "notif__ico")}
-              <div><b>${n.title}</b><p>${n.text}</p></div><small>${n.time}</small></div>`;
-          }).join("")}
-        </div>
+
         <div class="panel-actions">
           <button data-action="close-panel">Wyczyść wszystko</button>
           <button data-action="lock">Zablokuj</button>
@@ -225,8 +230,6 @@
       <!-- ===== aplikacje ===== -->
       <div class="a-apps"></div>
 
-      <!-- otwór aparatu: zawsze widoczny -->
-      <div class="punch"></div>
     `;
 
     /* ---------------- referencje ---------------- */
@@ -473,6 +476,8 @@
     const long = now.toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" });
     $$(".js-time").forEach(el => { el.textContent = time; });
     $$(".js-date").forEach(el => { el.textContent = long; });
+    const short = now.toLocaleDateString("pl-PL", { day: "numeric", month: "short" }).replace(".", "");
+    $$(".js-date-short").forEach(el => { el.textContent = short; });
   }
 
   window.Lumino.buildAndroid = buildAndroid;

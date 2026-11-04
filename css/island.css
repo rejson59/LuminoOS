@@ -23,37 +23,29 @@
   border:0;cursor:pointer;font-family:inherit;
   border-radius:99px;
   color:#fff;
-  background:rgba(16,19,28,.55);
+  background:linear-gradient(180deg, rgba(20,24,34,.80), rgba(12,15,23,.86));
   box-shadow:
-    0 0 0 .5px rgba(255,255,255,.22) inset,
+    0 0 0 .5px rgba(255,255,255,.16) inset,
     0 6px 16px -10px rgba(0,0,0,.9);
-  -webkit-backdrop-filter:blur(14px) saturate(170%);
-          backdrop-filter:blur(14px) saturate(170%);
   transition:transform 260ms cubic-bezier(.32,.72,0,1), background-color 200ms ease;
   flex:none;
 }
 .island:hover{transform:scale(1.03);background:rgba(30,36,50,.68)}
 .island:active{transform:scale(.97)}
+.island__cam{
+  width:7px;height:7px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 35% 30%, #2a3550 0%, #070a12 70%);
+  box-shadow:0 0 0 .5px rgba(140,175,235,.35) inset;
+}
 .island__time{
   font-size:11.5px;font-weight:600;letter-spacing:.2px;
   font-variant-numeric:tabular-nums;
 }
 .island__date{
-  font-size:9px;font-weight:600;letter-spacing:.05em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,.62);
+  font-size:9.5px;font-weight:500;
+  color:rgba(255,255,255,.66);
 }
-/* kropka aktywności — sygnalizuje „coś się dzieje” (muzyka, powiadomienie) */
-.island__dot{
-  width:5px;height:5px;border-radius:50%;
-  background:#7fd0ff;flex:none;
-  box-shadow:0 0 0 2px rgba(127,208,255,.22);
-  animation:island-pulse 2.6s ease-in-out infinite;
-}
-@keyframes island-pulse{
-  0%,100%{opacity:.55;transform:scale(.85)}
-  50%{opacity:1;transform:scale(1)}
-}
+
 /* wyspa „rozszerza się”, gdy panel jest otwarty */
 .a-panel.is-open ~ .a-launcher .island,
 .android:has(.a-panel.is-open) .island{
@@ -68,7 +60,7 @@
 }
 .statusbar__btn{
   width:22px;height:22px;border:0;padding:0;cursor:pointer;
-  display:grid;place-items:center;border-radius:50%;
+  display:grid;place-items:center;border-radius:7px;
   color:rgba(255,255,255,.92);
   background:rgba(255,255,255,.12);
   box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset;
@@ -87,80 +79,125 @@
 /* tablet: belka szersza, wyspa większa */
 .android[data-android="tablet"] .statusbar{padding:0 16px 0 12px;height:36px}
 .android[data-android="tablet"] .island{height:26px;padding:0 13px 0 11px}
+.android[data-android="tablet"] .island__cam{width:8px;height:8px}
 .android[data-android="tablet"] .island__time{font-size:12.5px}
 
-/* ---------- panel: nowy wygląd ---------- */
+/* ============================================================
+   PANEL — dopasowany do realnego ekranu makiety (292×600 px)
+   • nagłówek + przewijalna treść + akcje przypięte na dole
+   • 2 duże kafle suwaków, 2×2 duże przełączniki, rząd okrągłych skrótów
+   ============================================================ */
 .a-panel{
-  padding:6px 12px 12px;
-  gap:9px;
-  background:linear-gradient(180deg, rgba(26,30,44,.95), rgba(18,21,32,.97));
-  box-shadow:0 24px 48px -14px rgba(0,0,0,.85), 0 0 0 .5px rgba(255,255,255,.10) inset;
+  padding:0;
+  gap:0;
+  display:flex;flex-direction:column;
+  max-height:78%;
+  border-radius:0 0 26px 26px;
+  background:linear-gradient(180deg, rgba(30,34,48,.97), rgba(17,20,30,.98));
+  box-shadow:0 26px 50px -16px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.10) inset;
+  overflow:hidden;
 }
-.a-panel__top{
-  align-items:flex-start;
-  padding:2px 2px 0;
+.a-panel__grip{
+  width:34px;height:4px;border-radius:99px;
+  margin:6px auto 4px;flex:none;
+  background:rgba(255,255,255,.28);
+}
+.a-panel__head{
+  flex:none;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:2px 12px 8px;
 }
 .panel-greet{display:flex;flex-direction:column;gap:1px;min-width:0}
-.panel-greet b{
-  font-size:10.5px;font-weight:600;color:#fff;
+.panel-greet b{font-size:11px;font-weight:600;color:#fff;letter-spacing:.01em}
+.panel-greet small{
+  font-size:8.5px;color:rgba(255,255,255,.5);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.panel-greet small{font-size:8.5px;color:rgba(255,255,255,.55);letter-spacing:.04em}
-.a-panel__status{display:flex;align-items:center;gap:7px;flex:none}
-
-/* duże kafle suwaków (jasność / głośność) */
-.slider-tiles{
-  display:grid;grid-template-columns:1fr 1fr;gap:7px;
+/* przewijalna treść panelu — nic nie jest przycinane */
+.a-panel__body{
+  flex:1 1 auto;min-height:0;
+  overflow-y:auto;overscroll-behavior:contain;
+  padding:0 12px 10px;
+  display:flex;flex-direction:column;gap:8px;
+  scrollbar-width:none;
 }
+.a-panel__body::-webkit-scrollbar{width:0}
+
+/* duże kafle suwaków */
+.slider-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .tile-slider{
-  display:flex;align-items:center;gap:8px;
-  height:38px;padding:0 10px;
-  border-radius:14px;
+  display:flex;align-items:center;gap:6px;
+  height:36px;padding:0 9px;
+  border-radius:13px;
   background:rgba(255,255,255,.10);
   box-shadow:0 0 0 .5px rgba(255,255,255,.10) inset;
   cursor:pointer;
 }
 .tile-slider__ico{display:grid;place-items:center;flex:none;opacity:.9}
-.tile-slider__ico .ico{width:13px;height:13px}
+.tile-slider__ico .ico{width:12px;height:12px}
 .tile-slider__range{flex:1;min-width:0}
 
-/* siatka przełączników: 2 kolumny, równe wysokości */
-.a-panel .qs-grid{
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-}
+/* 2×2 duże przełączniki */
+.qs-grid--big{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .a-panel .qs{
-  min-height:44px;
-  border-radius:15px;
+  border-radius:14px;
   transition:background-color 180ms ease, transform 180ms cubic-bezier(.32,.72,0,1);
 }
 .a-panel .qs:active{transform:scale(.97)}
+.a-panel .qs--big{
+  flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;
+  min-height:52px;padding:8px 9px;
+  background:rgba(255,255,255,.08);
+}
+.a-panel .qs--big .qs__ic{
+  width:22px;height:22px;border-radius:7px;
+  background:rgba(255,255,255,.14);
+}
+.a-panel .qs--big .qs__ic .ico{width:13px;height:13px}
+.a-panel .qs--big .qs__txt b{font-size:9.5px;display:block;line-height:1.15}
+.a-panel .qs--big .qs__txt small{font-size:8px;color:rgba(255,255,255,.55)}
 .a-panel .qs.on{
-  background:linear-gradient(160deg, rgba(120,190,255,.34), rgba(90,150,255,.24));
-  box-shadow:0 0 0 .5px rgba(160,210,255,.4) inset;
+  background:linear-gradient(155deg, rgba(126,196,255,.42), rgba(64,132,255,.34));
+  box-shadow:0 0 0 .5px rgba(170,215,255,.5) inset;
 }
-.a-panel .qs.on .qs__ic{color:#dff0ff}
-.a-panel .qs:not(.qs--wide){
-  min-height:40px;
-  justify-content:center;
-  padding:0;
-}
+.a-panel .qs.on .qs__ic{color:#fff}
 
-/* przewijanie panelu: powiadomienia dostają więcej miejsca */
-.a-panel .panel-notifs{gap:6px;padding-top:2px}
-.a-panel .panel-actions{padding-top:0}
+/* rząd okrągłych skrótów */
+.qs-row{display:flex;gap:6px}
+.qs-row .qs--round{
+  flex:1;height:34px;padding:0;justify-content:center;
+  border-radius:12px;background:rgba(255,255,255,.08);
+}
+.qs-row .qs--round .ico{width:14px;height:14px}
+
+/* powiadomienia w panelu */
+.a-panel .panel-notifs{gap:6px}
+.a-panel .notif{border-radius:13px;padding:7px 9px;gap:7px}
+.a-panel .notif b{font-size:9px}
+.a-panel .notif p{font-size:8px;line-height:1.3}
+.a-panel .notif small{font-size:7.5px}
+
+/* akcje przypięte na dole */
+.a-panel .panel-actions{
+  flex:none;
+  display:flex;gap:6px;
+  padding:8px 12px 10px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
 .a-panel .panel-actions button{
-  flex:1;padding:7px 0;border-radius:11px;border:0;cursor:pointer;
-  font:inherit;font-size:10px;color:rgba(255,255,255,.9);
+  flex:1;padding:8px 0;border-radius:11px;border:0;cursor:pointer;
+  font:inherit;font-size:9.5px;color:rgba(255,255,255,.9);
   background:rgba(255,255,255,.10);
   transition:background-color 160ms ease;
 }
 .a-panel .panel-actions button:hover{background:rgba(255,255,255,.2)}
 
-/* redukcja ruchu */
-@media (prefers-reduced-motion:reduce){
-  .island,.island__dot,.statusbar__btn{animation:none;transition-duration:.001ms}
-}
+/* tablet: więcej miejsca, większe kafle */
+.android[data-android="tablet"] .a-panel{max-height:70%}
+.android[data-android="tablet"] .qs-grid{grid-template-columns:repeat(4,1fr)}
+.android[data-android="tablet"] .qs-grid--big{grid-template-columns:repeat(4,1fr)}
+.android[data-android="tablet"] .a-panel .qs--big{min-height:58px}
+.android[data-android="tablet"] .panel-greet b{font-size:12px}
 
 /* ---------- pole szukania w szufladzie ---------- */
 .drawer-search{cursor:text}

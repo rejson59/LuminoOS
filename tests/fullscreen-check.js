@@ -20,16 +20,27 @@ w.addEventListener("load", () => setTimeout(() => {
   const island = bar.querySelector(".island");
   check("belka ma wyspę po lewej", !!island && bar.firstElementChild === island);
   check("wyspa pokazuje zegar i datę", !!island.querySelector(".island__time") && !!island.querySelector(".island__date"));
-  check("prawa strona belki: szukaj + sterowanie + status",
+  check("prawa strona belki: szukaj + status (panel otwiera wyspa)",
     bar.querySelectorAll("[data-action='search']").length === 1 &&
-    bar.querySelectorAll('[data-action="panel"]').length >= 1 &&
+    bar.querySelector(".statusbar__right [data-action='search']") !== null &&
+    island.getAttribute("data-action") === "panel" &&
     !!bar.querySelector(".statusbar__icons"));
+  check("brak osobnej kropki aparatu na środku belki", !bar.querySelector(".punch") && !island.querySelector(".island__dot"));
+  check("wyspa ma soczewkę aparatu", !!island.querySelector(".island__cam"));
   check("belka nie jest już wyśrodkowana (brak justyfikacji space-between na czas)",
     !bar.hasAttribute("data-action"));
 
   /* --- panel --- */
   const panel = phone.querySelector(".a-panel");
   check("panel ma duże kafle suwaków", panel.querySelectorAll(".tile-slider").length === 2);
+  check("panel: uchwyt, nagłówek, przewijalna treść, akcje na dole",
+    !!panel.querySelector(".a-panel__grip") && !!panel.querySelector(".a-panel__head") &&
+    !!panel.querySelector(".a-panel__body") && !!panel.querySelector(".panel-actions"));
+  check("panel: treść przewijalna (nic nie jest przycinane)", !!panel.querySelector(".a-panel__body") &&
+    /a-panel__body[\s\S]*?overflow-y\s*:\s*auto/.test(
+      fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
+  check("panel: rząd okrągłych skrótów", panel.querySelectorAll(".qs-row .qs--round").length === 4);
+  check("panel: zamknięcie w nagłówku", !!panel.querySelector(".a-panel__head [data-action='close-panel']"));
   check("panel ma siatkę 8 przełączników", panel.querySelectorAll(".qs").length === 8);
   check("panel ma powiadomienia i akcje", panel.querySelectorAll(".notif").length >= 3 && !!panel.querySelector(".panel-actions"));
 
