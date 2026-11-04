@@ -1,0 +1,294 @@
+/* ============================================================
+   css/os.css — „jeden system" na trzech urządzeniach (etap 14)
+   • wspólne tokeny wyglądu (szkło, promienie, cienie) dla Androida i Windows
+   • pasek „System LuminoOS" pod przełącznikiem podglądów
+   • panel zasobnika Windows wygląda jak wyspa Androida
+   • dopracowana skala makiety na dużych ekranach
+   ============================================================ */
+
+:root{
+  /* jeden zestaw promieni — ikony, kafle, okna, karty */
+  --r-icon: 14px;
+  --r-tile: 12px;
+  --r-card: 14px;
+  --r-window: 10px;
+  --r-pill: 999px;
+
+  /* jedno szkło dla obu systemów */
+  --os-glass: rgba(255,255,255,.10);
+  --os-glass-strong: rgba(28,31,42,.94);
+  --os-line: rgba(255,255,255,.14);
+  --os-shadow: 0 26px 54px -18px rgba(0,0,0,.85);
+}
+
+/* ============================================================
+   0. JASNOŚĆ EKRANU (wspólny suwak jasności)
+   Nakładka nad tapetą, ale POD treścią powłoki — przyciemnia
+   tylko tło, nie psuje czytelności ikon i tekstu.
+   ============================================================ */
+.android::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:#000;
+  opacity:calc((1 - var(--lum, 1)) * 1.15);
+  transition:opacity 240ms ease-out;
+}
+/* pierwiastek morfowania wyspy to dalej <div>, więc ::after powłoki
+   musi być wyżej niż tło, a niżej niż belka i wyspa */
+.android .a-launcher,
+.android .a-lock,
+.android .a-apps{z-index:auto}
+.android .a-launcher{z-index:1}
+.android .a-lock{z-index:8}
+.android .a-apps{z-index:6}
+.android .island,.android .statusbar{z-index:40}
+.android .island{z-index:41}
+/* Windows: własna warstwa przyciemnienia (z-index 0 pod pulpitem) */
+.win .lum-dim{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:#000;opacity:calc((1 - var(--lum, 1)) * 1.15);
+  transition:opacity 240ms ease-out;
+}
+.win .win-desktop,.win .win-layer{z-index:1}
+.win .taskbar{z-index:500}
+.win .start-menu{z-index:520}
+.win .qs-panel{z-index:531}
+.win .win-toast{z-index:540}
+
+/* awaryjnie: bardzo ciemny ekran nie gasi ikon */
+.android.is-dim .app__icon,
+.android.is-dim .dock-app{opacity:.98}
+
+/* ============================================================
+   1. WSPÓLNE ELEMENTY SYSTEMU (identyczne w każdej powłoce)
+   ============================================================ */
+
+/* szklana pigułka: dock Androida = pasek zadań Windows = dolny pasek */
+.android .dock,
+.win .taskbar{
+  backdrop-filter:blur(22px) saturate(165%);
+  -webkit-backdrop-filter:blur(22px) saturate(165%);
+}
+
+/* kafle skrótów: ten sam promień i to samo tło w wyspie i zasobniku */
+.android .island-tile,
+.win .qs-panel .island-tile{
+  border-radius:var(--r-tile);
+}
+
+/* okna Windows i panel wyspy: ta sama głębia cienia */
+.win .win-window,
+.android .island[data-mode="panel"]{
+  box-shadow:
+    0 24px 52px -20px rgba(0,0,0,.9),
+    0 0 0 1px rgba(255,255,255,.12);
+}
+
+/* aplikacje: jedna ikona, jeden podpis — niezależnie od systemu */
+.android .app__icon,
+.win .start-app .app__icon,
+.win .recent .app__icon,
+.win .tb-icon .app__icon{
+  border-radius:var(--r-icon);
+}
+
+/* przełączniki: identyczny rozmiar i promień w Ustawieniach obu systemów */
+.android .switch,
+.win .switch{
+  width:32px;height:18px;border-radius:var(--r-pill);
+}
+.android .switch::after,
+.win .switch::after{
+  width:14px;height:14px;
+}
+
+/* pasek zadań: pływający (jak dock Androida), nie przyklejony do krawędzi */
+.win .taskbar{
+  left:8px;right:8px;bottom:6px;
+  border-radius:16px;
+  border-top:0;
+  border:1px solid var(--os-line);
+  background:rgba(28,31,42,.72);
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.08) inset;
+}
+/* okna kończą się nad pływającym paskiem */
+.win{--tb-h:46px}
+
+/* ============================================================
+   2. PASEK „SYSTEM LUMINOOS" (pod przełącznikiem podglądów)
+   ============================================================ */
+.design-system{
+  position:relative;z-index:2;
+  max-width:1180px;margin:8px auto 0;padding:0 clamp(16px,3vw,48px);
+  overflow:hidden;
+  /* zwinięty: zero wysokości, żeby nie zabierał miejsca makietom */
+  height:0;opacity:0;
+  /* pasek rozwijamy wysokością kontenera (bez animacji układu),
+     animujemy tylko opacity + transform wewnętrznej karty */
+  transition:opacity 260ms ease-out;
+}
+.design-system.is-visible{height:132px;opacity:1;margin:12px auto 0}
+.ds__inner{
+  display:grid;grid-template-columns:minmax(220px,1.4fr) 1fr 1.5fr .9fr;
+  gap:14px;align-items:center;
+  padding:12px 16px;border-radius:18px;
+  background:rgba(255,255,255,.055);
+  border:1px solid var(--line);
+  box-shadow:0 20px 46px -26px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.05) inset;
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  transform:translateY(-6px) scale(.99);
+  transition:transform 460ms cubic-bezier(.34,1.42,.64,1);
+}
+.design-system.is-visible .ds__inner{transform:none}
+
+.ds__intro{display:flex;gap:11px;align-items:flex-start;min-width:0}
+.ds__mark{
+  width:26px;height:26px;flex:none;border-radius:9px;
+  background:conic-gradient(from 190deg,#7cc4ff,#b98cff,#5ce1c4,#7cc4ff);
+  box-shadow:0 0 0 1px rgba(255,255,255,.20) inset, 0 6px 18px rgba(124,196,255,.35);
+}
+.ds__intro b{display:block;font-size:12.5px;font-weight:650;letter-spacing:.1px}
+.ds__intro small{display:block;font-size:11px;line-height:1.4;color:var(--txt-2);margin-top:2px}
+.ds__group{min-width:0}
+.ds__group h4{
+  margin:0 0 6px;font-size:10px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--txt-3);
+}
+.ds__group--sliders .island-sliders{display:flex;flex-direction:column;gap:6px}
+.ds__group--sliders .island-slider{
+  display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:10px;
+  background:rgba(255,255,255,.06);border:0;
+}
+.ds__group--sliders .island-slider__ico{display:grid;place-items:center;color:var(--txt-2);flex:none}
+.ds__group--sliders .island-slider__ico .ico{width:12px;height:12px}
+.ds__group--sliders .island-slider__range{flex:1;min-width:0;height:3px}
+.ds__grid{grid-template-columns:repeat(4,1fr);gap:6px}
+.ds__grid .island-tile{
+  width:auto;height:28px;border-radius:9px;border:0;cursor:pointer;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.07);color:#dfe6f5;
+}
+.ds__grid .island-tile .ico{width:13px;height:13px}
+.ds__grid .island-tile.on{background:#a9d5ff;color:#08121f}
+.ds__devices{display:flex;gap:6px;flex-wrap:wrap}
+.ds__dev{
+  font-size:10.5px;color:var(--txt-2);
+  padding:5px 9px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+  transition:color 200ms ease-out, background-color 220ms ease-out,
+             transform 260ms cubic-bezier(.34,1.42,.64,1);
+}
+.ds__dev.is-on{color:#08121f;background:#a9d5ff;border-color:transparent;transform:translateY(-1px)}
+.ds__group--devices .ds__devices{margin-bottom:6px}
+
+/* przycisk „System" w belce narzędzi */
+.toolbtn#dsToggle .ds-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:conic-gradient(from 190deg,#7cc4ff,#b98cff,#5ce1c4,#7cc4ff);
+  box-shadow:0 0 8px rgba(124,196,255,.6);
+}
+
+/* tryby: pasek systemu znika w pełnym ekranie (tam rządzi makieta) */
+html.is-fullscreen .design-system{display:none}
+
+/* ============================================================
+   3. LEPSZA SKALA MAKIET (jeden układ na każdym ekranie)
+   ============================================================ */
+/* w widoku pojedynczym makieta dostaje więcej powietrza, ale cień
+   i podpisy pozostają w tej samej odległości — nic nie „skacze" */
+.device{transition:transform 520ms cubic-bezier(.34,1.42,.64,1)}
+
+/* na bardzo szerokim ekranie widok „wszystkie" nie rozpływa się na boki */
+@media (min-width:1500px){
+  .stage{gap:clamp(32px,4vw,72px)}
+}
+
+/* na małych ekranach pasek systemu zwija się do dwóch kolumn */
+@media (max-width:1100px){
+  .ds__inner{grid-template-columns:minmax(180px,1.2fr) 1fr 1.4fr}
+  .ds__group--devices{display:none}
+  .design-system.is-visible{height:126px}
+}
+@media (max-width:780px){
+  .design-system.is-visible{height:0;opacity:0;margin:0}
+  .ds__group--devices{display:none}
+}
+
+/* prefers-reduced-motion: pasek pojawia się od razu */
+@media (prefers-reduced-motion:reduce){
+  .design-system,.ds__inner,.ds__dev,.ds__grid .island-tile{
+    transition-duration:.001ms!important;
+  }
+}
+
+/* ============================================================
+   4. MENU START: przełączniki sieci jak w wyspie Androida
+   ============================================================ */
+.start-toggles{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.10);
+}
+.start-toggle{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:7px 2px;border-radius:8px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.06);color:#c8d0e0;
+  font-family:inherit;font-size:8px;
+  transition:background-color 200ms ease-out, color 200ms ease-out,
+             transform 260ms cubic-bezier(.34,1.42,.64,1);
+}
+.start-toggle .ico{width:13px;height:13px}
+.start-toggle:hover{background:rgba(255,255,255,.12)}
+.start-toggle:active{transform:scale(.94)}
+.start-toggle.on{background:#7cc4ff;color:#08121f}
+
+/* ============================================================
+   5. PEŁNY EKRAN: przełączanie urządzeń bez wychodzenia z trybu
+   ============================================================ */
+.fs-switch{
+  position:fixed;left:50%;bottom:16px;z-index:120;
+  transform:translate(-50%, 14px) scale(.96);
+  display:flex;gap:4px;padding:4px;border-radius:999px;
+  background:rgba(20,23,32,.82);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 16px 34px -14px rgba(0,0,0,.85);
+  backdrop-filter:blur(18px) saturate(150%);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity 220ms ease-out, transform 420ms cubic-bezier(.34,1.42,.64,1),
+             visibility 0s linear 420ms;
+}
+.fs-switch.is-visible{
+  opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%, 0) scale(1);
+  transition:opacity 200ms ease-out, transform 420ms cubic-bezier(.34,1.42,.64,1), visibility 0s;
+}
+.fs-switch__btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;border:0;border-radius:999px;cursor:pointer;
+  font-family:inherit;font-size:11.5px;font-weight:500;color:#aeb7ca;
+  background:transparent;
+  transition:color 180ms ease-out, background-color 220ms ease-out,
+             transform 200ms cubic-bezier(.34,1.42,.64,1);
+}
+.fs-switch__btn .ico{width:13px;height:13px}
+.fs-switch__btn:hover{color:#eef1f7;background:rgba(255,255,255,.07)}
+.fs-switch__btn.is-active{color:#08121f;background:#a9d5ff}
+.fs-switch__btn:active{transform:scale(.95)}
+
+/* pasek trybów (belka) chowa się, gdy w pełnym ekranie jest przełącznik */
+html.is-fullscreen .fs-switch{display:flex}
+
+/* ============================================================
+   6. WSKAŹNIK „DZIAŁA" — ten sam w Androidzie i Windows
+   ============================================================ */
+.android .dock .dock-app{position:relative}
+.android .dock .dock-app::after,
+.android .app .app__wrap::after{
+  content:"";position:absolute;left:50%;bottom:-6px;
+  width:4px;height:4px;border-radius:50%;background:#eef1f7;
+  transform:translateX(-50%) scale(0);opacity:0;
+  transition:transform 300ms var(--mo-spring), opacity 200ms ease-out;
+  box-shadow:0 0 6px rgba(255,255,255,.45);
+}
+.android .dock .dock-app.is-running::after,
+.android .app.is-running .app__wrap::after{transform:translateX(-50%) scale(1);opacity:.9}
+.android .app .app__wrap::after{bottom:-4px;background:#a9d5ff}

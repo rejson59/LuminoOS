@@ -11,7 +11,8 @@
 <link rel="stylesheet" href="css/perf.css?v=2">
 <link rel="stylesheet" href="css/activity.css?v=4">
 <link rel="stylesheet" href="css/island.css?v=14">
-<link rel="stylesheet" href="css/motion.css?v=1">
+<link rel="stylesheet" href="css/motion.css?v=2">
+<link rel="stylesheet" href="css/os.css?v=2">
 </head>
 <body>
 
@@ -111,6 +112,9 @@
     </button>
   </div>
   <div class="viewbar__tools">
+    <button class="toolbtn" id="dsToggle" title="Pasek systemu — wspólne skróty wszystkich urządzeń" aria-pressed="false">
+      <span class="ds-dot" aria-hidden="true"></span> <span>System</span>
+    </button>
     <button class="toolbtn" id="sizeToggle" title="Pokaż urządzenie w skali 1:1" aria-pressed="false">
       <svg class="ico"><use href="#i-expand"/></svg> <span>1:1</span>
     </button>
@@ -119,6 +123,9 @@
     </button>
   </div>
 </nav>
+
+<section class="design-system" id="designSystem" aria-hidden="true"
+         aria-label="Wspólny stan systemu LuminoOS"></section>
 
 <main class="stage" id="stage" data-view="all">
 
@@ -163,15 +170,16 @@
 </footer>
 
 <script src="js/guard.js?v=14"></script>
-<script src="js/core.js?v=14"></script>
+<script src="js/core.js?v=16"></script>
 <script src="js/apps.js?v=15"></script>
-<script src="js/android.js?v=26"></script>
-<script src="js/windows.js?v=15"></script>
-<script src="js/views.js?v=21"></script>
-<script src="js/page.js?v=16"></script>
+<script src="js/android.js?v=28"></script>
+<script src="js/windows.js?v=17"></script>
+<script src="js/views.js?v=23"></script>
+<script src="js/page.js?v=17"></script>
 <script src="js/perf.js?v=3"></script>
 <script src="js/motion.js?v=5"></script>
-<script src="js/gestures.js?v=8"></script>
+<script src="js/gestures.js?v=9"></script>
+<script src="js/os.js?v=1"></script>
 <script src="js/fps-meter.js?v=1"></script>
 </body>
 </html>

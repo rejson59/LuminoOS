@@ -3,7 +3,8 @@
    ============================================================ */
 (function () {
   "use strict";
-  const { $, $$, icon, iconImg, player, tracks, androidApps, notifications, APP, brandIcon } = window.Lumino;
+  const { $, $$, icon, iconImg, player, tracks, androidApps, notifications, APP, brandIcon,
+          sys, qsGrid, qsSliders } = window.Lumino;
   const fmtTime = window.Lumino.fmtTime;
 
   const DOCK = ["phone", "messages", "chrome", "spotify"];
@@ -32,7 +33,9 @@
           <div class="statusbar__right">
             <button class="statusbar__btn" data-action="search" aria-label="Szukaj">${icon("i-search")}</button>
             <span class="statusbar__icons">
-              ${icon("i-signal")}${icon("i-wifi")}<span class="batt">78<span>%</span></span>${icon("i-battery")}
+              ${icon("i-signal")}
+              <span class="sys-wifi" data-sys-flag="wifi">${icon("i-wifi")}</span>
+              <span class="batt" data-sys-batt>${sys.get("battery")}<span>%</span></span>${icon("i-battery")}
             </span>
           </div>
         </div>
@@ -83,30 +86,8 @@
               <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
               <button class="island__play" type="button" data-island-play aria-label="Odtwórz / pauza">${icon("i-pause")}</button>
             </div>
-            <div class="island-sliders">
-              <label class="island-slider" title="Jasność" style="--i:0">
-                <span class="island-slider__ico">${icon("i-sun")}</span>
-                <input class="slider island-slider__range" type="range" min="0" max="100" value="70" aria-label="Jasność">
-              </label>
-              <label class="island-slider" title="Głośność" style="--i:1">
-                <span class="island-slider__ico">${icon("i-volume")}</span>
-                <input class="slider island-slider__range" type="range" min="0" max="100" value="55" aria-label="Głośność">
-              </label>
-            </div>
-            <div class="island-grid">
-              ${[
-                ["wifi", "i-wifi", "Internet", true],
-                ["bt", "i-bluetooth", "Bluetooth", true],
-                ["dnd", "i-bell-off", "Nie przeszkadzać", false],
-                ["saver", "i-saver", "Oszczędzanie baterii", false],
-                ["flash", "i-flash", "Latarka", false],
-                ["rotate", "i-rotate", "Auto-obrót", false],
-                ["air", "i-airplane", "Tryb samolotowy", false],
-                ["cast", "i-cast", "Przesyłanie obrazu", false]
-              ].map(([key, ico, label, on], i) => `<button class="island-tile${on ? " on" : ""}"
-                data-qs="${key}" aria-label="${label}" title="${label}"
-                aria-pressed="${on ? "true" : "false"}" style="--i:${i}" type="button">${icon(ico)}</button>`).join("")}
-            </div>
+            <div class="island-sliders">${qsSliders()}</div>
+            <div class="island-grid">${qsGrid("island-tile")}</div>
             <div class="island-bar">
               <div class="island-foot">
                 <button class="island-tile island-tile--sm" style="--i:8" type="button" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
@@ -471,11 +452,11 @@
       }
     }));
 
-    /* przełączniki: ikona wypełnia się na włączonym, bez podpisów */
-    $$(".island-tile", root).forEach(b => b.addEventListener("click", e => {
+    /* przełączniki: jedno źródło prawdy (sys) — panel, Ustawienia i Windows
+       pokazują ten sam stan, więc nic się nie rozjeżdża między urządzeniami */
+    $$(".island-tile[data-qs]", root).forEach(b => b.addEventListener("click", e => {
       e.stopPropagation();
-      const on = b.classList.toggle("on");
-      b.setAttribute("aria-pressed", on ? "true" : "false");
+      sys.toggle(b.dataset.qs);
     }));
     /* Escape / klawisz zamykają wyspę także w podglądzie na desktopie */
     document.addEventListener("keydown", e => {
@@ -484,6 +465,67 @@
     $$(".slider", root).forEach(s => {
       const update = () => s.style.setProperty("--v", s.value + "%");
       s.addEventListener("input", update); update();
+    });
+
+    /* ============================================================
+       WSPÓLNY STAN → TA POWŁOKA
+       Telefon i tablet czytają dokładnie ten sam stan co laptop,
+       więc przełącznik w telefonie zmienia też ikonę w Windows.
+       ============================================================ */
+    function paintSys() {
+      $$("[data-qs]", root).forEach(b => {
+        const on = !!sys.get(b.dataset.qs);
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      $$("[data-sys-range]", root).forEach(r => {
+        const v = sys.get(r.dataset.sysRange);
+        if (String(r.value) !== String(v)) r.value = v;
+        r.style.setProperty("--v", v + "%");
+      });
+      $$("[data-sys-flag]", root).forEach(el => {
+        el.classList.toggle("is-off", !sys.get(el.dataset.sysFlag));
+      });
+      $$("[data-sys-batt]", root).forEach(el => {
+        const t = el.firstChild;
+        if (t && t.nodeType === 3) t.textContent = sys.get("battery");
+      });
+      root.classList.toggle("sys-dnd", !!sys.get("dnd"));
+      root.classList.toggle("sys-air", !!sys.get("air"));
+    }
+    $$("[data-sys-range]", root).forEach(r => {
+      r.addEventListener("input", () => sys.set(r.dataset.sysRange, Number(r.value)), { passive: true });
+    });
+    sys.subscribe(paintSys);
+
+    /* ------------------------------------------------------------
+       JEDEN SYSTEM: jasność i głośność z suwaków naprawdę działają.
+       Głośność ustawia poziom wspólnego odtwarzacza (ta sama wartość
+       co suwak w Windows), jasność rozjaśnia/przyciemnia ekran tak samo
+       w każdej powłoce.
+       ------------------------------------------------------------ */
+    let _lastVol = sys.get("volume");
+    let volTimer = 0;
+    function applyBrightness() {
+      const v = sys.get("brightness");
+      const k = 0.55 + (v / 100) * 0.45;         /* ekran nigdy nie gaśnie do zera */
+      root.style.setProperty("--lum", k.toFixed(3));
+      root.classList.toggle("is-dim", v < 30);
+    }
+    function applyVolume() {
+      const v = sys.get("volume");
+      player.volume = v;
+      if (v === 0 && player.playing) player.pause();
+    }
+    sys.subscribe((state, key) => {
+      if (key === "brightness" || key === null) applyBrightness();
+      if (key === "volume" || key === null) {
+        if (sys.get("volume") !== _lastVol) {
+          _lastVol = sys.get("volume");
+          clearTimeout(volTimer);
+          volTimer = setTimeout(applyVolume, 140);   /* debounce: bez skoków w trakcie */
+        }
+      }
     });
 
     /* ---------------- szuflada ---------------- */
@@ -517,6 +559,14 @@
     }, { passive: true });
 
     /* ---------------- aplikacje ---------------- */
+    /* kropeczka „aplikacja działa" — dokładnie jak wskaźnik w pasku zadań
+       Windows, żeby obie powłoki opowiadały ten sam stan */
+    function markRunning(id, on) {
+      $$(`[data-app="${id}"]`, root).forEach(el => {
+        if (el.closest(".dock") || el.closest(".app-grid")) el.classList.toggle("is-running", on);
+      });
+    }
+
     function openApp(id, originIcon) {
       const meta = APP[id];
       if (!meta) return;
@@ -542,6 +592,7 @@
       const back = () => closeApp(id);
       el.querySelector("[data-back]").addEventListener("click", back);
       openStack.push(id);
+      markRunning(id, true);
       refreshWidget();
     }
 
@@ -594,6 +645,7 @@
         setTimeout(() => el.remove(), 240);
       }
       openStack = openStack.filter(x => x !== id);
+      if (!openStack.includes(id)) markRunning(id, false);
     }
 
     function closeAllApps() {
@@ -606,6 +658,7 @@
         delete appCleanups[id];
       });
       openStack = [];
+      $$("[data-app].is-running", root).forEach(el => el.classList.remove("is-running"));
     }
 
     root.addEventListener("click", e => {

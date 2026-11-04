@@ -33,8 +33,9 @@ w.addEventListener("load", () => setTimeout(() => {
     const tips = phone.querySelectorAll(".gesture-tip");
     return tips.length === 2 && phone.querySelector(".gesture-tip--left") && phone.querySelector(".gesture-tip--right");
   })());
-  check("tablet nie ma uchwytów (gesty tylko na telefonie)",
-    !document.querySelector('[data-android="tablet"] .gesture-edge'));
+  check("tablet ma ten sam zestaw gestów co telefon (jeden system)",
+    document.querySelectorAll('[data-android="tablet"] .gesture-edge').length === 4 &&
+    !!document.querySelector('[data-android="tablet"] .gesture-tip--left'));
 
   const act = phone.lumino && phone.lumino.activity;
   check("API gestów dostępne (window.Lumino.androidActivity)", !!act);

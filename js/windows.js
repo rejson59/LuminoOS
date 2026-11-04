@@ -3,7 +3,7 @@
    ============================================================ */
 (function () {
   "use strict";
-  const { $, $$, icon, iconImg, player, clamp } = window.Lumino;
+  const { $, $$, icon, iconImg, player, clamp, sys, qsGrid, qsSliders, WIN_TOGGLES } = window.Lumino;
 
   const WIN_APPS = {
     explorer: { title: "Pliki", icon: "i-folder", ico: "files", tint: "#ffd67a", w: "68%", h: "76%", x: 94, y: 18, part: window.Lumino.explorer },
@@ -96,6 +96,7 @@
     registerExtraApps();
     screen.innerHTML = `
       <div class="win-wallpaper"></div>
+    <div class="lum-dim" aria-hidden="true"></div>
       <div class="win-desktop">
         <div class="win-desktop-icons">
           <div class="win-desk-icon" data-open="explorer">${icon("i-pc")}<span>Ten komputer</span></div>
@@ -131,6 +132,13 @@
               <div><b>umowa.pdf</b><small>Wczoraj</small></div></button>
           </div>
         </div>
+        <div class="start-toggles">
+          ${WIN_TOGGLES.map(([k, ic, label], i) => `
+            <button class="start-toggle" data-win-toggle="${k}" style="--i:${i}"
+              aria-label="${label}" title="${label}" aria-pressed="${sys.get(k) ? "true" : "false"}">
+              ${icon(ic)}<span>${label}</span>
+            </button>`).join("")}
+        </div>
         <div class="start-user">
           <span class="avatar">Ł</span><span>Łukasz</span>
           <button class="start-power" data-power="lock" title="Zablokuj">${icon("i-lock")}</button>
@@ -147,12 +155,34 @@
               ${a.ico ? iconImg(a.ico) : icon(a.icon)}
             </button>`).join("")}
         </div>
-        <div class="taskbar__right" title="Panel szybkich ustawień">
+        <button class="tb-now" data-tb-now type="button" aria-label="Teraz gra — otwórz Spotify">
+          <span class="cover cv-1 tb-now__cover"></span>
+          <span class="tb-now__txt"><b>Nocna Jazda</b><small>Mira Kova</small></span>
+          <span class="island__eq" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="tb-now__play" data-tb-now-play>${icon("i-play")}</span>
+        </button>
+
+        <div class="taskbar__right" role="button" tabindex="0" aria-label="Panel szybkich ustawień"
+             aria-expanded="false" data-action="tray">
           <span class="tray-ico">⌃</span>
-          <span class="tray-icon">${icon("i-wifi")}</span>
-          <span class="tray-icon">${icon("i-volume")}</span>
-          <span class="tray-icon">${icon("i-battery")}</span>
+          <span class="tray-icon" data-sys-flag="wifi">${icon("i-wifi")}</span>
+          <span class="tray-icon" data-sys-flag="volume">${icon("i-volume")}</span>
+          <span class="tray-icon" data-sys-batt-ico>${icon("i-battery")}</span>
           <span class="tray-clock"><b class="js-time">09:41</b><small class="js-date-short">04.11.2026</small></span>
+        </div>
+
+        <!-- panel zasobnika: TE SAME kafle i suwaki co w wyspy Androida -->
+        <div class="qs-panel" role="dialog" aria-label="Szybkie ustawienia" aria-hidden="true">
+          <div class="qs-panel__head">
+            <span class="qs-panel__title">Szybkie ustawienia</span>
+            <span class="qs-panel__user"><span class="avatar">Ł</span> Łukasz</span>
+          </div>
+          <div class="island-sliders qs-panel__sliders">${qsSliders()}</div>
+          <div class="island-grid qs-panel__grid">${qsGrid("island-tile")}</div>
+          <div class="qs-panel__foot">
+            <span class="qs-panel__batt">${icon("i-battery")} <span data-sys-batt-txt>78</span>% · ładowanie</span>
+            <button class="qs-panel__lock" data-power="lock" type="button">${icon("i-lock")} Zablokuj</button>
+          </div>
         </div>
       </div>
 
@@ -182,12 +212,15 @@
 
     const layer = $(".win-layer", screen);
     const startMenu = $(".start-menu", screen);
+    const qsPanel = $(".qs-panel", screen);
+    const trayBtn = $("[data-action='tray']", screen);
     const startBtn = $('[data-tb="start"]', screen);
     const toast = $(".win-toast", screen);
     const openWindows = new Map(); // id -> { el, meta, cleanup }
 
     /* ---------------- menu Start ---------------- */
     function openStart() {
+      closeTray();
       startMenu.classList.add("is-open");
       startBtn.setAttribute("aria-expanded", "true");
       const input = $("input", startMenu);
@@ -199,9 +232,32 @@
     }
     const toggleStart = () => startMenu.classList.contains("is-open") ? closeStart() : openStart();
 
+    /* ---------------- panel zasobnika (te same skróty co wyspa) ---------------- */
+    function openTray() {
+      closeStart();
+      qsPanel.classList.add("is-open");
+      qsPanel.setAttribute("aria-hidden", "false");
+      trayBtn.setAttribute("aria-expanded", "true");
+    }
+    function closeTray() {
+      qsPanel.classList.remove("is-open");
+      qsPanel.setAttribute("aria-hidden", "true");
+      trayBtn.setAttribute("aria-expanded", "false");
+    }
+    const toggleTray = () => qsPanel.classList.contains("is-open") ? closeTray() : openTray();
+    trayBtn.addEventListener("click", e => { e.stopPropagation(); toggleTray(); });
+    trayBtn.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTray(); }
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && qsPanel.classList.contains("is-open")) closeTray();
+    });
+
     startBtn.addEventListener("click", e => { e.stopPropagation(); toggleStart(); });
     screen.addEventListener("click", e => {
       if (!e.target.closest(".start-menu, [data-tb='start']")) closeStart();
+      /* klik poza panelem zasobnika go zamyka (jak w Windows 11) */
+      if (!e.target.closest(".qs-panel, [data-action='tray']")) closeTray();
     });
 
     // filtrowanie w Start
@@ -406,6 +462,76 @@
       bar.addEventListener("pointercancel", end);
     }
 
+    /* ---------------- mini „teraz gra" w pasku zadań ----------------
+       Ten sam odtwarzacz co wyspa Androida — klik otwiera Spotify,
+       ikona play/pauza działa bez wchodzenia w okno. */
+    const tbNow = $("[data-tb-now]", screen);
+    function paintNow() {
+      if (!tbNow) return;
+      const t = player.track;
+      $("[data-tb-now] .tb-now__cover", screen).className = `cover ${t.cover} tb-now__cover`;
+      $(".tb-now__txt b", screen).textContent = t.title;
+      $(".tb-now__txt small", screen).textContent = t.artist;
+      $("[data-tb-now-play]", screen).innerHTML = icon(player.playing ? "i-pause" : "i-play");
+      tbNow.classList.toggle("is-playing", !!player.playing);
+    }
+    if (tbNow) {
+      tbNow.addEventListener("click", e => {
+        e.stopPropagation();
+        if (e.target.closest("[data-tb-now-play]")) { player.toggle(); return; }
+        openWindow("spotify");
+      });
+      player.subscribe(paintNow);
+      paintNow();
+    }
+
+    /* ---------------- wspólny stan → ta powłoka ---------------- */
+    /* Windows czyta ten sam stan co telefon/tablet: przełącznik w telefonie
+       zmienia też ikony w zasobniku, a suwak jasności działa w obie strony. */
+    function paintSys() {
+      $$("[data-qs]", screen).forEach(b => {
+        const on = !!sys.get(b.dataset.qs);
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      $$("[data-sys-range]", screen).forEach(r => {
+        const v = sys.get(r.dataset.sysRange);
+        if (String(r.value) !== String(v)) r.value = v;
+        r.style.setProperty("--v", v + "%");
+      });
+      $$("[data-win-toggle]", screen).forEach(b => {
+        const on = !!sys.get(b.dataset.winToggle);
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      $$("[data-sys-flag]", screen).forEach(el => {
+        el.classList.toggle("is-off", !sys.get(el.dataset.sysFlag));
+      });
+      $$("[data-sys-batt-txt]", screen).forEach(el => { el.textContent = sys.get("battery"); });
+      $$("[data-sys-batt-ico]", screen).forEach(el =>
+        el.classList.toggle("is-low", sys.get("battery") < 20));
+      screen.classList.toggle("sys-dnd", !!sys.get("dnd"));
+      screen.classList.toggle("sys-air", !!sys.get("air"));
+    }
+    $$("[data-qs]", screen).forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      sys.toggle(b.dataset.qs);
+    }));
+    $$("[data-win-toggle]", screen).forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      sys.toggle(b.dataset.winToggle);
+    }));
+    $$("[data-sys-range]", screen).forEach(r => {
+      r.addEventListener("input", () => sys.set(r.dataset.sysRange, Number(r.value)), { passive: true });
+    });
+    sys.subscribe(paintSys);
+    /* jasność: identyczna jak w telefonie i tablecie */
+    sys.subscribe(() => {
+      const v = sys.get("brightness");
+      screen.style.setProperty("--lum", (0.55 + (v / 100) * 0.45).toFixed(3));
+      screen.classList.toggle("is-dim", v < 30);
+    });
+
     /* ---------------- pasek zadań ---------------- */
     $$(".tb-icon", screen).forEach(btn => {
       const id = btn.dataset.tb;
@@ -449,7 +575,8 @@
     openWindow("explorer");
 
     /* ---------------- API ---------------- */
-    screen.lumino = { openWindow, closeWindow, closeStart, openStart, lockPC, unlockPC };
+    screen.lumino = { openWindow, closeWindow, closeStart, openStart, openTray, closeTray,
+      isTrayOpen: () => qsPanel.classList.contains("is-open"), lockPC, unlockPC };
   }
 
   /* ---------------- kalkulator (Windows) ---------------- */

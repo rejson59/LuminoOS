@@ -212,3 +212,160 @@ html.is-fullscreen .viewbar{
 @media (hover:none){
   .app:hover .app__icon,.dock .dock-app:hover{transform:none}
 }
+
+/* ============================================================
+   5. JEDEN SYSTEM, TRZY URZĄDZENIA (etap 14)
+   Wspólne elementy wszystkich powłok mają jedną definicję wyglądu,
+   więc telefon, tablet i laptop wyglądają jak jedna rodzina:
+   • aplikacja (ikona + podpis + plakietka) — ta sama siatka i ruch
+   • kafle skrótów (.island-tile) — wyspa Androida I panel zasobnika Windows
+   • suwaki (.island-slider) — ten sam wygląd na każdym ekranie
+   ============================================================ */
+
+/* ---------- aplikacja: wspólna w każdej powłoce ---------- */
+.a-app,.app,.dock-app,.start-app,.tb-icon,.win-desk-icon{will-change:transform}
+
+/* ikona „oddycha" identycznie w Androidzie i Windows (jeden ruch, jedno tempo) */
+.app__icon,
+.dock-app .app__icon,
+.start-app .app__icon{
+  transition:
+    transform 260ms var(--mo-spring),
+    opacity 160ms ease-out;
+  transform-origin:50% 80%;
+  backface-visibility:hidden;
+}
+.app:hover .app__icon,
+.app:focus-visible .app__icon{transform:translateY(-3px) scale(1.06)}
+.app:active .app__icon{transform:scale(.92)}
+.dock-app:hover .app__icon{transform:translateY(-5px) scale(1.09)}
+.dock-app:active .app__icon{transform:scale(.9)}
+.start-app:hover .app__icon{transform:translateY(-2px) scale(1.05)}
+.tb-icon:hover .app__icon,
+.tb-icon:hover .ico{transform:translateY(-1px) scale(1.06)}
+.tb-icon:active .app__icon,
+.tb-icon:active .ico{transform:scale(.92)}
+
+/* podpis aplikacji: ten sam krój i cień na każdym urządzeniu */
+.app__label,
+.start-app > span:last-child{
+  transition:opacity 180ms ease-out, transform 220ms var(--mo-out);
+}
+.app:hover .app__label{opacity:1;transform:translateY(-1px)}
+
+/* plakietka powiadomień: wspólna i sprężysta (Android + dock) */
+.app__badge{
+  transition:transform 300ms var(--mo-spring), opacity 180ms ease-out;
+}
+.app:hover .app__badge{transform:scale(1.08)}
+
+/* ---------- kafle skrótów: wyspa (Android) + zasobnik (Windows) ---------- */
+.island-tile{
+  transition:
+    transform 260ms var(--mo-spring),
+    background-color 200ms ease-out,
+    color 200ms ease-out,
+    opacity 200ms ease-out;
+}
+.island-tile:hover{transform:translateY(-2px)}
+.island-tile:active{transform:scale(.9)}
+.island-tile.on{transition:transform 300ms var(--mo-spring), background-color 220ms ease-out,
+  color 220ms ease-out, opacity 200ms ease-out}
+
+/* wspólna siatka skrótów: panel wyspy i panel zasobnika */
+.island-grid,
+.qs-panel__grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+}
+.island-slider{
+  transition:opacity 200ms ease-out, transform 240ms var(--mo-out);
+}
+
+/* ---------- pasek stanu: ikony sieci gasną, gdy wyłączysz Wi-Fi ---------- */
+[data-sys-flag]{transition:opacity 220ms ease-out, transform 260ms var(--mo-spring)}
+[data-sys-flag].is-off{opacity:.25;transform:scale(.9)}
+[data-sys-batt-ico].is-low{color:#ff8a8a}
+
+/* tryb nie przeszkadzać / samolotowy: spokojniejsza powłoka */
+.android.sys-dnd .island,
+.win.sys-dnd .win-toast{box-shadow:0 0 0 1px rgba(255,180,120,.35), 0 12px 26px -10px rgba(0,0,0,.9)}
+.android.sys-air .statusbar__icons [data-sys-flag="wifi"]{opacity:.2}
+
+/* ---------- wspólne elementy „systemowe" w aplikacjach ---------- */
+.switch{transition:background-color 220ms ease-out, box-shadow 220ms ease-out}
+.switch::after{transition:transform 320ms var(--mo-spring), background-color 200ms ease-out}
+.switch:active::after{width:18px}
+.switch[aria-checked="true"]:active::after{transform:translateX(10px)}
+
+.slider{-webkit-appearance:none;appearance:none}
+.slider:active::-webkit-slider-thumb{transform:scale(1.15)}
+.slider::-webkit-slider-thumb{transition:transform 220ms var(--mo-spring)}
+
+.row,
+.set-card,
+.side-item,
+.recent{
+  transition:background-color 200ms ease-out, transform 220ms var(--mo-out), opacity 180ms ease-out;
+}
+.row:active,
+.set-card:active,
+.side-item:active,
+.recent:active{transform:scale(.99)}
+
+/* ---------- panel zasobnika Windows (te same kafle co wyspa) ---------- */
+.win .qs-panel{
+  position:absolute;right:8px;bottom:calc(var(--tb-h) + 6px);
+  width:268px;padding:12px;border-radius:14px;
+  background:rgba(28,31,42,.94);
+  box-shadow:0 26px 54px -18px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.14);
+  color:#eef1f7;font-size:10px;z-index:530;
+  transform-origin:100% 100%;
+  transform:translateY(10px) scale(.96);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:
+    opacity 180ms ease-out,
+    transform 420ms var(--mo-spring),
+    visibility 0s linear 420ms;
+  will-change:transform, opacity;
+}
+.win .qs-panel.is-open{
+  transform:none;opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity 160ms ease-out, transform 420ms var(--mo-spring), visibility 0s;
+}
+.win .qs-panel__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.win .qs-panel__title{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7ca}
+.win .qs-panel__user{display:flex;align-items:center;gap:6px;font-size:9.5px}
+.win .qs-panel__grid{grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.win .qs-panel__grid .island-tile{
+  width:auto;height:34px;border-radius:9px;
+  background:rgba(255,255,255,.08);color:#dfe6f5;
+  border:0;display:grid;place-items:center;cursor:pointer;
+}
+.win .qs-panel__grid .island-tile .ico{width:13px;height:13px}
+.win .qs-panel__grid .island-tile.on{background:#7cc4ff;color:#08121f}
+.win .qs-panel__sliders{
+  display:flex;flex-direction:column;gap:8px;
+}
+.win .qs-panel__sliders .island-slider{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:9px;background:rgba(255,255,255,.06);
+}
+.win .qs-panel__sliders .island-slider__ico{display:grid;place-items:center;color:#c8d0e0}
+.win .qs-panel__sliders .island-slider__ico .ico{width:12px;height:12px}
+.win .qs-panel__sliders .island-slider__range{flex:1;min-width:0;height:3px}
+.win .qs-panel__foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.10);
+  font-size:9px;color:#aeb7ca;
+}
+.win .qs-panel__batt{display:inline-flex;align-items:center;gap:5px}
+.win .qs-panel__batt .ico{width:12px;height:12px}
+.win .qs-panel__lock{
+  display:inline-flex;align-items:center;gap:5px;
+  border:0;background:rgba(255,255,255,.10);color:#eaeef8;
+  padding:5px 9px;border-radius:7px;cursor:pointer;font-family:inherit;font-size:9px;
+  transition:background-color 180ms ease-out, transform 200ms var(--mo-spring);
+}
+.win .qs-panel__lock .ico{width:11px;height:11px}
+.win .qs-panel__lock:hover{background:rgba(255,255,255,.18)}
+.win .qs-panel__lock:active{transform:scale(.95)}

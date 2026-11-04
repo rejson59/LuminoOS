@@ -133,9 +133,46 @@
   let fsZoom = 1;
   const fullBtn = document.getElementById("fullToggle");
 
+  /* jedna powłoka: w pełnym ekranie można przeskakiwać między urządzeniami
+     bez wychodzenia z trybu (te same klawisze i kafelki co w podglądzie) */
+  function deviceSwitcher() {
+    let bar = document.querySelector(".fs-switch");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.className = "fs-switch";
+      bar.setAttribute("role", "tablist");
+      bar.setAttribute("aria-label", "Urządzenie w pełnym ekranie");
+      bar.innerHTML = [
+        ["phone", "Telefon", "i-phone"],
+        ["tablet", "Tablet", "i-computer-tablet"],
+        ["laptop", "Laptop", "i-laptop"]
+      ].map(([v, label, ic]) =>
+        `<button class="fs-switch__btn" data-fs-device="${v}" role="tab" aria-label="${label}">
+           <svg class="ico"><use href="#${ic}"/></svg><span>${label}</span></button>`).join("");
+      document.body.appendChild(bar);
+      bar.addEventListener("click", e => {
+        const b = e.target.closest("[data-fs-device]");
+        if (!b) return;
+        setView(b.dataset.fsDevice);
+      });
+    }
+    return bar;
+  }
+
+  function paintSwitcher(v) {
+    const bar = deviceSwitcher();
+    bar.classList.toggle("is-visible", fullscreen);
+    bar.querySelectorAll("[data-fs-device]").forEach(b => {
+      const on = b.dataset.fsDevice === v;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-selected", String(on));
+    });
+  }
+
   function fitFullscreen() {
     if (!fullscreen) return;
     const v = currentView() === "all" ? "phone" : currentView();
+    paintSwitcher(v);
     const el = stage.querySelector(`.device.device--${v}`);
     if (!el) return;
 
@@ -185,6 +222,7 @@
     }
     /* w pełnym ekranie zawsze dokładnie jedno urządzenie (nigdy czarne tło) */
     if (on && currentView() === "all") setView("phone");
+    paintSwitcher(currentView());
     if (on) { safeBlur(); fitFullscreen(); }
     else { resetSizeVars(); el_restore(); }
     requestAnimationFrame(fit);
@@ -291,6 +329,8 @@
       /* np. przy otwarciu z file:// — pomijamy zapis w adresie */
     }
     pauseHiddenDevices();
+    /* jeden system: inne moduły (os.js) dowiadują się o zmianie widoku */
+    document.dispatchEvent(new CustomEvent("lumino:view", { detail: { view: v } }));
     if (fullscreen) {
       const shown = stage.querySelector(".device.is-shown");
       if (!shown || !shown.classList.contains(`device--${v}`)) {

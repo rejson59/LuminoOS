@@ -30,6 +30,14 @@
     { id: "t9", title: "Satelita", artist: "Aster", album: "Orbita", dur: "5:02", cover: "cv-9" }
   ];
 
+  /* ---------------- przełączniki sieci w powłoce Windows (Start) ---------------- */
+  const WIN_TOGGLES = [
+    ["wifi", "i-wifi", "Wi-Fi"],
+    ["bt", "i-bluetooth", "Bluetooth"],
+    ["air", "i-airplane", "Tryb samolotowy"],
+    ["saver", "i-saver", "Oszczędzanie"]
+  ];
+
   /* ---------------- wspólny odtwarzacz ---------------- */
   const player = {
     tracks,
@@ -109,6 +117,80 @@
     { id: "settings", label: "Ustawienia", icon: "i-settings", color: "ic-gray" }
   ];
   const appById = (id) => androidApps.find(a => a.id === id);
+
+  /* ============================================================
+     WSPÓLNY STAN SYSTEMU (jeden dla telefonu, tabletu i laptopa)
+     • każdy przełącznik, suwak i wskaźnik czyta TEN SAM stan
+     • zmiana w jednej powłoce natychmiast widać w pozostałych
+     • brak duplikacji logiki — powłoki tylko się w niego wpinają
+     ============================================================ */
+  const sys = {
+    state: {
+      wifi: true, bt: true, dnd: false, saver: false,
+      flash: false, rotate: true, air: false, cast: false,
+      brightness: 70, volume: 55,
+      dark: true, notifications: true, sounds: true,
+      battery: 78
+    },
+    _subs: new Set(),
+    get(k) { return this.state[k]; },
+    set(k, v, silent) {
+      if (this.state[k] === v) return v;
+      this.state[k] = v;
+      /* tryb samolotowy wyłącza sieci — jak w prawdziwym systemie */
+      if (k === "air" && v) { this.state.wifi = false; this.state.bt = false; }
+      if (!silent) this._emit(k);
+      return v;
+    },
+    /* ustawienie kilku wartości JEDNYM odświeżeniem (bez migotania) */
+    patch(next) {
+      Object.keys(next).forEach(k => this.set(k, next[k], true));
+      this._emit(null);
+    },
+    toggle(k) { return this.set(k, !this.state[k]); },
+    subscribe(fn) { this._subs.add(fn); fn(this.state, null); return () => this._subs.delete(fn); },
+    _emit(key) {
+      this._subs.forEach(fn => { try { fn(this.state, key); } catch (e) { /* ignoruj */ } });
+    }
+  };
+
+  /* skróty systemowe — DOKŁADNIE ta sama lista w panelu wyspy (Android)
+     i w panelu zasobnika (Windows). Jedno źródło prawdy dla obu powłok. */
+  const QS_TILES = [
+    ["wifi", "i-wifi", "Internet"],
+    ["bt", "i-bluetooth", "Bluetooth"],
+    ["dnd", "i-bell-off", "Nie przeszkadzać"],
+    ["saver", "i-saver", "Oszczędzanie baterii"],
+    ["flash", "i-flash", "Latarka"],
+    ["rotate", "i-rotate", "Auto-obrót"],
+    ["air", "i-airplane", "Tryb samolotowy"],
+    ["cast", "i-cast", "Przesyłanie obrazu"]
+  ];
+
+  /* siatka skrótów: te same klasy w obu systemach → ten sam wygląd i ruch */
+  function qsGrid(cls = "island-tile") {
+    return QS_TILES.map(([key, ico, label], i) => {
+      const on = !!sys.get(key);
+      return `<button class="${cls}${on ? " on" : ""}" data-qs="${key}"
+        aria-label="${label}" title="${label}" aria-pressed="${on ? "true" : "false"}"
+        style="--i:${i}" type="button">${icon(ico)}</button>`;
+    }).join("");
+  }
+
+  /* dwa suwaki (jasność i głośność) — wspólne dla wyspy i zasobnika */
+  function qsSliders() {
+    return `
+      <label class="island-slider" title="Jasność" style="--i:0">
+        <span class="island-slider__ico">${icon("i-sun")}</span>
+        <input class="slider island-slider__range" type="range" min="0" max="100"
+          value="${sys.get("brightness")}" data-sys-range="brightness" aria-label="Jasność">
+      </label>
+      <label class="island-slider" title="Głośność" style="--i:1">
+        <span class="island-slider__ico">${icon("i-volume")}</span>
+        <input class="slider island-slider__range" type="range" min="0" max="100"
+          value="${sys.get("volume")}" data-sys-range="volume" aria-label="Głośność">
+      </label>`;
+  }
 
   /* ---------------- powiadomienia ---------------- */
   const notifications = [
@@ -232,5 +314,9 @@
 
   function brandIcon(id) { return iconImg(id); }
 
-  window.Lumino = { $, $$, icon, iconImg, fmtTime, parseDur, clamp, player, tracks, androidApps, appById, notifications, brandIcon, BRAND };
+  window.Lumino = {
+    $, $$, icon, iconImg, fmtTime, parseDur, clamp,
+    player, tracks, androidApps, appById, notifications, brandIcon, BRAND,
+    sys, QS_TILES, qsGrid, qsSliders, WIN_TOGGLES
+  };
 })();

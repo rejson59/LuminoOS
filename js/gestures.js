@@ -235,11 +235,9 @@
 
     screens.forEach(screen => {
       const device = screen.dataset.android || "phone";
-      /* nowe sterowanie dotyczy telefonu (na tablecie zostaje klasyczne) */
-      if (device !== "phone") {
-        legacyRecents(screen, recents);
-        return;
-      }
+      /* JEDEN system: ten sam zestaw gestów i ten sam pasek ostatnich
+         aplikacji działa na telefonie I na tablecie (wcześniej tablet
+         miał „klasyczne” zachowanie i wyglądał jak inny system). */
 
       /* zamykanie aplikacji bezpośrednio w powłoce */
       const closeAppDirect = id => {
@@ -469,7 +467,7 @@
         ["bottom", "Przesuń w górę — ostatnie aplikacje"],
         ["left", "Przesuń w prawo — wstecz"]
       ];
-      const handles = device === "phone" ? EDGES.map(([edge, hint]) => {
+      const handles = EDGES.map(([edge, hint]) => {
         const el = document.createElement("div");
         el.className = `gesture-edge gesture-edge--${edge}`;
         el.dataset.gestureEdge = edge;
@@ -477,7 +475,7 @@
         el.setAttribute("aria-hidden", "true");
         screen.appendChild(el);
         return el;
-      }) : [];
+      });
 
       /* strzałki pokazujące kierunek gestu (widoczne w trakcie przeciągania) */
       ["left", "right"].forEach(side => {

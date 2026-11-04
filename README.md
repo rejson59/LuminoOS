@@ -72,6 +72,8 @@ css/base.css        – strona, ramki urządzeń, wspólne kafelki ikon
 css/android.css     – Android: blokada, launcher, wyspa (skróty), aplikacje, Spotify
 css/windows.css     – Windows: okna, pasek zadań, Start, aplikacje
 css/motion.css      – warstwa ruchu: krzywe --mo-*, kaskady --i, przejścia widoków
+css/os.css          – „jeden system”: wspólne tokeny, pasek systemu, panel zasobnika
+js/os.js            – spinacz stanu: sys → wyspa/panel zasobnika/Ustawienia, pasek systemu
 js/core.js          – dane przykładowe (utwory, aplikacje, powiadomienia) + wspólny odtwarzacz
 js/apps.js          – treść aplikacji (Android i Windows)
 js/android.js       – powłoka Androida (telefon + tablet)
@@ -271,6 +273,36 @@ klikiem w pasek gestów u dołu — a także przeciągać go w poziomie myszką.
 - **Aplikacje**: sprężyste wejście 500 ms bez skoku `visibility`.
 - Wszystkie animacje idą wyłącznie na `transform`/`opacity` (kompozytor),
   więc nie ruszają layoutem i trzymają 60–120 fps.
+
+### Jeden system na trzech urządzeniach (etap 14)
+
+Telefon, tablet i laptop to **jedna powłoka w trzech rozmiarach**, nie trzy
+osobne makiety. Wszystko, co systemowe, ma jedno źródło prawdy:
+
+- **Wspólny stan** (`window.Lumino.sys` w `js/core.js`): Wi‑Fi, Bluetooth,
+  Nie przeszkadzać, oszczędzanie baterii, latarka, auto‑obrót, tryb samolotowy,
+  przesyłanie obrazu, jasność, głośność, bateria. Zmiana w jednym miejscu
+  natychmiast widać we wszystkich trzech ekranach (i w pasku systemu).
+- **Te same kafle skrótów**: `QS_TILES` + `qsGrid()` rysują identyczną siatkę
+  w panelu wyspy (Android) i w nowym **panelu zasobnika** w Windows.
+- **Te same suwaki**: `qsSliders()` — jasność i głośność, w wyspie, w zasobniku
+  i w pasku systemu. Jasność naprawdę przyciemnia ekran (`--lum` + warstwa
+  `.lum-dim`/`::after`), głośność ustawia poziom wspólnego odtwarzacza.
+- **Te same przełączniki**: Ustawienia w Androidzie, Ustawienia w Windows,
+  menu Start i panel zasobnika mówią tym samym stanem (`sys.toggle`).
+- **Ten sam wskaźnik „aplikacja działa”**: kropka pod ikoną w Androidzie
+  i podświetlenie w pasku zadań Windows.
+- **Ten sam pasek „teraz gra”**: wyspa Androida i mini‑odtwarzacz w pasku
+  zadań Windows pokazują ten sam utwór z jednego odtwarzacza.
+- **Te same gesty**: telefon **i tablet** mają cztery uchwyty gestów oraz
+  szklany pasek ostatnich aplikacji (wcześniej tablet był „inny”).
+- **Pasek „System LuminoOS”** (przycisk **System** w belce): jeden zestaw
+  kafli i suwaków nad makietami — klikasz i widzisz, jak wszystkie ekrany
+  zmieniają się razem.
+- **Pełny ekran**: przełącznik urządzeń (Telefon / Tablet / Laptop) u dołu —
+  bez wychodzenia z trybu, te same klawisze `1`/`2`/`3`.
+- **Pływający pasek zadań Windows** — jak dock Androida: oderwany od krawędzi,
+  ze szkłem i tym samym promieniem.
 
 ### Warstwa ruchu — `css/motion.css` (etap 13)
 Cały „dopracowany ruch” jest w jednym arkuszu, podpiętym po pozostałych CSS-ach:

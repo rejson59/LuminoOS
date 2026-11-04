@@ -23,12 +23,21 @@
   // laptop
   buildWindows(document.getElementById("winScreen"));
 
+  /* Jeden system: start wygląda tak samo na każdym urządzeniu —
+     telefon, tablet i laptop zaczynają od tego samego stanu i godziny. */
+  const sys = window.Lumino.sys;
+  if (sys) {
+    sys.patch({ wifi: true, bt: true, dnd: false, saver: false, flash: false,
+      rotate: true, air: false, cast: false, brightness: 70, volume: 55,
+      dark: true, notifications: true, sounds: true });
+  }
+
   // skróty klawiszowe (wygodne w podglądzie na desktopie)
   document.addEventListener("keydown", e => {
     if (e.target.matches("input, textarea")) return;
     const win = document.getElementById("winScreen");
     if (e.key === "Escape") {
-      if (win && win.lumino) win.lumino.closeStart();
+      if (win && win.lumino) { win.lumino.closeStart(); if (win.lumino.closeTray) win.lumino.closeTray(); }
       if (win && win.lumino) win.lumino.unlockPC();
       androidScreens.forEach(s => {
         const api = s.lumino;
