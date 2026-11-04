@@ -1,4 +1,4 @@
-/* Sprawdza, że 4 warianty ikon działają i faktycznie różnią się stylem. */
+/* Weryfikuje jeden, finalny styl ikon (szkło w stylu Apple). */
 const fs = require("fs"), path = require("path"), { JSDOM } = require("jsdom");
 const root = path.join(__dirname, "..");
 const dom = new JSDOM(fs.readFileSync(path.join(root, "index.html"), "utf8"), {
@@ -7,32 +7,33 @@ const dom = new JSDOM(fs.readFileSync(path.join(root, "index.html"), "utf8"), {
 });
 dom.window.addEventListener("load", () => setTimeout(() => {
   const { document } = dom.window;
-  const getComputedStyle = dom.window.getComputedStyle.bind(dom.window);
-  const L = dom.window.Lumino;
-  const icon = () => document.querySelector('[data-android="phone"] .app .bi');
+  const gcs = dom.window.getComputedStyle.bind(dom.window);
   let pass = 0, fail = 0;
   const check = (n, c) => c ? (console.log("  ✓ " + n), pass++) : (console.log("  ✗ " + n), fail++);
 
-  check("przełącznik ma 4 warianty", document.querySelectorAll("[data-icons-set]").length === 4);
+  const tiles = document.querySelectorAll(".app .bi");
+  check("ikony występują na pulpicie", tiles.length >= 12);
+  check("brak przełącznika wariantów", document.querySelectorAll("[data-icons-set]").length === 0);
+  check("brak atrybutu data-icons (jeden styl)", !document.body.dataset.icons);
 
-  const seen = new Set();
-  ["glass", "clear", "gel", "chrome"].forEach(name => {
-    L.setIconStyle(name);
-    const el = icon();
-    const cs = getComputedStyle(el);
-    seen.add(cs.backgroundImage + "|" + cs.boxShadow);
-    check(`wariant "${name}" ustawiony`, document.body.dataset.icons === name);
-    check(`  ikona ma tło i cień (${name})`, cs.backgroundImage !== "none" && cs.boxShadow !== "none");
-    check(`  ikona ma warstwy tła i cień (${name})`,
-      cs.backgroundImage !== "none" && cs.boxShadow !== "none");
+  const el = tiles[0];
+  const vars = el.getAttribute("style") || "";
+  check("kolor marki w zmiennych --g1/--g2", /--g1:/.test(vars) && /--g2:/.test(vars));
+
+  const rules = Array.from(document.styleSheets).flatMap(sh => {
+    try { return Array.from(sh.cssRules); } catch (e) { return []; }
   });
-  check("warianty różnią się wyglądem (4 unikalne style)", seen.size === 4);
-  const sheet = Array.from(document.styleSheets)
-    .flatMap(sh => { try { return Array.from(sh.cssRules); } catch (e) { return []; } })
-    .filter(r => r.selectorText === ".bi")
-    .map(r => r.style.getPropertyValue("border-radius"))
-    .join(" ");
-  check("wszystkie ikony kwadratowe (promień 31%)", /31%/.test(sheet));
+  const before = rules.find(r => r.selectorText === ".bi::before");
+  const after = rules.find(r => r.selectorText === ".bi::after");
+  check("warstwa koloru (.bi::before) ma maskę squircle",
+    !!before && /mask-image/.test(before.style.cssText || ""));
+  check("warstwa szkła (.bi::after) używa plate.png",
+    !!after && /plate\.png/.test(after.style.cssText || ""));
+  check("promień 31% (kwadraty, nie koła)",
+    rules.some(r => r.selectorText === ".bi" && /31%/.test(r.style.getPropertyValue("border-radius"))));
+
+  const files = ["assets/icons/plate.png", "assets/icons/mask.png"];
+  files.forEach(f => check(`plik ${f} istnieje`, fs.existsSync(path.join(root, f))));
 
   console.log(`\nIkony: ${pass} OK, ${fail} błędów`);
   process.exit(fail ? 1 : 0);

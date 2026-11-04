@@ -1,70 +1,84 @@
-"""Realistyczne szklane płytki ikon (liquid glass, styl Apple).
+"""Realistyczne ikony w stylu Apple (liquid glass) — generator płytek PNG.
 
-Płytka = przezroczysty PNG: superelipsa (squircle), czyste szkło z delikatnym
-tintem, wyraźny jasny „rim” na krawędzi, cień wewnętrzny u dołu (grubość szkła),
-refleks w kształcie sierpa w lewym górnym rogu, pasmo refrakcji z tęczą u dołu.
-Kolor marki kładziemy POD płytką (CSS: ::before z currentColor).
+Jedna, dopracowana płytka `plate.png` (512 px, supersampling x2):
+  • superelipsa (squircle, n≈5) — dokładnie jak maska iOS,
+  • szeroki, miękki refleks górny (jakby światło padało z góry),
+  • sierpowy błysk (specular) przy górnej-lewej krawędzi,
+  • jasny „rim” (grubość szkła) + rozszczepienie chromatyczne na krawędzi,
+  • cień wewnętrzny u dołu i po bokach (ambient occlusion / grubość materiału),
+  • soczewka rozświetlająca dolny obszar,
+  • bardzo delikatne ziarno (usuwa pasma gradientu).
+
+Płytka jest biało-przezroczysta: kolor marki (gradient) leży POD nią w CSS,
+więc szkło realnie go załamuje i rozjaśnia.
 """
 from PIL import Image
 import numpy as np
 import os
 
-SIZE = 256
-SS = 3                      # supersampling
-N = 4.6                     # wykładnik superelipsy
+OUT = "assets/icons/plate.png"
+SIZE = 512
+SS = 2
+N = 5.0
 
-def field(size):
-    yy, xx = np.mgrid[0:size, 0:size].astype(np.float32)
-    c = (size - 1) / 2.0
+def build():
+    s = SIZE * SS
+    yy, xx = np.mgrid[0:s, 0:s].astype(np.float32)
+    c = (s - 1) / 2.0
     x = (xx - c) / c
     y = (yy - c) / c
-    r = (np.abs(x) ** N + np.abs(y) ** N) ** (1.0 / N)     # 0 w środku, 1 na krawędzi
-    return r, x, y, c
 
-def sig(t, w):           # gładka „gaussowa” funkcja odległości
-    return np.exp(-((t / w) ** 2))
+    # superelipsa: r = 0 w środku, 1 na krawędzi
+    r = (np.abs(x) ** N + np.abs(y) ** N) ** (1.0 / N)
+    mask = np.clip((1.0 - r) / (1.2 / s), 0, 1)          # antyaliasing
 
-def plate(path, clarity=1.0, gloss=1.0, disp=1.0, tint=(255, 255, 255)):
-    size = SIZE * SS
-    r, x, y, c = field(size)
+    g = lambda d, w: np.exp(-((d / w) ** 2))              # gauss
 
-    # maska (antyaliasing na krawędzi)
-    mask = np.clip((1.0 - r) / (1.6 / size), 0, 1)
+    # --- 1. podstawa szkła: bardzo delikatna, tylko górna część jaśniejsza ---
+    base = 0.035 + 0.10 * np.clip(1.0 - (y + 1) / 2 * 1.4, 0, 1) ** 1.6
 
-    # ---- szkło: podstawa ----
-    # jasność rośnie ku górze, delikatnie ciemniej przy dolnej krawędzi
-    vert = np.clip((0.62 - (y + 1) / 2 * 0.52), 0, 1)
-    base = vert * (0.30 * clarity)
+    # --- 2. szeroki refleks górny (miękki, „sufit”) ---
+    top_glow = g(y + 0.88, 0.40) * np.clip(1.0 - np.abs(x) * 0.40, 0, 1) * 0.14
 
-    # ---- refleks w kształcie sierpa przy górnej/lewej krawędzi ----
-    crescent = sig(r - 0.80, 0.11) * np.clip(-(y - 0.05) * 1.1, 0, 1) * np.clip(-x * 0.55 + 0.65, 0, 1)
-    # ---- błysk punktowy ----
-    spark = sig(np.sqrt((x + 0.36) ** 2 + (y + 0.44) ** 2), 0.20) * 0.95
-    # ---- rozświetlenie „soczewki” u dołu (światło skupione w szkle) ----
-    lens = sig(np.sqrt((x * 1.6) ** 2 + ((y - 0.62) * 1.25) ** 2), 0.42) * 0.42
-    # ---- cienki, jasny rim (krawędź szkła) ----
-    rim = sig(r - 0.965, 0.020) * 1.0
-    # ---- cień wewnętrzny u dołu (grubość szkła) ----
-    inner_shadow = sig(r - 0.86, 0.09) * np.clip((y - 0.15) * 1.6, 0, 1)
+    # --- 3. sierpowy błysk przy górnej-lewej krawędzi ---
+    crescent = g(r - 0.885, 0.055) * np.clip(-(y + 0.10) * 1.9, 0, 1) \
+               * np.clip(-x * 0.90 + 0.45, 0, 1) ** 0.9 * 0.85
 
-    # ---- pasmo refrakcji (tęcza) ----
-    band = sig(y - 0.62, 0.055) * np.clip(1 - np.abs(x) / 0.86, 0, 1)
-    disp_rgb = np.zeros((size, size, 3), np.float32)
-    for i, off in enumerate((-0.028, 0.0, 0.028)):
-        disp_rgb[..., i] = np.roll(band, int(off * size), axis=0) * (0.60 if i != 1 else 0.25) * disp
+    # --- 4. drobny, ostry błysk punktowy ---
+    spark = g(np.sqrt((x + 0.44) ** 2 + (y + 0.50) ** 2), 0.13) * 0.70
 
-    # ---- alfa ----
-    alpha = base + crescent * 0.55 * gloss + spark * 0.75 * gloss + lens * 0.30 \
-            + rim * 0.72 + band * 0.16 - inner_shadow * 0.22
+    # --- 5. rim: jasna krawędź szkła ---
+    rim = g(r - 0.962, 0.018) * 1.05
+    rim_top = rim * np.clip(1.35 - (y + 1) * 0.55, 0, 1)     # mocniejszy u góry
+    rim_bottom = rim * np.clip((y + 0.1) * 0.9, 0, 1)
+
+    # --- 6. cień wewnętrzny (grubość szkła, dół i boki) ---
+    inner = g(r - 0.82, 0.085) * np.clip((y - 0.10) * 2.0, 0, 1) * 0.46
+    side = g(r - 0.88, 0.09) * np.clip(np.abs(x) - 0.45, 0, 1) * 0.22
+
+    # --- 7. soczewka: rozświetlenie dolnej części ---
+    lens = g(np.sqrt((x * 1.9) ** 2 + ((y - 0.72) * 1.25) ** 2), 0.34) * 0.16
+
+    # --- 8. refrakcja / rozszczepienie przy krawędzi ---
+    edge_band = g(r - 0.947, 0.030)
+    disp = np.zeros((s, s, 3), np.float32)
+    for i, (dx, dy) in enumerate(((-0.010, -0.008), (0.0, 0.0), (0.010, 0.008))):
+        shifted = np.roll(np.roll(edge_band, int(dy * s), axis=0), int(dx * s), axis=1)
+        disp[..., i] = shifted * (0.55 if i != 1 else 0.18)
+
+    # --- alfa ---
+    alpha = (base + top_glow + crescent * 0.85 + spark * 0.65 + rim_top * 0.85
+             + rim_bottom * 0.35 + lens + edge_band * 0.10 - inner - side)
     alpha = np.clip(alpha, 0, 1) * mask
 
-    # ---- kolor ----
-    rgb = np.zeros((size, size, 3), np.float32)
+    # --- kolor (białe szkło z lekkim chłodem) ---
+    rgb = np.zeros((s, s, 3), np.float32)
+    tints = (255.0, 255.0, 255.0)
     for i in range(3):
-        col = np.full((size, size), float(tint[i]))
-        col = col * (1 + crescent * 0.10 + spark * 0.22 + rim * 0.18 + lens * 0.12)
-        col = col * (1 - inner_shadow * 0.35)
-        col = col + disp_rgb[..., i] * 255 * 1.05     # refrakcja dodaje barwę
+        col = np.full((s, s), tints[i], np.float32)
+        col *= (1.0 + crescent * 0.12 + spark * 0.18 + rim_top * 0.10 + lens * 0.08)
+        col *= (1.0 - inner * 0.55 - side * 0.5)
+        col += disp[..., i] * 110.0
         rgb[..., i] = np.clip(col, 0, 255)
 
     rgba = np.dstack([rgb, alpha * 255]).astype(np.uint8)
@@ -72,11 +86,17 @@ def plate(path, clarity=1.0, gloss=1.0, disp=1.0, tint=(255, 255, 255)):
 
     # ziarno
     a = np.array(img).astype(np.float32)
-    n = np.random.default_rng(11).normal(0, 2.0, (SIZE, SIZE, 1))
-    a[..., :3] = np.clip(a[..., :3] + n, 0, 255)
-    Image.fromarray(a.astype(np.uint8), "RGBA").save(path, optimize=True)
-    print(f"{path}: {os.path.getsize(path)/1024:.1f} KB")
+    noise = np.random.default_rng(23).normal(0, 1.7, (SIZE, SIZE, 1))
+    a[..., :3] = np.clip(a[..., :3] + noise, 0, 255)
+    img = Image.fromarray(a.astype(np.uint8), "RGBA")
+    img.save(OUT, optimize=True)
+    print(f"{OUT}: {os.path.getsize(OUT)/1024:.1f} KB  {img.size}")
 
-plate("assets/icons/plate-light.png", clarity=1.00, gloss=1.00, disp=1.00)
-plate("assets/icons/plate-clear.png", clarity=0.70, gloss=0.95, disp=1.25)
-plate("assets/icons/plate-deep.png",  clarity=1.20, gloss=0.80, disp=0.55, tint=(238, 244, 255))
+    # maska squircle (kryta w środku) — do podglądów i przycinania koloru
+    m = (np.clip(mask, 0, 1) * 255).astype(np.uint8)
+    mask_img = Image.fromarray(np.dstack([m, m, m, m]), "RGBA").resize((SIZE, SIZE), Image.LANCZOS)
+    mask_img.save("assets/icons/mask.png", optimize=True)
+    print(f"assets/icons/mask.png: {os.path.getsize('assets/icons/mask.png')/1024:.1f} KB")
+
+if __name__ == "__main__":
+    build()

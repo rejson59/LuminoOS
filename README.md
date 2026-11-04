@@ -128,11 +128,16 @@ Wszystkie ikony (`js/core.js` → `brandIcon`, styl `css/glass.css` → `.bi`) s
 krawędź, miękki cień i podniesienie pod kursorem. Dotyczy to pulpitu, docku,
 szuflady aplikacji, ekranu blokady i widgetów.
 
-### Ikony „liquid glass”
-Każda ikona to **ten sam szklany kwadrat** (zaokrąglone rogi ~31%, bez kół),
-mocno przezroczysty, z jasną krawędzią i refleksem światła — w środku zostaje
-tylko kolorowy glif marki (kolor ustawia `--ink`). Definicje: `js/core.js`
-(`brandIcon`), styl: `css/glass.css` (sekcja 7).
+### Ikony — szkło w stylu Apple (jeden styl)
+Płytki generuje `tools/make-icons.py` (512 px, supersampling): **superelipsa (squircle)**,
+jasny **rim** krawędzi, **sierpowy refleks** + błysk, **cień wewnętrzny** u dołu,
+**pasmo refrakcji** z rozszczepieniem i delikatne ziarno. Kolor marki to **kryty gradient**
+(`--g1`/`--g2`) przycięty maską `assets/icons/mask.png`, szkło leży na wierzchu
+(`assets/icons/plate.png`), a glif jest biały z miękkim cieniem — jak w iOS.
+
+Warianty stylów (dawniej Liquid/Frosted/Gel/Chrome) zostały **usunięte** —
+jest jeden, dopracowany wygląd.
+
 
 ### Tablet: komplet aplikacji na jednym ekranie
 `14` aplikacji w siatce **5 kolumn** + 3 kompaktowe widgety w jednym rzędzie.
