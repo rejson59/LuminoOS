@@ -149,8 +149,22 @@
   box-shadow:0 0 0 .5px rgba(255,255,255,.5) inset;
 }
 
+/* stopka wyspy: kłódka / szukaj / wszystkie aplikacje — same ikony */
+.island-foot{
+  display:flex;gap:6px;align-items:center;
+  padding-top:1px;
+}
+.island-foot .island-tile--sm{
+  width:26px;height:26px;aspect-ratio:auto;flex:none;
+  border-radius:9px;
+  background:rgba(255,255,255,.06);
+}
+.island-foot .island-tile--sm .ico{width:13px;height:13px}
+.island-foot .island-tile--sm:hover{background:rgba(255,255,255,.16)}
+
 /* powiadomienia: tylko ikona aplikacji + kropka (mniej tekstu) */
-.island-notifs{display:flex;gap:6px;align-items:center;padding:1px 2px 0}
+.island-bar{display:flex;align-items:center;gap:8px;padding-top:1px}
+.island-notifs{display:flex;gap:6px;align-items:center;margin-left:auto}
 .island-notif{
   position:relative;border:0;padding:0;cursor:pointer;background:none;
   width:22px;height:22px;flex:none;border-radius:7px;overflow:visible;
@@ -211,7 +225,7 @@ html.is-fullscreen,html.is-fullscreen body{
   overflow:hidden!important;
   height:100%!important;
   margin:0!important;padding:0!important;
-  background:#05070c;
+  background:#0b0f18;
 }
 html.is-fullscreen .site-header,
 html.is-fullscreen .hero,
@@ -230,15 +244,20 @@ html.is-fullscreen .stage{
   display:grid!important;
   place-items:center;
   z-index:900;
-  background:radial-gradient(120% 120% at 50% 0%, #10131c 0%, #05070c 72%);
+  background:radial-gradient(130% 120% at 50% 0%, #161c2a 0%, #0b0f18 70%);
 }
-html.is-native .stage{background:#000}
-html.is-fullscreen .stage > .device{
+/* wybrane urządzenie zawsze widoczne — to jego brak dawał czarny ekran */
+html.is-fullscreen .stage > .device.is-shown{
   display:flex!important;
   margin:0!important;
   transform:scale(var(--zoom,1));
   transform-origin:center center;
   transition:transform 320ms cubic-bezier(.32,.72,0,1);
+}
+/* awaryjnie: jeśli JS nie zdążył nadać .is-shown, pokazujemy urządzenie
+   z aktualnego widoku (nigdy „czarny ekran”) */
+html.is-fullscreen:not(:has(.device.is-shown)) .stage > .device[data-device="phone"]{
+  display:flex!important;
 }
 
 /* pasek trybów w pełnym ekranie — dyskretny overlay, znika po chwili */
@@ -253,6 +272,19 @@ html.is-fullscreen .viewbar{
   margin:0;
 }
 html.is-fullscreen .viewbar:hover,html.is-fullscreen .viewbar:focus-within{opacity:1}
+/* wyjście z pełnego ekranu — zawsze widoczne w rogu */
+.fs-exit{
+  position:fixed;top:14px;right:14px;z-index:903;
+  width:34px;height:34px;border-radius:11px;cursor:pointer;
+  display:none;place-items:center;
+  color:#fff;border:1px solid rgba(255,255,255,.18);
+  background:rgba(14,18,28,.72);
+  font:400 15px/1 ui-sans-serif,system-ui,sans-serif;
+  transition:background-color 160ms ease, transform 160ms cubic-bezier(.32,.72,0,1);
+}
+.fs-exit:hover{background:rgba(38,46,64,.9)}
+.fs-exit:active{transform:scale(.93)}
+html.is-fullscreen .fs-exit{display:grid}
 html.is-fullscreen .viewbar__hint{display:none}
 html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
 

@@ -20,7 +20,14 @@ w.addEventListener("load", () => setTimeout(() => {
   check("pasek ostatnich aplikacji istnieje", !!bar);
   check("pasek jest poza widokiem na start", bar && !bar.classList.contains("is-open"));
   check("pasek ma przewijalny tor", !!phone.querySelector(".a-activity__track"));
-  check("pasek ma strzałki przewijania", phone.querySelectorAll(".a-activity__arrow").length === 2);
+  check("pasek jest oderwany od krawędzi (pływająca wyspa)", () => {
+    const fsx = require("fs"), px = require("path");
+    const css = fsx.readFileSync(px.join(__dirname, "..", "css/activity.css"), "utf8");
+    const base = css.slice(css.indexOf(".a-activity{"), css.indexOf(".a-activity.is-following"));
+    return base.includes("left:8px") && base.includes("bottom:calc(12px") &&
+      base.includes("backdrop-filter:blur") && base.includes("border-radius:24px");
+  });
+  check("pasek nie ma już nagłówka z tekstem (styl macOS)", !phone.querySelector(".a-activity__head"));
 
   const act = phone.lumino && phone.lumino.activity;
   check("API gestów dostępne (window.Lumino.androidActivity)", !!act);

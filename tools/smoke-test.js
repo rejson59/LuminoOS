@@ -42,8 +42,27 @@ dom.window.addEventListener("load", async () => {
   check("windows zbudowany", () => assert(win.querySelector(".taskbar") && win.querySelector(".win-window")));
 
   console.log("\n— Android: ekran blokady —");
-  check("ekran startowy jest odblokowany", () => assert(!phone.lumino.isLocked()));
-  check("blokada ekranu działa (przycisk w panelu)", () => {
+  check("ekran startowy pokazuje blokadę telefonu", () => assert(phone.lumino.isLocked()));
+  check("tablet też pokazuje blokadę", () => {
+    assert(tablet.lumino && tablet.lumino.isLocked());
+    assert(tablet.querySelector(".a-lock .lock-clock"));
+  });
+  check("blokada telefonu ma zegar i powiadomienia", () => {
+    assert(phone.querySelector(".a-lock .lock-clock"));
+    assert(phone.querySelector(".a-lock .lock-notif"));
+  });
+  check("blokada jest widoczna (nie przesunięta poza ekran)", () => {
+    const lock = phone.querySelector(".a-lock");
+    assert(!lock.classList.contains("is-unlocked"));
+  });
+  check("kłódka w wyspie blokuje ekran", () => {
+    phone.querySelector(".island").click();
+    const lockBtn = phone.querySelector('.island-foot [data-action="lock"]');
+    assert(lockBtn);
+    lockBtn.dispatchEvent(new dom.window.Event("click", { bubbles: true }));
+    assert(phone.lumino.isLocked());
+  });
+  check("blokada ekranu działa (przycisk w wyspie)", () => {
     phone.lumino.lockScreen();
     assert(phone.lumino.isLocked());
   });
@@ -252,10 +271,16 @@ dom.window.addEventListener("load", async () => {
     assert(phone.querySelector(".searchbar"));
   });
   check("skróty w wyspie są ikonami bez tekstu (prostota)", () => {
-    const tiles = [...phone.querySelectorAll(".island-tile")];
-    assert(tiles.length === 8);
-    assert(tiles.every(t => !t.textContent.trim()));
-    assert(tiles.every(t => t.querySelector("svg.ico")));
+    const grid = [...phone.querySelectorAll(".island-grid .island-tile")];
+    assert(grid.length === 8);
+    assert(grid.every(t => !t.textContent.trim()));
+    assert(grid.every(t => t.querySelector("svg.ico")));
+  });
+  check("wyspa ma stopkę z samymi ikonami (kłódka/szukaj/aplikacje)", () => {
+    const foot = [...phone.querySelectorAll(".island-foot .island-tile")];
+    assert(foot.length === 3);
+    assert(foot.every(t => !t.textContent.trim() && t.querySelector("svg.ico")));
+    assert(phone.querySelector('.island-foot [data-action="lock"]'));
   });
   check("Windows: menu Start ma 6 kolumn i 18 aplikacji", () => {
     assert(win.querySelectorAll(".start-app").length === 18);

@@ -36,12 +36,12 @@ w.addEventListener("load", () => setTimeout(() => {
     !phone.querySelector(".a-panel") && !phone.querySelector(".a-shade"));
   check("wyspa ma rozwijane skróty", !!menu && !!phone.querySelector(".island-shade"));
   check("skróty: 8 kafli + 2 suwaki + powiadomienia jako ikony",
-    menu.querySelectorAll(".island-tile").length === 8 &&
+    menu.querySelectorAll(".island-grid .island-tile").length === 8 &&
     menu.querySelectorAll(".island-slider").length === 2 &&
     menu.querySelectorAll(".island-notif").length >= 3);
   check("skróty to same ikony — bez podpisów tekstowych",
-    [...menu.querySelectorAll(".island-tile")].every(t => !t.textContent.trim()) &&
-    [...menu.querySelectorAll(".island-tile")].every(t => t.querySelector("svg.ico")));
+    [...menu.querySelectorAll(".island-grid .island-tile")].every(t => !t.textContent.trim()) &&
+    [...menu.querySelectorAll(".island-grid .island-tile")].every(t => t.querySelector("svg.ico")));
   check("kafle to kwadraty z zaokrągleniem (nie koła)",
     /island-tile\{[\s\S]*?border-radius:\s*12px/.test(fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
 
@@ -65,9 +65,18 @@ w.addEventListener("load", () => setTimeout(() => {
   check("tryb 1:1 włącza się (aria-pressed)", sizeBtn.getAttribute("aria-pressed") === "true");
   check("tryb 1:1 wymusza widok pojedynczy", !!document.querySelector("#stage.single"));
 
-  /* --- pełny ekran (tryb awaryjny „theater” w jsdom) --- */
+  /* --- pełny ekran (w jsdom bez Fullscreen API — weryfikujemy stan i CSS) --- */
+  const fs_css = fs.readFileSync(path.join(root, "css/island.css"), "utf8");
   fullBtn.click();
   check("pełny ekran włącza klasę na <html>", document.documentElement.classList.contains("is-fullscreen"));
+  check("pełny ekran pokazuje dokładnie jedno urządzenie (.is-shown) — brak czarnego ekranu",
+    document.querySelectorAll(".device.is-shown").length === 1 &&
+    document.querySelector(".device.is-shown").classList.contains("device--phone"));
+  check("w pełnym ekranie jest przycisk wyjścia",
+    !!document.querySelector(".fs-exit") &&
+    fs_css.includes("html.is-fullscreen .fs-exit{display:grid}"));
+  check("awaryjna reguła CSS pokazuje telefon, gdy brak .is-shown",
+    fs_css.includes('html.is-fullscreen:not(:has(.device.is-shown))'));
   check("bez Fullscreen API nie udajemy trybu natywnego (brak .is-native w jsdom)",
     !document.documentElement.classList.contains("is-native"));
   check("pełny ekran ustawia aria-pressed", fullBtn.getAttribute("aria-pressed") === "true");

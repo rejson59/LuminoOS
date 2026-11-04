@@ -185,12 +185,19 @@
             <button class="island-tile" data-qs="air" aria-label="Tryb samolotowy">${icon("i-airplane")}</button>
             <button class="island-tile" data-qs="cast" aria-label="Przesyłanie obrazu">${icon("i-cast")}</button>
           </div>
-          <div class="island-notifs">
-            ${notifications.map(n => {
-              const a = androidApps.find(x => x.id === n.app);
-              return `<button class="island-notif" title="${n.title} — ${n.text}">
-                ${iconImg(a.id, "notif__ico")}<span class="island-notif__dot"></span></button>`;
-            }).join("")}
+          <div class="island-bar">
+            <div class="island-foot">
+              <button class="island-tile island-tile--sm" data-action="lock" aria-label="Zablokuj ekran" title="Zablokuj ekran">${icon("i-lock")}</button>
+              <button class="island-tile island-tile--sm" data-action="search" aria-label="Szukaj aplikacji" title="Szukaj aplikacji">${icon("i-search")}</button>
+              <button class="island-tile island-tile--sm" data-action="drawer" aria-label="Wszystkie aplikacje" title="Wszystkie aplikacje">${icon("i-grid")}</button>
+            </div>
+            <div class="island-notifs">
+              ${notifications.map(n => {
+                const a = androidApps.find(x => x.id === n.app);
+                return `<button class="island-notif" title="${n.title} — ${n.text}">
+                  ${iconImg(a.id, "notif__ico")}<span class="island-notif__dot"></span></button>`;
+              }).join("")}
+            </div>
           </div>
         </div>
       </div>
@@ -268,6 +275,19 @@
     });
     islandShade.addEventListener("click", closePanel);
     $$("[data-action='close-panel']", root).forEach(b => b.addEventListener("click", closePanel));
+
+    /* stopka wyspy: kłódka blokuje ekran, pozostałe otwierają szufladę */
+    $$(".island-foot [data-action]", root).forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      const action = b.dataset.action;
+      if (action === "lock") { lockScreen(); return; }
+      closePanel();
+      toggleDrawer(true);
+      if (action === "search") {
+        const input = drawer.querySelector("input");
+        if (input) setTimeout(() => input.focus(), 180);
+      }
+    }));
 
     /* przełączniki: ikona wypełnia się na włączonym, bez podpisów */
     $$(".island-tile", root).forEach(b => b.addEventListener("click", e => {

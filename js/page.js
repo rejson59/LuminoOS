@@ -38,9 +38,10 @@
     }
   });
 
-  // na starcie: jedna makiety "żywa" — reszta czeka w tle (czytelniejszy podgląd)
-  // (ekrany działają niezależnie; to tylko stan początkowy)
-  androidScreens.forEach(s => { if (s.lumino && s.lumino.isLocked()) s.lumino.unlock(); });
+  /* Na starcie NIE odblokowujemy ekranów — telefon i tablet pokazują ekran
+     blokady (zegar, powiadomienia, „przesuń w górę”). Klik lub przeciągnięcie
+     w górę odblokowuje, a blokada wraca z wyspy (przycisk z kłódką)
+     albo z powłoki przez lumino.lockScreen(). */
 
   // przywrócenie stanu po zmianie rozmiaru (scroll-snap potrafi przeskoczyć)
   let resizeTimer;

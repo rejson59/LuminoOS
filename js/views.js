@@ -72,6 +72,8 @@
 
     const el = stage.querySelector(`.device.device--${v}`);
     if (!el) return;
+    /* dokładnie jedno urządzenie jest „pokazane” (także w pełnym ekranie) */
+    devices.forEach(d => d.classList.toggle("is-shown", d === el));
 
     /* tryb 1:1 — skalujemy makietę tak, by miała wymiary urządzenia */
     if (sizeReal) {
@@ -128,7 +130,7 @@
       fullBtn.classList.toggle("is-active", on);
       fullBtn.setAttribute("aria-pressed", String(on));
     }
-    /* jeśli nie wybrano urządzenia, pokaż telefon (jest najbardziej „1:1”) */
+    /* w pełnym ekranie zawsze dokładnie jedno urządzenie (nigdy czarne tło) */
     if (on && currentView() === "all") setView("phone");
     requestAnimationFrame(fit);
     setTimeout(fit, 260);
@@ -195,6 +197,16 @@
     requestAnimationFrame(fit);
   });
   if (fullBtn) fullBtn.addEventListener("click", toggleFullscreen);
+
+  /* przycisk wyjścia widoczny w pełnym ekranie */
+  const exitBtn = document.createElement("button");
+  exitBtn.className = "fs-exit";
+  exitBtn.type = "button";
+  exitBtn.title = "Wyjdź z pełnego ekranu (Esc)";
+  exitBtn.setAttribute("aria-label", "Wyjdź z pełnego ekranu");
+  exitBtn.textContent = "✕";
+  exitBtn.addEventListener("click", () => { if (fullscreen) toggleFullscreen(); });
+  document.body.appendChild(exitBtn);
 
   /* wyjście z pełnego ekranu skrótem z podglądu (przycisk w rogu) */
   window.Lumino = window.Lumino || {};

@@ -180,7 +180,11 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   więc na laptopie znika pasek adresu i systemowe ramki), a makieta skaluje się
   do całego okna. Gdy przeglądarka odmówi (np. podgląd w iframe), pojawia się
   czytelny komunikat z prośbą o otwarcie podglądu w osobnej karcie — nie
-  udajemy już pełnego ekranu. Wyjście: **F**, **Esc** albo przycisk w rogu.
+  udajemy już pełnego ekranu. Wyjście: **F**, **Esc**, przycisk ✕ w prawym
+  górnym rogu albo kropka paska trybów na dole.
+  W pełnym ekranie widoczne jest **dokładnie jedno urządzenie** (`.is-shown`);
+  gdyby JS nie zdążył, reguła awaryjna i tak pokazuje telefon — czarny ekran
+  nie jest już możliwy.
 
 ### Górna belka telefonu/tabletu + wyspa (panel usunięty)
 - **Wyspa po lewej** (tam, gdzie była godzina): ciemna pigułka z soczewką
@@ -200,14 +204,23 @@ Dwa przyciski w belce widoków (skróty: **S** i **F**):
   „wstecz” (od lewej krawędzi) albo **Esc**.
 - **Prawa strona**: szukaj (szuflada z filtrowaniem) i status
   (zasięg, Wi-Fi, bateria).
+- **Stopka wyspy**: trzy ikony bez tekstu — kłódka (zablokuj ekran),
+  lupa (szukaj w szufladzie) i siatka (wszystkie aplikacje).
+- **Ekrany blokady** telefonu i tabletu są widoczne **od pierwszego otwarcia**
+  (wcześniej start automatycznie je odblokowywał). Blokada wraca kłódką
+  w wyspie albo `lumino.lockScreen()`.
 
 ### Telefon: nowe sterowanie gestami (zamiast ostatnich zadań)
-Zamiast systemowego ekranu „ostatnich zadań” telefon ma **wysuwany pasek w stylu
-macOS** z ostatnio używanymi aplikacjami (`js/gestures.js` + `css/activity.css`).
+Zamiast systemowego ekranu „ostatnich zadań” telefon ma **pływający, szklany
+pasek w stylu macOS** z ostatnio używanymi aplikacjami (`js/gestures.js` +
+`css/activity.css`). Pasek jest oderwany od wszystkich krawędzi (8 px z boków,
+12 px od dołu), ma 24 px zaokrąglenia, jasną mgłę, `backdrop-filter: blur(26px)`
+i miękką krawędź 1 px — unosi się nad tapetą zamiast być przyklejonym do dołu.
+Nie ma już nagłówka z tekstem: tylko karty aplikacji (ikona + nazwa) i grabber.
 
 | Gest | Efekt |
 |---|---|
-| przesunięcie **w górę od dolnej krawędzi** | wysuwa się pasek ostatnich aplikacji (podąża za palcem) |
+| przesunięcie **w górę od dolnej krawędzi** | wysuwa się pływający, szklany pasek ostatnich aplikacji (podąża za palcem) |
 | przesunięcie **w górę na pasku** | ekran główny |
 | przesunięcie **w dół** | schowanie paska |
 | przesunięcie **od lewej krawędzi** | wstecz (zamyka aplikację / skróty wyspy) |

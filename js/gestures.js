@@ -58,14 +58,9 @@
     bar.className = "a-activity";
     bar.setAttribute("role", "dialog");
     bar.setAttribute("aria-label", "Ostatnio używane aplikacje");
+    /* pasek jak w macOS: jedna szklana wyspa unosi się NAD dołem ekranu,
+       bez nagłówka z tekstem — tylko karty (ikona + nazwa) i grabber */
     bar.innerHTML = `
-      <div class="a-activity__head">
-        <span class="a-activity__hint">Ostatnio używane</span>
-        <span class="a-activity__nav">
-          <button class="a-activity__arrow" data-dir="-1" aria-label="W lewo">‹</button>
-          <button class="a-activity__arrow" data-dir="1" aria-label="W prawo">›</button>
-        </span>
-      </div>
       <div class="a-activity__track"><div class="a-activity__rail"></div></div>
       <div class="a-activity__grabber" aria-hidden="true"></div>
     `;
