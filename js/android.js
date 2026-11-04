@@ -23,6 +23,9 @@
      ------------------------------------------------------------ */
   function buildAndroid(root) {
     const isTablet = root.dataset.android === "tablet";
+    /* margines pigułki + panel liczymy z tego samego miejsca, więc panel
+       nigdy nie wyjedzie za krawędź ekranu */
+    const PANEL_MARGIN = isTablet ? 14 : 10;
     const dev = root.dataset.device || "phone";
 
     root.innerHTML = `
@@ -321,6 +324,24 @@
        sama pigułka, która rozciąga się w górę i w dół.
        ============================================================ */
     let islandMode = "idle";
+
+    /* ------------------------------------------------------------
+       PANEL MUSI ZAWSZE ZMIEŚCIĆ SIĘ W EKRANIE
+       Na tablecie pigułka stoi 14 px od lewej, a panel miał szerokość
+       „100% - 20px” — wychodził 14 px za prawą krawędź i był przycięty.
+       Zamiast polegać tylko na CSS, mierzymy realny ekran i ustawiamy
+       panel dokładnie między marginesami (działa też po zmianie rozmiaru
+       i w trybie 1:1, gdzie makieta jest przeskalowana).
+       ------------------------------------------------------------ */
+    function fitIslandPanel() {
+      const w = Math.max(0, (root.clientWidth || 0) - 2 * PANEL_MARGIN);
+      if (w > 0) islandBtn.style.setProperty("--panel-w", w + "px");
+    }
+    if (typeof ResizeObserver === "function") {
+      try { new ResizeObserver(fitIslandPanel).observe(root); } catch (e) { /* starsze przeglądarki */ }
+    }
+    window.addEventListener("resize", fitIslandPanel, { passive: true });
+    fitIslandPanel();
     let modeTimer = 0;
     const musicOn = () => !!(player && player.playing);
 
@@ -330,6 +351,7 @@
         if (musicOn() && mode === "idle") mode = "music";
       }
       islandMode = mode;
+      if (mode === "panel") fitIslandPanel();
       islandBtn.dataset.mode = mode;
       islandBtn.classList.toggle("is-open", mode === "panel");
       islandBtn.classList.toggle("is-music", mode === "music");
@@ -722,6 +744,8 @@
       closeAllApps,
       closePanel,
       isPanelOpen: panelOpen,
+      /* szerokość panelu policzona z realnego ekranu (testy + responsywność) */
+      fitPanel: fitIslandPanel,
       isLocked: () => !lock.classList.contains("is-unlocked")
     };
   }

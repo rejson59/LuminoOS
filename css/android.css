@@ -26,6 +26,12 @@
 .android[data-device="phone"]{
   background:url("../assets/wallpaper-phone-home.jpg?v=20261104b") center/cover no-repeat;
 }
+/* TABLET: ikony 46 px w 6 kolumnach wychodziły poza krawędź (ostatnia
+   kolumna przycięta). Mniejsza ikona + ciaśniejsza siatka = wszystko się
+   mieści, a tapeta zostaje bez rozmycia i bez przyciemniania. */
+.android[data-android="tablet"]{--icon:42px;--gap:12px;--radius:13px}
+.android[data-android="tablet"] .app-grid{grid-template-columns:repeat(6,1fr);gap:14px 6px}
+.android[data-android="tablet"] .app__label{font-size:9.5px}
 .android[data-device="tablet"]{
   background:url("../assets/wallpaper-tablet-home.jpg?v=20261104b") center/cover no-repeat;
 }

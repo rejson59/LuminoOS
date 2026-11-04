@@ -178,7 +178,9 @@
 }
 /* wyspa w trybie panelu: szeroka i wysoka, ale nadal JEDEN element */
 .island[data-mode="panel"]{
-  width:calc(100% - 20px);
+  /* szerokość policzona w JS (fitIslandPanel) — panel zawsze mieści się
+     między marginesami; calc() zostaje jako bezpiecznik bez JS */
+  width:var(--panel-w, calc(100% - 20px));
   height:auto;
   border-radius:22px;
   transform:none;
@@ -236,6 +238,26 @@
 
 /* tablet: większe proporcje */
 .android[data-android="tablet"] .island{top:8px;left:14px;height:28px;border-radius:14px}
+/* TABLET — DWIE POPRAWKI PANELU (zgłoszone: „błąd w panelu na tablecie”)
+   1) szerokość: pigułka stoi 14 px od lewej, więc „100% - 20px” wychodziło
+      14 px za prawą krawędź i prawa strona panelu była ucięta,
+   2) wysokość: reguła tabletu ustawiała wyspę na 28 px i MA wyższą
+      specyficzność niż `.island[data-mode="panel"]`, więc rozwinięty panel
+      zostawał przycięty do paska ~28 px — widać było tylko czarny pasek
+      z uchwytem, bez kafli i suwaków. Poniżej nadpisujemy to jawnie. */
+.android[data-android="tablet"] .island[data-mode="panel"]{
+  height:auto;
+  border-radius:24px;
+}
+.android[data-android="tablet"] .island[data-mode="notif"],
+.android[data-android="tablet"] .island[data-mode="music"]{
+  height:34px;
+  border-radius:17px;
+}
+.android[data-android="tablet"] .island[data-mode="notif"]{
+  left:14px;right:14px;width:auto;min-width:0;
+}
+.android[data-android="tablet"] .island__grip{margin:2px auto 4px;width:44px}
 .android[data-android="tablet"] .island__time{font-size:13px}
 .android[data-android="tablet"] .island__cam{left:12px;top:10.5px;width:8px;height:8px}
 
@@ -463,35 +485,45 @@ html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
   transition:background-color 200ms ease, box-shadow 200ms ease;
 }
 .gesture-edge:active{cursor:grabbing}
-.gesture-edge::after{
-  content:attr(data-hint);
-  position:absolute;
+/* PODPOWIEDŹ GESTU
+   Wcześniej była dymkiem ::after na samej krawędzi — a krawędź jest wąska
+   i przycięta przez overflow ekranu, więc na tablecie (710 px) długi tekst
+   rozjeżdżał się paskiem przez całą makietę. Teraz to osobna „pigułka”
+   przyklejona do ekranu, zawsze w całości widoczna i wyśrodkowana. */
+.gesture-hint{
+  position:absolute;left:50%;z-index:36;
+  max-width:calc(100% - 24px);
+  transform:translate(-50%, -4px) scale(.96);
   opacity:0;pointer-events:none;
-  font:600 8.5px/1.2 ui-sans-serif,system-ui,sans-serif;
-  letter-spacing:.04em;white-space:nowrap;
-  color:rgba(255,255,255,.9);
-  background:rgba(10,14,22,.86);
-  padding:4px 7px;border-radius:6px;
-  transition:opacity 160ms ease;
+  font:600 9px/1.25 ui-sans-serif,system-ui,sans-serif;
+  letter-spacing:.03em;white-space:nowrap;
+  color:rgba(255,255,255,.94);
+  background:rgba(10,14,22,.90);
+  box-shadow:0 6px 16px -8px rgba(0,0,0,.9), 0 0 0 .5px rgba(255,255,255,.12) inset;
+  padding:5px 9px;border-radius:8px;
+  transition:opacity 180ms ease-out, transform 260ms cubic-bezier(.34,1.42,.64,1);
 }
+.gesture-hint.is-on{opacity:1;transform:translate(-50%, 0) scale(1)}
+.gesture-hint[data-edge="top"]{top:44px}
+.gesture-hint[data-edge="bottom"]{bottom:44px}
+.gesture-hint[data-edge="left"],
+.gesture-hint[data-edge="right"]{top:50%;transform:translate(-50%, -50%) scale(.96)}
+.gesture-hint[data-edge="left"].is-on,
+.gesture-hint[data-edge="right"].is-on{transform:translate(-50%, -50%) scale(1)}
 /* dolna krawędź — wysuwa pasek ostatnich aplikacji */
 .gesture-edge--bottom{
   left:22%;right:22%;bottom:0;height:22px;
   border-radius:12px 12px 0 0;
 }
-.gesture-edge--bottom::after{bottom:26px;left:50%;transform:translateX(-50%)}
 /* górna krawędź — wyspa / skróty */
 .gesture-edge--top{
   left:22%;right:22%;top:0;height:20px;
   border-radius:0 0 12px 12px;
 }
-.gesture-edge--top::after{top:24px;left:50%;transform:translateX(-50%)}
 /* lewa krawędź — gest „wstecz” */
 .gesture-edge--left{left:0;top:24%;bottom:24%;width:20px;border-radius:0 12px 12px 0}
-.gesture-edge--left::after{left:26px;top:50%;transform:translateY(-50%)}
 /* prawa krawędź — ekran główny */
 .gesture-edge--right{right:0;top:24%;bottom:24%;width:20px;border-radius:12px 0 0 12px}
-.gesture-edge--right::after{right:26px;top:50%;transform:translateY(-50%)}
 
 /* widoczność: tylko przy myszce (na dotyku palec i tak trafia w krawędź) */
 @media (hover:hover) and (pointer:fine){
@@ -500,10 +532,10 @@ html.is-fullscreen .viewbtn{font-size:11px;padding:5px 10px}
   .gesture-edge--top:hover{box-shadow:0 1px 0 rgba(190,220,255,.55) inset}
   .gesture-edge--left:hover{box-shadow:1px 0 0 rgba(190,220,255,.55) inset}
   .gesture-edge--right:hover{box-shadow:-1px 0 0 rgba(190,220,255,.55) inset}
-  .gesture-edge:hover::after{opacity:1}
 }
-/* tablet: gesty tylko telefon (spójnie z js/gestures.js) */
-.android[data-android="tablet"] .gesture-edge{display:none}
+/* tablet: te same uchwyty gestów co telefon (jeden system) */
+.android[data-android="tablet"] .gesture-edge{display:block}
+.android[data-android="tablet"] .gesture-hint{font-size:10px;padding:6px 11px}
 
 /* ============================================================
    TŁO POD ROZWINIĘTĄ WYSPĄ

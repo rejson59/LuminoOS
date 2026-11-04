@@ -289,6 +289,13 @@
         }
       };
       const panelIsOpen = () => !!islandEl && islandEl.dataset.mode === "panel";
+      /* ten sam przełącznik, którego używa klik w pigułkę (morfowanie,
+         aria-expanded i cień pod panelem) */
+      const openIslandPanel = () => {
+        const face = islandEl && islandEl.querySelector(".island__face--idle");
+        if (face) { face.click(); return; }
+        if (islandEl) islandEl.dataset.mode = "panel";
+      };
       const goHome = () => {
         closePanel();
         api.hide();
@@ -350,9 +357,12 @@
         /* gest z uchwytu startuje pierwszy — nie nadpisujemy go drugim
            nasłuchem (wcześniej gubił się forceEdge i gest „nie działał”) */
         if (g && g.forceEdge && g.pointerId === e.pointerId) return;
+        const rb0 = screen.getBoundingClientRect();
         g = {
           kind: null,
           x: e.clientX, y: e.clientY,
+          startY: e.clientY,
+          startTop: rb0.height ? rb0.top : 0,
           t: performance.now(),
           pointerId: e.pointerId,
           target: e.target
@@ -423,13 +433,22 @@
 
         if (!kind) return;
 
-        /* --- w górę --- */
+        /* --- w górę ---
+           tablet: gest od GÓRNEJ krawędzi otwiera panel wyspy (skróty),
+           a nie zamyka aplikacji — inaczej „przesunięcie w górę” na
+           tablecie robiło coś zupełnie innego niż na telefonie. */
         if (kind === "up") {
           const far = -dy > TRIGGER || vy < -VELOCITY;
           if (!far) { if (api.isOpen()) api.hide(); return; }
-          /* otwarty pasek + ruch w górę = ekran główny (bez względu na krawędź) */
-          if (api.isOpen()) { goHome(); return; }
-          if (edge < EDGE) { api.show(); return; }   /* schowek z dołu → pasek aplikacji */
+          if (api.isOpen()) { goHome(); return; }    /* otwarty pasek → ekran główny */
+          if (edge < EDGE) {
+            if (device === "tablet" && (g0.startY - (g0.startTop || 0)) < 64) {
+              openIslandPanel();                     /* góra ekranu → panel wyspy */
+              return;
+            }
+            api.show();                              /* schowek z dołu → pasek aplikacji */
+            return;
+          }
           goHome();                                  /* w górę nad paskiem → ekran główny */
           return;
         }
@@ -474,8 +493,22 @@
         el.dataset.hint = hint;
         el.setAttribute("aria-hidden", "true");
         screen.appendChild(el);
+        /* podpowiedź jako osobna pigułka — nie dymek przycięty krawędzią */
+        const tip = document.createElement("div");
+        tip.className = "gesture-hint";
+        tip.dataset.edge = edge;
+        tip.dataset.hint = hint;
+        tip.textContent = hint;
+        tip.setAttribute("aria-hidden", "true");
+        screen.appendChild(tip);
+        el._hintEl = tip;
         return el;
       });
+
+      const showHint = (el, on) => {
+        if (!el || !el._hintEl) return;
+        el._hintEl.classList.toggle("is-on", !!on);
+      };
 
       /* strzałki pokazujące kierunek gestu (widoczne w trakcie przeciągania) */
       ["left", "right"].forEach(side => {
@@ -492,6 +525,10 @@
           pdown(e);
           if (g) g.forceEdge = true;
         });
+        el.addEventListener("pointerenter", () => showHint(el, true));
+        el.addEventListener("pointerleave", () => showHint(el, false));
+        el.addEventListener("focus", () => showHint(el, true));
+        el.addEventListener("blur", () => showHint(el, false));
       });
 
       /* nasłuchujemy na całej makiecie telefonu (krawędzie też) */
@@ -511,6 +548,26 @@
         screen.classList.remove("is-swiping-back", "is-swiping-home");
       });
       if (window.LUMINO_DEBUG) window.__luLast = () => ({ kind: "attached", g: !!g });
+
+      /* pierwsze odblokowanie: na chwilę pokazujemy, gdzie są uchwyty
+         (na tablecie nikt się ich nie domyśli) */
+      let hinted = false;
+      const flashHints = () => {
+        if (hinted) return;
+        hinted = true;
+        handles.forEach((el, i) => setTimeout(() => {
+          showHint(el, true);
+          setTimeout(() => showHint(el, false), 1400);
+        }, i * 120));
+      };
+      screen.addEventListener("lumino:unlocked", flashHints);
+      const lockEl = screen.querySelector(".a-lock");
+      if (lockEl) {
+        const mo2 = new MutationObserver(() => {
+          if (lockEl.classList.contains("is-unlocked")) { mo2.disconnect(); setTimeout(flashHints, 500); }
+        });
+        mo2.observe(lockEl, { attributes: true, attributeFilter: ["class"] });
+      }
       screen.addEventListener("pointercancel", () => { g = null; api.bar.classList.remove("is-following"); });
 
       /* pasek gestów (dotychczas otwierał szufladę) — teraz pokazuje aplikacje */

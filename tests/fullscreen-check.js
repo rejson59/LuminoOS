@@ -61,6 +61,30 @@ w.addEventListener("load", () => setTimeout(() => {
   check("tło zamyka panel (wyspa wraca do zegara)", island.dataset.mode !== "panel" &&
     menu.getAttribute("aria-hidden") === "true");
 
+  /* --- panel wyspy mieści się w ekranie (tablet 710 px, pigułka 14 px od lewej) --- */
+  const tab = document.querySelector('[data-android="tablet"]');
+  Object.defineProperty(tab, "clientWidth", { configurable: true, value: 710 });
+  Object.defineProperty(tab, "clientHeight", { configurable: true, value: 540 });
+  tab.lumino.fitPanel();
+  const tabIsland = tab.querySelector(".island");
+  tabIsland.dataset.mode = "panel";
+  tab.lumino.fitPanel();
+  check("panel wyspy na tablecie mieści się między marginesami (bez przycięcia)",
+    tabIsland.style.getPropertyValue("--panel-w") === "682px");
+  Object.defineProperty(phone, "clientWidth", { configurable: true, value: 292 });
+  phone.lumino.fitPanel();
+  check("panel na telefonie też liczy szerokość z ekranu",
+    phone.querySelector(".island").style.getPropertyValue("--panel-w") === "272px");
+  const islandCss = fs.readFileSync(path.join(root, "css/island.css"), "utf8");
+  check("tablet: rozwinięty panel nie jest przycięty do 28 px (wysokość auto)",
+    /\.android\[data-android="tablet"\] \.island\[data-mode="panel"\]\{[^}]*height:auto/.test(islandCss));
+  check("tablet: powiadomienie i muzyka zostają niskimi pigułkami",
+    /\.android\[data-android="tablet"\] \.island\[data-mode="notif"\]/.test(islandCss));
+  check("CSS nie ma już szerokości panelu zaszytej na sztywno dla tabletu",
+    !/data-android="tablet"[^{]*island\[data-mode="panel"\]\{[^}]*width:calc/.test(
+      fs.readFileSync(path.join(root, "css/island.css"), "utf8")));
+  tab.lumino.closePanel();
+
   /* --- 1:1 --- */
   const sizeBtn = document.getElementById("sizeToggle");
   const fullBtn = document.getElementById("fullToggle");

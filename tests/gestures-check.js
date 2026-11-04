@@ -37,6 +37,28 @@ w.addEventListener("load", () => setTimeout(() => {
     document.querySelectorAll('[data-android="tablet"] .gesture-edge').length === 4 &&
     !!document.querySelector('[data-android="tablet"] .gesture-tip--left'));
 
+  /* tablet: gest od góry otwiera panel wyspy (ten sam efekt co na telefonie) */
+  check("tablet: gest w górę od góry ekranu otwiera panel wyspy", (() => {
+    const tab = document.querySelector('[data-android="tablet"]');
+    tab.lumino.unlock();
+    const isl = tab.querySelector(".island");
+    const face = isl.querySelector(".island__face--idle");
+    if (isl.dataset.mode === "panel") { face.click(); return false; }
+    const top = tab.querySelector('.gesture-edge[data-gesture-edge="top"]');
+    const fire = (type, x, y) => (top || tab).dispatchEvent(new dom.window.PointerEvent(type, {
+      bubbles: true, clientX: x, clientY: y, pointerId: 7
+    }));
+    fire("pointerdown", 300, 2);
+    fire("pointermove", 300, -40);
+    fire("pointerup", 300, -80);
+    const ok = isl.dataset.mode === "panel";
+    tab.lumino.closePanel();
+    return ok;
+  })());
+  check("tablet: uchwyty gestów pokazują podpowiedź (osobna pigułka, nie przycięta)",
+    document.querySelectorAll('[data-android="tablet"] .gesture-hint').length === 4 &&
+    !!document.querySelector('[data-android="tablet"] .gesture-hint[data-edge="top"]'));
+
   const act = phone.lumino && phone.lumino.activity;
   check("API gestów dostępne (window.Lumino.androidActivity)", !!act);
 
