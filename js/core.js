@@ -213,7 +213,7 @@
 
   /* Ikony to gotowe grafiki (assets/icons/<id>.png) generowane przez
      tools/make-icons.js — wyglądają jak ikony Apple w każdej przeglądarce. */
-  const ICON_V = "3";
+  const ICON_V = "4";
   const ICON_IDS = ["phone","messages","spotify","camera","chrome","gallery",
     "youtube","calendar","gmail","maps","notes","calculator","files",
     "settings","store","youtubeMusic","search","weather","terminal","clock","trash"];

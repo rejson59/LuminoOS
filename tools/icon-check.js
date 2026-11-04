@@ -57,8 +57,15 @@ dom.window.addEventListener("load", () => setTimeout(() => {
     try { return Array.from(sh.cssRules); } catch (e) { return []; }
   });
   const txt = rules.map(r => r.cssText || "").join("\n");
-  check("stary styl (plate.png / mask.png) nie jest już używany",
-    !/plate\.png|mask\.png/.test(txt));
+  /* liquid glass: maska squircle + backdrop-filter pod ikoną */
+  const glass = rules.find(r => (r.selectorText || "").includes(".app__icon.bi::before"));
+  check("ikona ma warstwę rozmywającą tapetę (.bi::before)", !!glass);
+  check("warstwa szkła używa backdrop-filter + maski squircle",
+    !!glass && /backdrop-filter/.test(glass.style.cssText || glass.cssText) &&
+    /mask-image/.test(glass.style.cssText || glass.cssText));
+  /* kafel musi mieć kanał alfa (RGBA = color type 6), inaczej nie byłby szkłem */
+  check("grafiki ikon mają kanał alfa (półprzezroczyste szkło)",
+    ids.every(id => fs.readFileSync(path.join(root, "assets/icons", id + ".png"))[25] === 6));
   check("ikony nie mają promienia 50% (żadnych kół)",
     !Array.from(document.querySelectorAll(".bi")).some(el => win.getComputedStyle(el).borderRadius === "50%"));
 

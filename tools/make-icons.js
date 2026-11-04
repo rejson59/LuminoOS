@@ -141,137 +141,156 @@ const G = {
      metal  — stalowy kafel, jasny glif
      dark   — ciemny kafel, kolorowy glif
    ------------------------------------------------------------ */
+/* ---------- definicje ikon ----------
+   hue   — kolor szkła (barwnik kafla, podawany jako półprzezroczysty)
+   tint  — krycie barwnika (0..1). Im mniej, tym bardziej „szkło”
+   ink   — kolor glifu; domyślnie biel, logotypy zachowują własne kolory
+   sc    — szerokość glifu względem kafla
+   ------------------------------------------------------------ */
 const ICONS = {
-  phone:        { kind: "vivid", g1: "#6FE38A", g2: "#0F9E4C", glyph: G.phone,        sc: 0.56 },
-  messages:     { kind: "vivid", g1: "#6FE38A", g2: "#0F9E4C", glyph: G.messages,     sc: 0.54, dy: 0.6 },
-  spotify:      { kind: "vivid", g1: "#3AE47F", g2: "#0B9B4C", glyph: G.spotify,      sc: 0.72, drop: false },
-  camera:       { kind: "metal", g1: "#A8AFBB", g2: "#3B4048", glyph: G.camera,       sc: 0.62, drop: false },
-  chrome:       { kind: "light", glyph: G.chrome,                                          sc: 0.68, drop: false },
-  gallery:      { kind: "light", glyph: G.gallery,                                         sc: 0.80, drop: false },
-  youtube:      { kind: "vivid", g1: "#FF6A62", g2: "#C4180C", glyph: G.youtube,      sc: 0.74, drop: false },
-  calendar:     { kind: "light", glyph: G.calendar,                                        sc: 0.92, drop: false },
-  gmail:        { kind: "light", glyph: G.gmail,                                           sc: 0.66, drop: false },
-  maps:         { kind: "vivid", g1: "#B4EFB6", g2: "#3E9BE0", glyph: G.maps,         sc: 0.62 },
-  notes:        { kind: "light", glyph: G.notes,                                           sc: 0.80, drop: false },
-  calculator:   { kind: "dark",  g1: "#5A5A60", g2: "#1B1B1E", glyph: G.calculator,   sc: 0.82, drop: false },
-  files:        { kind: "vivid", g1: "#8FD2FF", g2: "#1567DF", glyph: G.files,        sc: 0.62, drop: true },
-  settings:     { kind: "metal", g1: "#C2C7D1", g2: "#565C6B", glyph: G.settings,      sc: 0.64, drop: false },
-  store:        { kind: "vivid", g1: "#63C8FF", g2: "#0A6BE0", glyph: G.store,        sc: 0.70 },
-  youtubeMusic: { kind: "vivid", g1: "#FF6A62", g2: "#C4180C", glyph: G.youtubeMusic, sc: 0.66, drop: false },
-  search:       { kind: "dark",  g1: "#4A4A50", g2: "#232327", glyph: G.search,       sc: 0.48, drop: false },
-  weather:      { kind: "vivid", g1: "#7FC9FF", g2: "#1B67D6", glyph: G.weather,      sc: 0.66, drop: false },
-  terminal:     { kind: "dark",  g1: "#3A3F47", g2: "#14171C", glyph: G.terminal,     sc: 0.72, drop: false },
-  clock:        { kind: "dark",  g1: "#4A4A50", g2: "#1E1E22", glyph: G.clock,        sc: 0.66, drop: false },
-  trash:        { kind: "metal", g1: "#BCC2CC", g2: "#5A606E", glyph: G.trash,        sc: 0.62, drop: false }
+  phone:        { hue: "#2FD35B", tint: 0.38, glyph: G.phone,        sc: 0.52 },
+  messages:     { hue: "#2FD35B", tint: 0.36, glyph: G.messages,     sc: 0.50, dy: 0.6 },
+  spotify:      { hue: "#1ED760", tint: 0.30, glyph: G.spotify,      sc: 0.62, ink: "#0A2A18" },
+  camera:       { hue: "#6E7A88", tint: 0.38, glyph: G.camera,       sc: 0.58, ink: "#FFFFFF" },
+  chrome:       { hue: "#EEF2F8", tint: 0.26, glyph: G.chrome,       sc: 0.66, keep: true },
+  gallery:      { hue: "#F6F8FC", tint: 0.20, glyph: G.gallery,      sc: 0.78, keep: true },
+  youtube:      { hue: "#FF3B30", tint: 0.38, glyph: G.youtube,      sc: 0.70, ink: "#FFFFFF" },
+  calendar:     { hue: "#FFFFFF", tint: 0.26, glyph: G.calendar,     sc: 0.90, keep: true },
+  gmail:        { hue: "#FFFFFF", tint: 0.24, glyph: G.gmail,        sc: 0.64, keep: true },
+  maps:         { hue: "#2FA8D8", tint: 0.36, glyph: G.maps,         sc: 0.58 },
+  notes:        { hue: "#FFC61E", tint: 0.34, glyph: G.notes,        sc: 0.76, keep: true },
+  calculator:   { hue: "#3A3A3C", tint: 0.40, glyph: G.calculator,   sc: 0.80, ink: "#FFFFFF" },
+  files:        { hue: "#0A84FF", tint: 0.38, glyph: G.files,        sc: 0.56, ink: "#FFFFFF" },
+  settings:     { hue: "#6E7480", tint: 0.38, glyph: G.settings,     sc: 0.60, ink: "#FFFFFF" },
+  store:        { hue: "#0A84FF", tint: 0.38, glyph: G.store,        sc: 0.66, ink: "#FFFFFF" },
+  youtubeMusic: { hue: "#FF3B30", tint: 0.32, glyph: G.youtubeMusic, sc: 0.62, keep: true },
+  search:       { hue: "#8E8E93", tint: 0.26, glyph: G.search,       sc: 0.46, ink: "#FFFFFF" },
+  weather:      { hue: "#0A84FF", tint: 0.34, glyph: G.weather,      sc: 0.62, keep: true },
+  terminal:     { hue: "#1C1C1E", tint: 0.38, glyph: G.terminal,     sc: 0.68, ink: "#FFFFFF" },
+  clock:        { hue: "#1C1C1E", tint: 0.34, glyph: G.clock,        sc: 0.62, ink: "#FFFFFF" },
+  trash:        { hue: "#8E8E93", tint: 0.28, glyph: G.trash,        sc: 0.58, ink: "#FFFFFF" }
 };
 
-const BASE = {
-  vivid: ['#FFFFFF', '0'],
-  light: ['#FDFDFF', '#EFF1F6'],
-  metal: null,
-  dark: null
-};
+/* glif przepuszczony przez kolor — zostawiamy tylko biel/zieleń marki */
+function glyphFor(id, d) {
+  const g = d.glyph;
+  if (d.keep) return g;
+  /* wszystko, co białe lub currentColor, staje się kolorem `ink` */
+  return g
+    .replace(/fill="currentColor"/g, `fill="${d.ink || "#fff"}"`)
+    .replace(/fill="#fff"/g, `fill="${d.ink || "#fff"}"`)
+    .replace(/stroke="currentColor"/g, `stroke="${d.ink || "#fff"}"`)
+    .replace(/fill="#0B3B24"/g, `fill="${d.ink || "#fff"}"`);
+}
 
 function svgFor(id) {
   const d = ICONS[id];
-  const PAL = {
-    vivid: ["#A7D8FF", "#2B6FD8"],
-    light: ["#FFFFFF", "#E6EAF2"],
-    metal: ["#C9CED8", "#5E6472"],
-    dark:  ["#4E4E53", "#1B1B1E"]
-  };
-  const [dg1, dg2] = PAL[d.kind] || PAL.vivid;
-  const g1 = d.g1 || dg1;
-  const g2 = d.g2 || dg2;
-  const sc = (d.sc || 0.6) * 0.94;      // glif zajmuje `sc` szerokości kafla
-  const gs = 100 * sc;                  // rozmiar kafla w jednostkach glifu (24-box)
+  const sc = (d.sc || 0.6) * 0.94;
+  const gs = 100 * sc;
   const tx = (100 - gs) / 2;
   const ty = (100 - gs) / 2 + (d.dy || 0) * (100 / 24);
-
-  /* jasność kafla — biel mocniej rozświetla górę */
-  const sheen = d.kind === "light" ? 0.20 : d.kind === "metal" ? 0.16 : 0.13;
-  const floor = d.kind === "light" ? 0.04 : d.kind === "dark" ? 0.24 : 0.13;
+  const tint = d.tint == null ? 0.3 : d.tint;
+  const hue = d.hue || "#8E8E93";
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 100 100">
 <defs>
   <clipPath id="sq"><path d="${SQ}"/></clipPath>
-  <linearGradient id="body" x1="0.18" y1="0" x2="0.55" y2="1">
-    <stop offset="0" stop-color="${g1}"/>
-    <stop offset="0.42" stop-color="${g1}"/>
-    <stop offset="1" stop-color="${g2}"/>
+
+  <!-- barwnik szkła: pełny kolor, ale mocno przezroczysty -->
+  <linearGradient id="dye" x1="0.1" y1="0" x2="0.7" y2="1">
+    <stop offset="0"   stop-color="${hue}" stop-opacity="${(tint * 0.78).toFixed(3)}"/>
+    <stop offset="0.45" stop-color="${hue}" stop-opacity="${tint.toFixed(3)}"/>
+    <stop offset="1"   stop-color="${hue}" stop-opacity="${(tint * 1.05).toFixed(3)}"/>
   </linearGradient>
-  <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+
+  <!-- światło: góra kafla jaśniejsza (szkło grubsze u góry) -->
+  <linearGradient id="sheen" x1="0.2" y1="0" x2="0.5" y2="1">
+    <stop offset="0"    stop-color="#fff" stop-opacity=".34"/>
+    <stop offset="0.28" stop-color="#fff" stop-opacity=".13"/>
+    <stop offset="0.62" stop-color="#fff" stop-opacity=".05"/>
+    <stop offset="1"    stop-color="#fff" stop-opacity=".16"/>
+  </linearGradient>
+
+  <!-- ciemniejsza „grubość” materiału przy dolnej krawędzi -->
+  <linearGradient id="body" x1="0" y1="0.55" x2="0" y2="1">
     <stop offset="0" stop-color="#000" stop-opacity="0"/>
-    <stop offset="1" stop-color="#000" stop-opacity="${floor}"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".11"/>
   </linearGradient>
-  <radialGradient id="gloss" cx="0.40" cy="0.02" r="0.62">
-    <stop offset="0" stop-color="#fff" stop-opacity="${sheen}"/>
-    <stop offset="0.5" stop-color="#fff" stop-opacity="${sheen * 0.22}"/>
-    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-  </radialGradient>
-  <linearGradient id="rim" x1="0" y1="0" x2="0.35" y2="1">
-    <stop offset="0" stop-color="#fff" stop-opacity=".48"/>
-    <stop offset="0.42" stop-color="#fff" stop-opacity=".14"/>
-    <stop offset="0.78" stop-color="#fff" stop-opacity=".08"/>
-    <stop offset="1" stop-color="#fff" stop-opacity=".20"/>
+
+  <!-- jasna krawędź szkła -->
+  <linearGradient id="rim" x1="0.15" y1="0" x2="0.5" y2="1">
+    <stop offset="0"    stop-color="#fff" stop-opacity=".92"/>
+    <stop offset="0.3"  stop-color="#fff" stop-opacity=".52"/>
+    <stop offset="0.68" stop-color="#fff" stop-opacity=".30"/>
+    <stop offset="1"    stop-color="#fff" stop-opacity=".60"/>
   </linearGradient>
-  <linearGradient id="hook" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#000" stop-opacity="0"/>
-    <stop offset="0.78" stop-color="#000" stop-opacity="0"/>
-    <stop offset="1" stop-color="#000" stop-opacity=".13"/>
-  </linearGradient>
+
+  <!-- błysk krawędziowy (refrakcja) -->
   <linearGradient id="streak" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-    <stop offset="0.45" stop-color="#fff" stop-opacity=".16"/>
-    <stop offset="0.6" stop-color="#fff" stop-opacity=".05"/>
-    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    <stop offset="0"    stop-color="#fff" stop-opacity="0"/>
+    <stop offset="0.42" stop-color="#fff" stop-opacity=".34"/>
+    <stop offset="0.58" stop-color="#fff" stop-opacity=".08"/>
+    <stop offset="1"    stop-color="#fff" stop-opacity="0"/>
   </linearGradient>
-  <linearGradient id="metal" x1="0" y1="0" x2="0.4" y2="1">
-    <stop offset="0" stop-color="#FFFFFF"/>
-    <stop offset="0.5" stop-color="#D8DDE6"/>
-    <stop offset="1" stop-color="#A7AEBA"/>
-  </linearGradient>
+
+  <radialGradient id="spec" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0"   stop-color="#fff" stop-opacity=".55"/>
+    <stop offset="0.6" stop-color="#fff" stop-opacity=".14"/>
+    <stop offset="1"   stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+
   <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
-    <feGaussianBlur stdDeviation="2.6"/>
+    <feGaussianBlur stdDeviation="2.4"/>
   </filter>
   <filter id="softer" x="-60%" y="-60%" width="220%" height="220%">
-    <feGaussianBlur stdDeviation="5"/>
+    <feGaussianBlur stdDeviation="5.5"/>
   </filter>
-  <filter id="glyphShadow" x="-30%" y="-30%" width="160%" height="160%">
-    <feDropShadow dx="0" dy="0.55" stdDeviation="0.75" flood-color="#000" flood-opacity=".28"/>
+  <filter id="glyphDrop" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="0" dy="0.7" stdDeviation="1.0" flood-color="#000" flood-opacity=".30"/>
   </filter>
 </defs>
 
 <g clip-path="url(#sq)">
-  <rect width="100" height="100" fill="url(#body)"/>
-  <rect width="100" height="100" fill="url(#gloss)"/>
-  <rect y="46" width="100" height="54" fill="url(#floor)"/>
-  <!-- szeroki refleks od góry -->
-  <ellipse cx="42" cy="1" rx="56" ry="24" fill="#fff" opacity="${d.kind === "light" ? 0.3 : 0.14}" filter="url(#softer)"/>
-  <!-- wąski błysk krawędziowy (szkło) -->
-  <path d="M-10 -4 L34 -4 L60 46 L22 54 Z" fill="url(#streak)" opacity="${d.kind === "dark" ? 0.30 : 0.42}" filter="url(#soft)"/>
-  <!-- dolna krawędź materiału -->
-  <rect y="60" width="100" height="40" fill="url(#hook)"/>
-  <!-- rim -->
-  <path d="${SQ}" fill="none" stroke="url(#rim)" stroke-width="0.9"/>
+  <!-- 1. barwnik -->
+  <rect width="100" height="100" fill="url(#dye)"/>
+  <!-- 2. rozświetlenie od góry (światło przechodzące przez szkło) -->
+  <rect width="100" height="100" fill="url(#sheen)"/>
+  <!-- 3. duża, miękka plama światła -->
+  <ellipse cx="38" cy="-2" rx="62" ry="34" fill="url(#spec)" filter="url(#softer)"/>
+  <!-- 4. błysk biegnący po przekątnej -->
+  <path d="M-14 -6 L26 -6 L64 44 L24 56 Z" fill="url(#streak)" filter="url(#soft)"/>
+  <!-- 5. grubość materiału u dołu -->
+  <rect y="48" width="100" height="52" fill="url(#body)"/>
+  <!-- 6. wewnętrzny cień tuż przy krawędzi (grubość szkła, poprawia kontrast glifu) -->
+  <path d="${SQ}" fill="none" stroke="#000" stroke-opacity=".16" stroke-width="3.2" filter="url(#soft)"/>
+  <!-- 7. jasna krawędź squircle -->
+  <path d="${SQ}" fill="none" stroke="url(#rim)" stroke-width="1.15"/>
 </g>
 
 <g transform="translate(${tx.toFixed(3)} ${ty.toFixed(3)}) scale(${(gs / 24).toFixed(3)})"
-   ${d.drop === false ? "" : 'filter="url(#glyphShadow)"'}>${d.glyph}</g>
+   filter="url(#glyphDrop)">${glyphFor(id, d)}</g>
 </svg>`;
+}
+
+/* ---------- maska squircle dla CSS (do backdrop-filter) ---------- */
+function maskSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 100 100">
+<path d="${SQ}" fill="#fff"/></svg>`;
 }
 
 function main() {
   fs.mkdirSync(OUT, { recursive: true });
+  /* maska: tylko kształt, używana w CSS przy rozmywaniu tła pod ikoną */
+  fs.writeFileSync(path.join(OUT, "mask.png"),
+    new Resvg(maskSvg(), { fitTo: { mode: "width", value: SIZE } }).render().asPng());
   const done = [];
   for (const id of Object.keys(ICONS)) {
     const svg = svgFor(id);
-    const png = new Resvg(svg, { fitTo: { mode: "width", value: SIZE }, background: "rgba(0,0,0,0)" }).render().asPng();
-    const file = path.join(OUT, `${id}.png`);
-    fs.writeFileSync(file, png);
+    const png = new Resvg(svg, { fitTo: { mode: "width", value: SIZE } }).render().asPng();
+    fs.writeFileSync(path.join(OUT, `${id}.png`), png);
     done.push({ id, kb: (png.length / 1024).toFixed(1) });
   }
-  console.log(`Ikony: ${done.length} plików w assets/icons (${SIZE}px)`);
+  console.log(`Ikony (liquid glass): ${done.length} plików w assets/icons (${SIZE}px)`);
   console.log(done.map(d => `  ${d.id}.png ${d.kb} KB`).join("\n"));
 }
 

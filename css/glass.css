@@ -323,14 +323,19 @@ button:active{transform:scale(.96)}
 
 
 /* ============================================================
-   7. IKONY — grafiki w stylu Apple (jak iOS / macOS)
-   • każda ikona to gotowy obraz 512 px: assets/icons/<id>.png
-     (squircle, gradient, światło, szkło, glif — generowane przez
-      tools/make-icons.js, więc wygląd jest identyczny w każdej przeglądarce)
-   • brak glifów SVG w HTML, brak mask, brak filtrów: tylko obraz
-   • wszystkie ikony są kwadratami z zaokrągleniem (bez kół)
+   7. IKONY — liquid glass (przezroczyste, rozmywają tapetę)
+   Dwie warstwy:
+     • .bi::before  — backdrop-filter + maska squircle: tapeta POD ikoną
+                      jest rozmyta, wysycona i lekko przyciemniona
+     • sam .bi      — obraz PNG (assets/icons/<id>.png): barwnik szkła,
+                      refleksy, jasna krawędź i glif
+   Dzięki temu kafel jest półprzezroczysty — widać przez niego tapetę.
+   Wszystkie ikony są kwadratami z zaokrągleniem (bez kół).
    ============================================================ */
 .app__icon.bi{
+  --mask:url("../assets/icons/mask.png?v=1");
+  position:relative;
+  isolation:isolate;
   background-position:center;
   background-size:contain;
   background-repeat:no-repeat;
@@ -341,22 +346,48 @@ button:active{transform:scale(.96)}
   flex:none;
   color:transparent;
   box-shadow:none;
-  filter:drop-shadow(0 9px 14px rgba(0,0,0,.34)) drop-shadow(0 2px 4px rgba(0,0,0,.20));
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.34)) drop-shadow(0 2px 4px rgba(0,0,0,.20));
   transition:transform 380ms var(--ease-ios), filter 380ms var(--ease-soft);
   will-change:transform;
 }
 .app__icon.bi > svg,.app__icon.bi > .cal-day{display:none}
 
+/* rozmyta tapeta pod ikoną (prawdziwe szkło) */
+.app__icon.bi::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  border-radius:0;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(16px) saturate(190%) brightness(1.06);
+          backdrop-filter:blur(16px) saturate(190%) brightness(1.06);
+  -webkit-mask-image:var(--mask);
+          mask-image:var(--mask);
+  -webkit-mask-size:100% 100%;
+          mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;
+          mask-repeat:no-repeat;
+}
+
 /* podświetlenie i uniesienie pod kursorem */
 .app:hover .app__icon.bi,.dock-app:hover .app__icon.bi{
   transform:translateY(-4px) scale(1.06);
-  filter:drop-shadow(0 14px 20px rgba(0,0,0,.38)) drop-shadow(0 3px 6px rgba(0,0,0,.22))
-         saturate(1.06) brightness(1.03);
+  filter:drop-shadow(0 14px 20px rgba(0,0,0,.38)) drop-shadow(0 3px 6px rgba(0,0,0,.22));
+}
+.app:hover .app__icon.bi::before,.dock-app:hover .app__icon.bi::before{
+  background:rgba(255,255,255,.13);
+  -webkit-backdrop-filter:blur(18px) saturate(210%) brightness(1.1);
+          backdrop-filter:blur(18px) saturate(210%) brightness(1.1);
 }
 .app:active .app__icon.bi,.dock-app:active .app__icon.bi{transform:translateY(-1px) scale(.955)}
 
 @media (prefers-reduced-motion:reduce){
   .app__icon.bi,.app:hover .app__icon.bi,.dock-app:hover .app__icon.bi{transform:none!important}
+}
+/* bez wsparcia dla backdrop-filter kafel nadal jest szkłem (barwnik + refleksy) */
+@supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+  .app__icon.bi::before{background:rgba(255,255,255,.14)}
 }
 
 /* ------------------------------------------------------------
