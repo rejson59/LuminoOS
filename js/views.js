@@ -33,7 +33,7 @@
     if (v === "all") { stage.classList.remove("single"); return; }
     stage.classList.add("single");
 
-    const el = stage.querySelector(`.device[data-device="${v}"]`);
+    const el = stage.querySelector(`.device.device--${v}`);
     if (!el) return;
     // dostępne miejsce
     const availW = stage.clientWidth - 40;
@@ -62,7 +62,10 @@
     } catch (err) {
       /* np. przy otwarciu z file:// — pomijamy zapis w adresie */
     }
+    // natychmiast, a potem jeszcze po ustabilizowaniu layoutu
+    fit();
     requestAnimationFrame(fit);
+    setTimeout(fit, 260);
   }
 
   buttons.forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));

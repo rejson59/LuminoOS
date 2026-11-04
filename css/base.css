@@ -282,12 +282,12 @@ body::before{
 .stage[data-view="all"]{align-items:flex-end}
 
 /* tryb pojedynczy: tylko wybrane urządzenie, powiększone */
-.stage[data-view="phone"] .device,
-.stage[data-view="tablet"] .device,
-.stage[data-view="laptop"] .device{display:none}
-.stage[data-view="phone"] .device[data-device="phone"],
-.stage[data-view="tablet"] .device[data-device="tablet"],
-.stage[data-view="laptop"] .device[data-device="laptop"]{
+.stage[data-view="phone"] > .device,
+.stage[data-view="tablet"] > .device,
+.stage[data-view="laptop"] > .device{display:none}
+.stage[data-view="phone"] > .device.device--phone,
+.stage[data-view="tablet"] > .device.device--tablet,
+.stage[data-view="laptop"] > .device.device--laptop{
   display:flex;
   transform:scale(var(--zoom,1));
   transform-origin:center center;
@@ -327,3 +327,19 @@ body[data-view="laptop"] .stage{padding-bottom:6px}
 body[data-view="phone"] .device__caption,
 body[data-view="tablet"] .device__caption,
 body[data-view="laptop"] .device__caption{margin-top:8px}
+
+/* pasek błędu (widoczny, żeby nic nie ginęło po cichu) */
+.err-banner{
+  position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;
+  display:flex;gap:10px;align-items:center;
+  padding:10px 12px;border-radius:10px;
+  background:#3a1418;border:1px solid #bb3b47;color:#ffe3e5;
+  font:12px/1.45 ui-sans-serif,system-ui,sans-serif;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.8);
+}
+.err-banner b{flex:none;color:#ffb3ba}
+.err-banner span{flex:1;min-width:0;word-break:break-word;opacity:.9}
+.err-banner button{
+  flex:none;width:24px;height:24px;border-radius:6px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;font-size:14px;line-height:1;
+}

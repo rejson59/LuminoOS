@@ -85,3 +85,15 @@ tools/smoke-test.js – test dymny w jsdom
 Kierunek wizualny LuminoOS (kolory, typografia, ikony), nazwy i układ aplikacji,
 zachowanie powłoki (gesty, powiadomienia, okna) oraz to, co ma być **wspólne**
 między urządzeniami. Wtedy podmieniamy makiety — zaczynając od telefonu.
+
+## Rozwiązywanie problemów
+
+- **Pusta scena po wybraniu „Telefon / Tablet / Laptop”** — naprawione (selektory
+  widoków korzystają z klas `device--phone/tablet/laptop`). Jeśli nadal widzisz stary
+  stan, odśwież z pominięciem cache: `Ctrl+Shift+R` (albo `Cmd+Shift+R`).
+- **Zmiany nie widać po aktualizacji** — pliki CSS/JS mają znacznik `?v=3`;
+  podbij go przy większych zmianach, żeby przeglądarka pobrała nową wersję.
+- **Coś się wysypuje** — na dole strony pojawia się czerwony pasek z treścią błędu
+  (`js/guard.js`). Skopiuj jego treść i wyślij — to najszybsza droga do poprawki.
+- **Testy**: `npm test` (interakcje, 45 sprawdzeń) oraz `npm run test:views`
+  (kaskada CSS trybów pojedynczych).
