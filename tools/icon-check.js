@@ -28,10 +28,14 @@ dom.window.addEventListener("load", () => setTimeout(() => {
 
   /* adresy obrazów */
   const urls = Array.from(icons).map(el => {
-    const m = (el.getAttribute("style") || "").match(/--ico:\s*url\((["']?)([^"')]+)\1\)/);
+    const m = (el.getAttribute("style") || "").match(/background-image:\s*url\((["']?)([^"')]+)\1\)/);
     return m ? m[2] : "";
   });
-  check("każda ikona ma --ico z plikiem PNG", urls.every(u => /assets\/icons\/[a-zA-Z]+\.png\?v=\d+$/.test(u)));
+  check("każda ikona ma background-image z plikiem PNG",
+    urls.every(u => /^assets\/icons\/[a-zA-Z]+\.png\?v=\d+$/.test(u)));
+  /* adres musi być względny wobec index.html, nie wobec arkusza CSS */
+  check("adres ikony nie zależy od pliku CSS (poprawna ścieżka w atrybucie style)",
+    urls.every(u => u.startsWith("assets/icons/")));
 
   const ids = [...new Set(urls.map(u => (u.match(/icons\/([a-zA-Z]+)\.png/) || [])[1]).filter(Boolean))];
   check("paleta ikon jest zróżnicowana (>= 10 grafek)", ids.length >= 10);

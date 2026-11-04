@@ -331,8 +331,8 @@ button:active{transform:scale(.96)}
    • wszystkie ikony są kwadratami z zaokrągleniem (bez kół)
    ============================================================ */
 .app__icon.bi{
-  background-image:var(--ico);
-  background-size:100% 100%;
+  background-position:center;
+  background-size:contain;
   background-repeat:no-repeat;
   background-color:transparent;
   border-radius:0!important;

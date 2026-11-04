@@ -223,7 +223,10 @@
     const key = ICON_IDS.includes(id) ? id : "settings";
     /* „sm” = mniejsza ikona w liście/powiadomieniu; rozmiar ustawia CSS */
     const cls = extra ? `app__icon bi ${extra === "sm" ? "bi--sm" : extra}` : "app__icon bi";
-    const style = `--ico:url('assets/icons/${key}.png?v=${ICON_V}')`;
+    /* UWAGA: adres podajemy wprost w background-image — url() ukryty w zmiennej
+       CSS był rozwiązywany względem pliku .css (css/assets/...), przez co ikony
+       w ogóle się nie wczytywały. */
+    const style = `background-image:url('assets/icons/${key}.png?v=${ICON_V}')`;
     return `<i class="${cls}" style="${style}" aria-hidden="true"></i>`;
   }
 
