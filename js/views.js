@@ -47,6 +47,25 @@
     el.style.setProperty("--zoom", String(Math.max(0.55, zoom)));
   }
 
+  /* Makiety, których nie widać, nie animują się i nie malują — to największa
+     oszczędność w widoku „wszystkie urządzenia”. */
+  function pauseHiddenDevices() {
+    const v = currentView();
+    devices.forEach(d => {
+      const visible = v === "all" || d.classList.contains(`device--${v}`);
+      d.classList.toggle("is-idle", !visible);
+    });
+    /* w widoku pojedynczym reszta jest display:none — dodatkowo usuwamy jej
+       animacje, żeby nie zużywały klatek przy przejściu */
+    const ids = ["phone", "tablet", "laptop"];
+    ids.forEach(id => {
+      const d = stage.querySelector(`.device--${id}`);
+      if (!d) return;
+      const on = v === "all" || v === id;
+      d.style.animationPlayState = on ? "" : "paused";
+    });
+  }
+
   function setView(v) {
     stage.dataset.view = v;
     document.body.dataset.view = v;
@@ -62,6 +81,7 @@
     } catch (err) {
       /* np. przy otwarciu z file:// — pomijamy zapis w adresie */
     }
+    pauseHiddenDevices();
     // natychmiast, a potem jeszcze po ustabilizowaniu layoutu
     fit();
     requestAnimationFrame(fit);

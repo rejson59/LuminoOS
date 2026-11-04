@@ -210,7 +210,7 @@
 .tb-icon{transition:background-color var(--t-fast) var(--ease-soft), transform var(--t-fast) var(--ease-ios)}
 .tb-icon:hover{transform:translateY(-1px)}
 .tb-icon:active{transform:scale(.94)}
-.tb-icon.is-running::after{transition:width var(--t-mid) var(--ease-ios)}
+
 
 .start-menu{
   background:rgba(34,38,50,.68);
@@ -347,7 +347,7 @@ button:active{transform:scale(.96)}
   color:transparent;
   box-shadow:none;
   filter:drop-shadow(0 8px 14px rgba(0,0,0,.34)) drop-shadow(0 2px 4px rgba(0,0,0,.20));
-  transition:transform 380ms var(--ease-ios), filter 380ms var(--ease-soft);
+  transition:transform 340ms var(--ease-ios);
   will-change:transform;
 }
 .app__icon.bi > svg,.app__icon.bi > .cal-day{display:none}
@@ -373,12 +373,9 @@ button:active{transform:scale(.96)}
 /* podświetlenie i uniesienie pod kursorem */
 .app:hover .app__icon.bi,.dock-app:hover .app__icon.bi{
   transform:translateY(-4px) scale(1.06);
-  filter:drop-shadow(0 14px 20px rgba(0,0,0,.38)) drop-shadow(0 3px 6px rgba(0,0,0,.22));
 }
 .app:hover .app__icon.bi::before,.dock-app:hover .app__icon.bi::before{
-  background:rgba(255,255,255,.13);
-  -webkit-backdrop-filter:blur(18px) saturate(210%) brightness(1.1);
-          backdrop-filter:blur(18px) saturate(210%) brightness(1.1);
+  background:rgba(255,255,255,.11);
 }
 .app:active .app__icon.bi,.dock-app:active .app__icon.bi{transform:translateY(-1px) scale(.955)}
 

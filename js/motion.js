@@ -25,16 +25,20 @@
   /* ---------------- ripple ---------------- */
   function ripple(host, ev) {
     if (host.dataset.noRipple !== undefined) return;
-    const r = host.getBoundingClientRect();
-    if (!r.width || !r.height) return;
+    /* rozmiar bierzemy z cache (offsetWidth jest tani — nie wymusza pełnego
+       przeliczania stylów tak jak getBoundingClientRect w pętli) */
+    const w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    const r = { width: w, height: h, left: 0, top: 0 };
 
-    const size = Math.max(r.width, r.height) * 2.1;
-    const x = (ev && ev.clientX ? ev.clientX - r.left : r.width / 2) - size / 2;
-    const y = (ev && ev.clientY ? ev.clientY - r.top : r.height / 2) - size / 2;
-
-    const cs = getComputedStyle(host);
-    if (cs.position === "static") host.style.position = "relative";
-    const radius = cs.overflow === "hidden" ? "999px" : cs.borderRadius;
+    const size = Math.max(w, h) * 2.1;
+    let x = w / 2 - size / 2, y = h / 2 - size / 2;
+    if (ev && ev.clientX) {
+      const b = host.getBoundingClientRect();
+      x = ev.clientX - b.left - size / 2;
+      y = ev.clientY - b.top - size / 2;
+    }
+    if (getComputedStyle(host).position === "static") host.style.position = "relative";
 
     const el = document.createElement("span");
     el.className = "lu-ripple";
@@ -62,7 +66,6 @@
         { duration: 420, easing: EASE }
       );
     }
-    void radius;
   }
 
   document.addEventListener("pointerdown", e => {
@@ -75,14 +78,18 @@
 
   function popIn(root) {
     const items = Array.from(root.querySelectorAll(POP_SEL)).filter(el => !el.dataset.popped);
-    items.forEach((el, i) => {
+    if (!items.length) return;
+    /* maks. 16 elementów w jednej fali — reszta od razu w stanie końcowym */
+    const wave = items.slice(0, 16);
+    items.slice(16).forEach(el => { el.dataset.popped = "1"; });
+    wave.forEach((el, i) => {
       el.dataset.popped = "1";
       el.animate(
         [
           { opacity: 0, transform: "translateY(10px) scale(.96)" },
           { opacity: 1, transform: "translateY(0) scale(1)" }
         ],
-        { duration: 440, delay: Math.min(i * 18, 260), easing: EASE, fill: "backwards" }
+        { duration: 380, delay: Math.min(i * 14, 140), easing: EASE, fill: "backwards" }
       );
     });
   }
@@ -113,10 +120,10 @@
     if (!el) return;
     el.animate(
       [
-        { opacity: 0, transform: "translateY(16px) scale(.97)", filter: "blur(6px)" },
-        { opacity: 1, transform: "none", filter: "blur(0)" }
+        { opacity: 0, transform: "translateY(12px) scale(.975)" },
+        { opacity: 1, transform: "none" }
       ],
-      { duration: 560, easing: EASE }
+      { duration: 420, easing: EASE }
     );
   }
 
@@ -131,7 +138,7 @@
               { opacity: 0, transform: "translateY(22px) scale(.95)" },
               { opacity: 1, transform: "none" }
             ],
-            { duration: 620, delay: i * 60, easing: EASE }
+            { duration: 460, delay: i * 45, easing: EASE }
           );
         });
       });
@@ -139,19 +146,34 @@
   });
 
   /* ---------------- magnetyczne podświetlenie pod kursorem ---------------- */
-  document.addEventListener("pointermove", e => {
+  /* geometria elementu liczona RAZ przy wejściu kursora; ruch kursora tylko
+     przelicza macierz transformacji — zero wymuszonych przeliczeń layoutu */
+  let magEl = null, magRect = null, magRaf = 0, magEv = null;
+
+  document.addEventListener("pointerover", e => {
     const el = e.target.closest(".app, .tb-icon, .qs, .start-app");
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - .5;
-    const py = (e.clientY - r.top) / r.height - .5;
-    el.style.transform = `perspective(420px) rotateX(${(-py * 6).toFixed(2)}deg) rotateY(${(px * 8).toFixed(2)}deg) translateY(-2px)`;
+    if (el === magEl) return;
+    if (magEl) magEl.style.transform = "";
+    magEl = el;
+    magRect = el ? el.getBoundingClientRect() : null;
+  }, { passive: true });
+
+  document.addEventListener("pointermove", e => {
+    if (!magEl || !magRect) return;
+    magEv = e;
+    if (!magRaf) magRaf = requestAnimationFrame(() => {
+      magRaf = 0;
+      if (!magEl || !magRect || !magEv) return;
+      const px = (magEv.clientX - magRect.left) / magRect.width - .5;
+      const py = (magEv.clientY - magRect.top) / magRect.height - .5;
+      magEl.style.transform = `perspective(420px) rotateX(${(-py * 6).toFixed(2)}deg) rotateY(${(px * 8).toFixed(2)}deg) translateY(-2px)`;
+    });
   }, { passive: true });
 
   document.addEventListener("pointerout", e => {
     const el = e.target.closest(".app, .tb-icon, .qs, .start-app");
     if (!el) return;
-    el.style.transform = "";
+    if (el === magEl) { magEl.style.transform = ""; magEl = null; magRect = null; }
   }, { passive: true });
 
   /* ---------------- płynne otwieranie aplikacji Androida ---------------- */
@@ -172,7 +194,7 @@
         { opacity: 0, transform: `translate(${ir.left - sr.left + ir.width / 2 - sr.width / 2}px, ${ir.top - sr.top + ir.height / 2 - sr.height / 2}px) scale(.06)` },
         { opacity: 1, transform: "none" }
       ],
-      { duration: 520, easing: EASE }
+      { duration: 420, easing: EASE }
     );
   }, true);
 

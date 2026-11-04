@@ -1,0 +1,82 @@
+/* ============================================================
+   LuminoOS — warstwa płynności
+   • sprężyste, „prawdziwe” krzywe ruchu (Apple + sprężyna)
+   • wygaszanie animacji w tle (mniej pracy = więcej fps)
+   • wyłączanie kosztownych efektów podczas animacji i przewijania
+   • tanie przewijanie (bez backdrop-filter w ruchu)
+   ============================================================ */
+
+:root{
+  --ease-ios:cubic-bezier(.32,.72,0,1);       /* Apple */
+  --ease-out-ios:cubic-bezier(.25,.46,.45,.94);
+  --ease-spring:cubic-bezier(.34,1.42,.64,1); /* lekka sprężyna */
+  --ease-snap:cubic-bezier(.22,1.18,.36,1);
+  --motion-live:1;                            /* 1 = animacje włączone */
+}
+
+/* ---------- 1. oszczędzanie pracy w tle ---------- */
+/* gdy karta jest w tle, przeglądarka i tak nie rysuje — ale my dodatkowo
+   zatrzymujemy własne animacje JS, żeby po powrocie nie było „skoku”. */
+html.lu-hidden *, body.lu-hidden *{
+  animation-play-state:paused!important;
+}
+
+/* ---------- 2. tryb „w ruchu”: wyłączamy kosztowne efekty ---------- */
+html.lu-busy .bi::before{
+  -webkit-backdrop-filter:none!important;
+          backdrop-filter:none!important;
+  background:rgba(255,255,255,.14)!important;
+}
+html.lu-busy .app__icon.bi,
+html.lu-busy .win-window,
+html.lu-busy .notif,
+html.lu-busy .qs{
+  will-change:transform;
+}
+
+/* ---------- 3. tanie, płynne przewijanie ---------- */
+.launcher-pages,
+.panel-notifs,
+.start-scroll,
+.win-body,
+.side,
+.list{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+}
+@media (prefers-reduced-motion:reduce){
+  .launcher-pages,.panel-notifs,.start-scroll,.win-body,.side,.list{scroll-behavior:auto}
+}
+
+/* ---------- 4. brak „przyklejania” i migotania przy przewijaniu ---------- */
+.launcher-pages > *, .app-grid > *, .start-grid > *{
+  backface-visibility:hidden;
+}
+
+/* ---------- 5. tekst: bez migotania przy skalowaniu ---------- */
+.app__label,.device__caption span,.win-titlebar,.taskbar{
+  text-rendering:optimizeSpeed;
+}
+
+/* ---------- 6. redukcja ruchu: wszystko natychmiast ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+/* ---------- 7. makiety poza widokiem: zero pracy ---------- */
+.device.is-idle{
+  /* nie malujemy i nie animujemy urządzeń, których nie widać w siatce */
+  content-visibility:auto;
+  contain-intrinsic-size:auto 640px;
+}
+.stage[data-view="phone"] > .device:not(.device--phone),
+.stage[data-view="tablet"] > .device:not(.device--tablet),
+.stage[data-view="laptop"] > .device:not(.device--laptop){
+  content-visibility:hidden;
+}

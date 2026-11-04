@@ -277,7 +277,7 @@
     }, { passive: true });
 
     /* ---------------- aplikacje ---------------- */
-    function openApp(id) {
+    function openApp(id, originIcon) {
       const meta = APP[id];
       if (!meta) return;
       const el = document.createElement("div");
@@ -295,6 +295,7 @@
       appsHost.appendChild(el);
       // animacja wejścia (klasa od razu, aby stan był poprawny także bez animacji)
       el.classList.add("is-open");
+      growFromIcon(el, appsHost, originIcon);
 
       if (meta.init) appCleanups[id] = meta.init(el, root);
 
@@ -302,6 +303,41 @@
       el.querySelector("[data-back]").addEventListener("click", back);
       openStack.push(id);
       refreshWidget();
+    }
+
+    /* sprężyste „wyrastanie” aplikacji z ikony — 100% transform/opacity */
+    function growFromIcon(el, host, iconEl) {
+      if (!iconEl || !el.animate) return;
+      const a = iconEl.getBoundingClientRect(), b = host.getBoundingClientRect();
+      if (!a.width || !b.width) return;
+      const dx = a.left + a.width / 2 - (b.left + b.width / 2);
+      const dy = a.top + a.height / 2 - (b.top + b.height / 2);
+      const s = Math.max(.04, a.width / b.width);
+      el.animate(
+        [
+          { transform: `translate(${dx}px, ${dy}px) scale(${s})`, opacity: 0, borderRadius: "40%" },
+          { transform: "none", opacity: 1, borderRadius: "0%" }
+        ],
+        { duration: 460, easing: "cubic-bezier(.32,.72,0,1)", fill: "backwards" }
+      );
+    }
+
+    function shrinkToIcon(el, host, iconEl) {
+      if (!iconEl || !el.animate) return false;
+      const a = iconEl.getBoundingClientRect(), b = host.getBoundingClientRect();
+      if (!a.width || !b.width) return false;
+      const dx = a.left + a.width / 2 - (b.left + b.width / 2);
+      const dy = a.top + a.height / 2 - (b.top + b.height / 2);
+      const s = Math.max(.04, a.width / b.width);
+      const anim = el.animate(
+        [
+          { transform: "none", opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) scale(${s})`, opacity: 0 }
+        ],
+        { duration: 320, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }
+      );
+      anim.onfinish = () => el.remove();
+      return true;
     }
 
     function closeApp(id) {
@@ -314,7 +350,9 @@
       else if (cleanup && typeof cleanup.dispose === "function") cleanup.dispose();
       delete appCleanups[id];
       el.classList.remove("is-open");
-      setTimeout(() => el.remove(), 260);
+      if (!shrinkToIcon(el, appsHost, root.querySelector(`[data-app="${id}"] .app__icon`))) {
+        setTimeout(() => el.remove(), 240);
+      }
       openStack = openStack.filter(x => x !== id);
     }
 
@@ -339,7 +377,7 @@
           const el = appsHost.querySelector(`.a-app[data-app-id="${id}"]`);
           if (el) el.classList.remove("is-open");
         }
-        openApp(id);
+        openApp(id, appBtn.querySelector(".app__icon") || appBtn);
         toggleDrawer(false);
         return;
       }
@@ -349,7 +387,7 @@
     /* przechwytywanie kliknięć w tło blokady, aby nie otwierać aplikacji */
     lock.addEventListener("click", e => {
       const btn = e.target.closest("[data-app]");
-      if (btn) { unlock(); openApp(btn.dataset.app); e.stopPropagation(); }
+      if (btn) { unlock(); openApp(btn.dataset.app, btn.querySelector(".app__icon") || btn); e.stopPropagation(); }
     }, true);
 
     /* ---------------- widget Spotify na tablecie ---------------- */

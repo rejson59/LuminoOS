@@ -149,6 +149,27 @@ Podpięcie: `Lumino.iconImg(id)` → `<i class="app__icon bi" style="background-
 Regeneracja: `node tools/make-icons.js` → podbij `ICON_V` w `js/core.js`
 oraz `?v=` przy `mask.png` w `css/glass.css`.
 
+### Najpłynniejszy interfejs (etap 5)
+Wszystkie animacje idą **jedną ścieżką**: wyłącznie `transform` i `opacity`
+(kompozytor/GPU), na **jednym schedulerze `requestAnimationFrame`** (`js/perf.js`).
+
+- **krzywe Apple**: `--ease-ios: cubic-bezier(.32,.72,0,1)` — ruch jest szybki
+  na starcie i miękko wyhamowuje; dodatkowo `--ease-spring` i `--ease-snap`,
+- **sprężyny** (`Lumino.motion.spring`) — animacje bez sztywnych czasów,
+- **efekt „wyrastania”** — aplikacja otwiera się z ikony (transform z jej pozycji
+  i rozmiaru) i w nią się zapada przy zamykaniu,
+- **inercyjne przewijanie** — kółko myszy dostaje wygładzenie jak w macOS,
+- **zero wymuszonych przeliczeń layoutu** — ripple i „magnetyczne” ikony liczą
+  geometrię raz, potem tylko macierze transformacji (rAF),
+- **makiety poza widokiem nie pracują** — `content-visibility` + pauza animacji,
+- **tryb `lu-busy`** — na czas animacji wyłączamy `backdrop-filter` pod ikonami,
+- **wygaszanie w tle** — karta w tle zatrzymuje scheduler.
+
+Kontrola jakości: `npm run test:perf` (`tools/perf-audit.js`) wykrywa przejścia
+na właściwościach układu, zmiany `backdrop-filter` na hover i animacje filtrów.
+Licznik klatek w podglądzie: dopisz `?fps=1` do adresu — w prawym dolnym rogu
+pojawi się FPS, średnia klatka, najgorsza klatka i procent zaciągnięć.
+
 ### Tablet: komplet aplikacji na jednym ekranie
 `14` aplikacji w siatce **5 kolumn** + 3 kompaktowe widgety w jednym rzędzie.
 Siatka trzyma się w ramce (sprawdzane testem `tools/layout-check.js`), a pełna
