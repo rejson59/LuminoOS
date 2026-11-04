@@ -148,27 +148,27 @@ const G = {
    sc    — szerokość glifu względem kafla
    ------------------------------------------------------------ */
 const ICONS = {
-  phone:        { hue: "#2FD35B", tint: 0.38, glyph: G.phone,        sc: 0.52 },
-  messages:     { hue: "#2FD35B", tint: 0.36, glyph: G.messages,     sc: 0.50, dy: 0.6 },
-  spotify:      { hue: "#1ED760", tint: 0.30, glyph: G.spotify,      sc: 0.62, ink: "#0A2A18" },
-  camera:       { hue: "#6E7A88", tint: 0.38, glyph: G.camera,       sc: 0.58, ink: "#FFFFFF" },
-  chrome:       { hue: "#EEF2F8", tint: 0.26, glyph: G.chrome,       sc: 0.66, keep: true },
-  gallery:      { hue: "#F6F8FC", tint: 0.20, glyph: G.gallery,      sc: 0.78, keep: true },
-  youtube:      { hue: "#FF3B30", tint: 0.38, glyph: G.youtube,      sc: 0.70, ink: "#FFFFFF" },
-  calendar:     { hue: "#FFFFFF", tint: 0.26, glyph: G.calendar,     sc: 0.90, keep: true },
-  gmail:        { hue: "#FFFFFF", tint: 0.24, glyph: G.gmail,        sc: 0.64, keep: true },
-  maps:         { hue: "#2FA8D8", tint: 0.36, glyph: G.maps,         sc: 0.58 },
-  notes:        { hue: "#FFC61E", tint: 0.34, glyph: G.notes,        sc: 0.76, keep: true },
-  calculator:   { hue: "#3A3A3C", tint: 0.40, glyph: G.calculator,   sc: 0.80, ink: "#FFFFFF" },
-  files:        { hue: "#0A84FF", tint: 0.38, glyph: G.files,        sc: 0.56, ink: "#FFFFFF" },
-  settings:     { hue: "#6E7480", tint: 0.38, glyph: G.settings,     sc: 0.60, ink: "#FFFFFF" },
-  store:        { hue: "#0A84FF", tint: 0.38, glyph: G.store,        sc: 0.66, ink: "#FFFFFF" },
-  youtubeMusic: { hue: "#FF3B30", tint: 0.32, glyph: G.youtubeMusic, sc: 0.62, keep: true },
-  search:       { hue: "#8E8E93", tint: 0.26, glyph: G.search,       sc: 0.46, ink: "#FFFFFF" },
-  weather:      { hue: "#0A84FF", tint: 0.34, glyph: G.weather,      sc: 0.62, keep: true },
-  terminal:     { hue: "#1C1C1E", tint: 0.38, glyph: G.terminal,     sc: 0.68, ink: "#FFFFFF" },
-  clock:        { hue: "#1C1C1E", tint: 0.34, glyph: G.clock,        sc: 0.62, ink: "#FFFFFF" },
-  trash:        { hue: "#8E8E93", tint: 0.28, glyph: G.trash,        sc: 0.58, ink: "#FFFFFF" }
+  phone:{ hue: "#2FD35B", tint: 0.17, glyph: G.phone,        sc: 0.52 },
+  messages:{ hue: "#2FD35B", tint: 0.16, glyph: G.messages,     sc: 0.50, dy: 0.6 },
+  spotify:{ hue: "#1ED760", tint: 0.14, glyph: G.spotify,      sc: 0.62, ink: "#0A2A18" },
+  camera:{ hue: "#6E7A88", tint: 0.17, glyph: G.camera,       sc: 0.58, ink: "#FFFFFF" },
+  chrome:{ hue: "#EEF2F8", tint: 0.12, glyph: G.chrome,       sc: 0.66, keep: true },
+  gallery:{ hue: "#F6F8FC", tint: 0.09, glyph: G.gallery,      sc: 0.78, keep: true },
+  youtube:{ hue: "#FF3B30", tint: 0.17, glyph: G.youtube,      sc: 0.70, ink: "#FFFFFF" },
+  calendar:{ hue: "#FFFFFF", tint: 0.12, glyph: G.calendar,     sc: 0.90, keep: true },
+  gmail:{ hue: "#FFFFFF", tint: 0.11, glyph: G.gmail,        sc: 0.64, keep: true },
+  maps:{ hue: "#2FA8D8", tint: 0.16, glyph: G.maps,         sc: 0.58 },
+  notes:{ hue: "#FFC61E", tint: 0.15, glyph: G.notes,        sc: 0.76, keep: true },
+  calculator:{ hue: "#3A3A3C", tint: 0.18, glyph: G.calculator,   sc: 0.80, ink: "#FFFFFF" },
+  files:{ hue: "#0A84FF", tint: 0.17, glyph: G.files,        sc: 0.56, ink: "#FFFFFF" },
+  settings:{ hue: "#6E7480", tint: 0.17, glyph: G.settings,     sc: 0.60, ink: "#FFFFFF" },
+  store:{ hue: "#0A84FF", tint: 0.17, glyph: G.store,        sc: 0.66, ink: "#FFFFFF" },
+  youtubeMusic:{ hue: "#FF3B30", tint: 0.14, glyph: G.youtubeMusic, sc: 0.62, keep: true },
+  search:{ hue: "#8E8E93", tint: 0.12, glyph: G.search,       sc: 0.46, ink: "#FFFFFF" },
+  weather:{ hue: "#0A84FF", tint: 0.15, glyph: G.weather,      sc: 0.62, keep: true },
+  terminal:{ hue: "#1C1C1E", tint: 0.17, glyph: G.terminal,     sc: 0.68, ink: "#FFFFFF" },
+  clock:{ hue: "#1C1C1E", tint: 0.15, glyph: G.clock,        sc: 0.62, ink: "#FFFFFF" },
+  trash:{ hue: "#8E8E93", tint: 0.13, glyph: G.trash,        sc: 0.58, ink: "#FFFFFF" }
 };
 
 /* glif przepuszczony przez kolor — zostawiamy tylko biel/zieleń marki */
@@ -205,24 +205,24 @@ function svgFor(id) {
 
   <!-- światło: góra kafla jaśniejsza (szkło grubsze u góry) -->
   <linearGradient id="sheen" x1="0.2" y1="0" x2="0.5" y2="1">
-    <stop offset="0"    stop-color="#fff" stop-opacity=".34"/>
-    <stop offset="0.28" stop-color="#fff" stop-opacity=".13"/>
-    <stop offset="0.62" stop-color="#fff" stop-opacity=".05"/>
-    <stop offset="1"    stop-color="#fff" stop-opacity=".16"/>
+    <stop offset="0"    stop-color="#fff" stop-opacity=".52"/>
+    <stop offset="0.3"  stop-color="#fff" stop-opacity=".20"/>
+    <stop offset="0.66" stop-color="#fff" stop-opacity=".08"/>
+    <stop offset="1"    stop-color="#fff" stop-opacity=".26"/>
   </linearGradient>
 
   <!-- ciemniejsza „grubość” materiału przy dolnej krawędzi -->
   <linearGradient id="body" x1="0" y1="0.55" x2="0" y2="1">
     <stop offset="0" stop-color="#000" stop-opacity="0"/>
-    <stop offset="1" stop-color="#000" stop-opacity=".11"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".08"/>
   </linearGradient>
 
   <!-- jasna krawędź szkła -->
   <linearGradient id="rim" x1="0.15" y1="0" x2="0.5" y2="1">
-    <stop offset="0"    stop-color="#fff" stop-opacity=".92"/>
-    <stop offset="0.3"  stop-color="#fff" stop-opacity=".52"/>
-    <stop offset="0.68" stop-color="#fff" stop-opacity=".30"/>
-    <stop offset="1"    stop-color="#fff" stop-opacity=".60"/>
+    <stop offset="0"    stop-color="#fff" stop-opacity=".95"/>
+    <stop offset="0.28" stop-color="#fff" stop-opacity=".62"/>
+    <stop offset="0.7"  stop-color="#fff" stop-opacity=".42"/>
+    <stop offset="1"    stop-color="#fff" stop-opacity=".72"/>
   </linearGradient>
 
   <!-- błysk krawędziowy (refrakcja) -->
@@ -257,14 +257,17 @@ function svgFor(id) {
   <rect width="100" height="100" fill="url(#sheen)"/>
   <!-- 3. duża, miękka plama światła -->
   <ellipse cx="38" cy="-2" rx="62" ry="34" fill="url(#spec)" filter="url(#softer)"/>
-  <!-- 4. błysk biegnący po przekątnej -->
-  <path d="M-14 -6 L26 -6 L64 44 L24 56 Z" fill="url(#streak)" filter="url(#soft)"/>
+  <!-- 4. wąski, miękki refleks przy górnej krawędzi (bez „rysy”) -->
+  <ellipse cx="42" cy="-6" rx="46" ry="14" fill="#fff" opacity=".30" filter="url(#soft)"/>
+  <!-- 5. rozszczepienie światła na krawędzi (delikatny błękit i ciepły ton) -->
+  <path d="${SQ}" fill="none" stroke="#8ecbff" stroke-opacity=".22" stroke-width="2.6" filter="url(#soft)"/>
+  <path d="${SQ}" fill="none" stroke="#ffd9a8" stroke-opacity=".16" stroke-width="1.4" transform="translate(0.5 0.5)"/>
   <!-- 5. grubość materiału u dołu -->
   <rect y="48" width="100" height="52" fill="url(#body)"/>
   <!-- 6. wewnętrzny cień tuż przy krawędzi (grubość szkła, poprawia kontrast glifu) -->
-  <path d="${SQ}" fill="none" stroke="#000" stroke-opacity=".16" stroke-width="3.2" filter="url(#soft)"/>
+  <path d="${SQ}" fill="none" stroke="#000" stroke-opacity=".10" stroke-width="3" filter="url(#soft)"/>
   <!-- 7. jasna krawędź squircle -->
-  <path d="${SQ}" fill="none" stroke="url(#rim)" stroke-width="1.15"/>
+  <path d="${SQ}" fill="none" stroke="url(#rim)" stroke-width="1.4"/>
 </g>
 
 <g transform="translate(${tx.toFixed(3)} ${ty.toFixed(3)}) scale(${(gs / 24).toFixed(3)})"
