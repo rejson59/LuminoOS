@@ -453,7 +453,7 @@
 
   function placeholderHTML(app) {
     return `<div class="center-msg">
-      <span class="app__icon ${app.color}">${icon(app.icon)}</span>
+      ${iconImg(app.id, "center__ico")}
       <b style="font-size:12px;color:#fff">${app.label}</b>
       <span>Ta aplikacja jest makietą — ekran do zaprojektowania.<br>Powiedz, jak ma działać w LuminoOS.</span>
     </div>`;

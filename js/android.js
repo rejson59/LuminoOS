@@ -3,7 +3,7 @@
    ============================================================ */
 (function () {
   "use strict";
-  const { $, $$, icon, player, tracks, androidApps, notifications, APP, brandIcon } = window.Lumino;
+  const { $, $$, icon, iconImg, player, tracks, androidApps, notifications, APP, brandIcon } = window.Lumino;
   const fmtTime = window.Lumino.fmtTime;
 
   const DOCK = ["phone", "messages", "chrome", "spotify"];
@@ -99,7 +99,7 @@
             <div class="app-grid app-grid--all">
               ${androidApps.map(a => appTile(a)).join("")}
               <button class="app" data-action="drawer">
-                <span class="app__icon bi" style="--bg:#3c4043">${icon("i-search")}</span>
+                ${iconImg("search")}
                 <span class="app__label">Wszystkie</span>
               </button>
             </div>
@@ -136,7 +136,7 @@
         <div class="lock-notif">
           ${notifications.slice(0, 2).map(n => {
             const a = androidApps.find(x => x.id === n.app);
-            return `<div class="ln"><span class="app__icon ${a.color}">${icon(a.icon)}</span>
+            return `<div class="ln">${iconImg(a.id, "ln__ico")}
               <div><b>${n.title}</b><span>${n.text}</span></div></div>`;
           }).join("")}
         </div>
@@ -194,7 +194,7 @@
         <div class="panel-notifs">
           ${notifications.map(n => {
             const a = androidApps.find(x => x.id === n.app);
-            return `<div class="notif"><span class="app__icon ${a.color}">${icon(a.icon)}</span>
+            return `<div class="notif">${iconImg(a.id, "notif__ico")}
               <div><b>${n.title}</b><p>${n.text}</p></div><small>${n.time}</small></div>`;
           }).join("")}
         </div>

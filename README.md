@@ -128,16 +128,26 @@ Wszystkie ikony (`js/core.js` → `brandIcon`, styl `css/glass.css` → `.bi`) s
 krawędź, miękki cień i podniesienie pod kursorem. Dotyczy to pulpitu, docku,
 szuflady aplikacji, ekranu blokady i widgetów.
 
-### Ikony — szkło w stylu Apple (jeden styl)
-Płytki generuje `tools/make-icons.py` (512 px, supersampling): **superelipsa (squircle)**,
-jasny **rim** krawędzi, **sierpowy refleks** + błysk, **cień wewnętrzny** u dołu,
-**pasmo refrakcji** z rozszczepieniem i delikatne ziarno. Kolor marki to **kryty gradient**
-(`--g1`/`--g2`) przycięty maską `assets/icons/mask.png`, szkło leży na wierzchu
-(`assets/icons/plate.png`), a glif jest biały z miękkim cieniem — jak w iOS.
+### Ikony — grafiki w stylu Apple (jeden styl, jak iOS)
+Każda ikona to **gotowy obraz 512 px** (`assets/icons/<id>.png`), rysowany od zera
+przez `tools/make-icons.js` (SVG → PNG przez `@resvg/resvg-js`):
 
-Warianty stylów (dawniej Liquid/Frosted/Gel/Chrome) zostały **usunięte** —
-jest jeden, dopracowany wygląd.
+- **squircle** — superelipsa n=5, ta sama krzywa co maska iOS,
+- **kafel** — nasycony gradient marki, delikatne światło od góry i przyciemnienie dołem,
+- **szkło** — szeroki refleks górny + wąski błysk krawędziowy, jasna krawędź u góry,
+  ciemna linia u dołu (grubość materiału),
+- **glif** — ok. 55% szerokości kafla, wyśrodkowany, z miękkim cieniem.
 
+Ikony podpina `Lumino.iconImg(id)` — wstawia `<i class="app__icon bi">` z tłem
+`--ico:url(...)`, więc **w HTML nie ma już żadnych glifów SVG** i wygląd jest
+identyczny w każdej przeglądarce. Cień ikony to `filter: drop-shadow` (podąża za
+kształtem squircle), a nie prostokątny `box-shadow`.
+
+Regeneracja: `node tools/make-icons.js` (nadpisuje pliki) → podbij `ICON_V`
+w `js/core.js` i `?v=` w `css/glass.css`, żeby przeglądarka odświeżyła obrazki.
+
+Warianty stylów (Liquid/Frosted/Gel/Chrome) i przełącznik na stronie zostały
+**usunięte** — jest jeden, dopracowany wygląd.
 
 ### Tablet: komplet aplikacji na jednym ekranie
 `14` aplikacji w siatce **5 kolumn** + 3 kompaktowe widgety w jednym rzędzie.
@@ -147,7 +157,7 @@ lista aplikacji jest w szufladzie (pasek gestów).
 ### Tapety bez rozmycia i bez przyciemniania
 Tapety są wstawiane jako czysty obraz (`center / cover`), bez nakładanych gradientów
 i **bez `backdrop-filter`** — jedyne rozmycie w całym interfejsie występuje
-w przezroczystych ikonach aplikacji (`.bi`). Czytelność białego tekstu zapewniają
+w w grafikach ikon (`assets/icons/`). Czytelność białego tekstu zapewniają
 wyłącznie cienie tekstu (`text-shadow`).
 
 | Ekran | Plik |

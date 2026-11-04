@@ -3,26 +3,26 @@
    ============================================================ */
 (function () {
   "use strict";
-  const { $, $$, icon, player, clamp } = window.Lumino;
+  const { $, $$, icon, iconImg, player, clamp } = window.Lumino;
 
   const WIN_APPS = {
-    explorer: { title: "Pliki", icon: "i-folder", tint: "#ffd67a", w: "68%", h: "76%", x: 94, y: 18, part: window.Lumino.explorer },
-    spotify: { title: "Spotify", icon: "i-spotify", tint: "#1ed760", w: "58%", h: "72%", x: 150, y: 26, part: window.Lumino.spotifyWin, cls: "sp-win" },
-    settings: { title: "Ustawienia", icon: "i-gear-win", tint: "#a8c7fa", w: "52%", h: "70%", x: 170, y: 30, part: window.Lumino.winSettings },
-    notepad: { title: "Notatnik", icon: "i-notes", tint: "#ffe08a", w: "44%", h: "52%", x: 210, y: 60, part: window.Lumino.notepad },
-    edge: { title: "Edge", icon: "i-edge", tint: "#8ed0ff", w: "60%", h: "72%", x: 140, y: 24, part: { html: () => `<div class="center-msg" style="height:100%">
-        <span class="app__icon ic-sky">${icon("i-edge")}</span>
+    explorer: { title: "Pliki", icon: "i-folder", ico: "files", tint: "#ffd67a", w: "68%", h: "76%", x: 94, y: 18, part: window.Lumino.explorer },
+    spotify: { title: "Spotify", icon: "i-spotify", ico: "spotify", tint: "#1ed760", w: "58%", h: "72%", x: 150, y: 26, part: window.Lumino.spotifyWin, cls: "sp-win" },
+    settings: { title: "Ustawienia", icon: "i-gear-win", ico: "settings", tint: "#a8c7fa", w: "52%", h: "70%", x: 170, y: 30, part: window.Lumino.winSettings },
+    notepad: { title: "Notatnik", icon: "i-notes", ico: "notes", tint: "#ffe08a", w: "44%", h: "52%", x: 210, y: 60, part: window.Lumino.notepad },
+    edge: { title: "Edge", icon: "i-edge", ico: "chrome", tint: "#8ed0ff", w: "60%", h: "72%", x: 140, y: 24, part: { html: () => `<div class="center-msg" style="height:100%">
+        ${iconImg("chrome")}
         <b style="color:#fff;font-size:12px">Microsoft Edge — makieta</b>
         <span style="font-size:9.5px">Tu trafi docelowa przeglądarka LuminoOS.</span></div>` } },
-    store: { title: "Store", icon: "i-store", tint: "#a8c7fa", w: "54%", h: "66%", x: 160, y: 40, part: { html: () => `<div class="win-settings">
+    store: { title: "Store", icon: "i-store", ico: "store", tint: "#a8c7fa", w: "54%", h: "66%", x: 160, y: 40, part: { html: () => `<div class="win-settings">
         <h4>Polecane aplikacje</h4>
-        ${[["Spotify", "ic-spotify", "i-spotify"], ["Pliki", "ic-yellow", "i-files"], ["Notatnik", "ic-amber", "i-notes"]]
-          .map(([n, c, i]) => `<div class="set-card"><span class="app__icon ${c}" style="--s:26px;border-radius:7px">${icon(i)}</span>
+        ${[["Spotify", "spotify"], ["Pliki", "files"], ["Notatnik", "notes"]]
+          .map(([n, i]) => `<div class="set-card">${iconImg(i)}
             <span>${n}</span><span class="val">Zainstaluj</span></div>`).join("")}
         <p style="font-size:8.5px;color:#a9b2c6;margin-top:6px">Makieta sklepu z aplikacjami.</p>
       </div>` } },
-    calculator: { title: "Kalkulator", icon: "i-calc", tint: "#a8c7fa", w: "30%", h: "62%", x: 300, y: 60, part: { html: () => wineCalcHTML() } },
-    weather: { title: "Pogoda", icon: "i-sun", tint: "#ffd166", w: "38%", h: "48%", x: 240, y: 70, part: { html: () => `
+    calculator: { title: "Kalkulator", icon: "i-calc", ico: "calculator", tint: "#a8c7fa", w: "30%", h: "62%", x: 300, y: 60, part: { html: () => wineCalcHTML() } },
+    weather: { title: "Pogoda", icon: "i-sun", ico: "weather", tint: "#ffd166", w: "38%", h: "48%", x: 240, y: 70, part: { html: () => `
       <div style="padding:16px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:10px;background:
         radial-gradient(70% 60% at 20% 10%, rgba(255,209,102,.35), transparent 60%),linear-gradient(160deg,#1b2438,#0d1120)">
         <div style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#c8d0e0">Kraków</div>
@@ -35,57 +35,57 @@
   };
 
   const EXTRA_APPS = [
-    ["mail", "Poczta", "i-mail", "#5aa9ff"],
-    ["calendar", "Kalendarz", "i-calendar", "#ff9f6b"],
-    ["photos", "Zdjęcia", "i-gallery", "#ff8fb1"],
-    ["maps", "Mapy", "i-maps", "#6fe3c4"],
-    ["terminal", "Terminal", "i-files", "#d6dbe6"],
-    ["paint", "Paint", "i-gallery", "#ffd166"],
-    ["word", "Word", "i-notes", "#5aa9ff"],
-    ["excel", "Excel", "i-calc", "#7bd88f"],
-    ["xbox", "Xbox", "i-play", "#7bd88f"],
-    ["camera", "Aparat", "i-camera", "#cfd6e6"],
-    ["clock", "Zegar", "i-sun", "#cfd6e6"],
-    ["recycle", "Kosz", "i-trash", "#cfd6e6"]
+    ["mail", "Poczta", "gmail", "#5aa9ff"],
+    ["calendar", "Kalendarz", "calendar", "#ff9f6b"],
+    ["photos", "Zdjęcia", "gallery", "#ff8fb1"],
+    ["maps", "Mapy", "maps", "#6fe3c4"],
+    ["terminal", "Terminal", "terminal", "#d6dbe6"],
+    ["paint", "Paint", "gallery", "#ffd166"],
+    ["word", "Word", "notes", "#5aa9ff"],
+    ["excel", "Excel", "calculator", "#7bd88f"],
+    ["xbox", "Xbox", "youtubeMusic", "#7bd88f"],
+    ["camera", "Aparat", "camera", "#cfd6e6"],
+    ["clock", "Zegar", "clock", "#cfd6e6"],
+    ["recycle", "Kosz", "trash", "#cfd6e6"]
   ];
 
   const TASKBAR_APPS = [
     { id: "start", icon: "i-windows", label: "Start" },
     { id: "search", icon: "i-search", label: "Szukaj" },
-    { id: "explorer", icon: "i-folder", label: "Eksplorator plików", dataIcon: "folder" },
-    { id: "edge", icon: "i-edge", label: "Edge", dataIcon: "edge" },
-    { id: "spotify", icon: "i-spotify", label: "Spotify", dataIcon: "spotify" },
-    { id: "store", icon: "i-store", label: "Sklep", dataIcon: "store" }
+    { id: "explorer", label: "Eksplorator plików", dataIcon: "folder", ico: "files" },
+    { id: "edge", label: "Edge", dataIcon: "edge", ico: "chrome" },
+    { id: "spotify", label: "Spotify", dataIcon: "spotify", ico: "spotify" },
+    { id: "store", label: "Sklep", dataIcon: "store", ico: "store" }
   ];
 
   const START_APPS = [
-    ["edge", "Edge", "i-edge", "#1a73e8"],
-    ["explorer", "Pliki", "i-folder", "#e8b33c"],
-    ["settings", "Ustawienia", "i-gear-win", "#8b95a8"],
-    ["notepad", "Notatnik", "i-notes", "#6fa8dc"],
-    ["spotify", "Spotify", "i-spotify", "#1ed760"],
-    ["store", "Sklep", "i-store", "#4cc2ff"],
-    ["weather", "Pogoda", "i-sun", "#ffb54d"],
-    ["calculator", "Kalkulator", "i-calc", "#5f6368"],
-    ["mail", "Poczta", "i-mail", "#3b82f6"],
-    ["calendar", "Kalendarz", "i-calendar", "#ef6a4c"],
-    ["photos", "Zdjęcia", "i-gallery", "#e8567f"],
-    ["maps", "Mapy", "i-maps", "#39b98a"],
-    ["terminal", "Terminal", "i-files", "#2b2f36"],
-    ["paint", "Paint", "i-gallery", "#f2c744"],
-    ["word", "Word", "i-notes", "#2b579a"],
-    ["excel", "Excel", "i-calc", "#217346"],
-    ["xbox", "Xbox", "i-play", "#107c10"],
-    ["clock", "Zegar", "i-sun", "#5f6368"]
+    ["edge", "Edge", "chrome"],
+    ["explorer", "Pliki", "files"],
+    ["settings", "Ustawienia", "settings"],
+    ["notepad", "Notatnik", "notes"],
+    ["spotify", "Spotify", "spotify"],
+    ["store", "Sklep", "store"],
+    ["weather", "Pogoda", "weather"],
+    ["calculator", "Kalkulator", "calculator"],
+    ["mail", "Poczta", "gmail"],
+    ["calendar", "Kalendarz", "calendar"],
+    ["photos", "Zdjęcia", "gallery"],
+    ["maps", "Mapy", "maps"],
+    ["terminal", "Terminal", "terminal"],
+    ["paint", "Paint", "gallery"],
+    ["word", "Word", "notes"],
+    ["excel", "Excel", "calculator"],
+    ["xbox", "Xbox", "youtubeMusic"],
+    ["clock", "Zegar", "clock"]
   ];
 
   function registerExtraApps() {
     EXTRA_APPS.forEach(([id, title, ic, tint]) => {
       if (WIN_APPS[id]) return;
       WIN_APPS[id] = {
-        title, icon: ic, tint, w: "48%", h: "62%", x: 160, y: 42,
+        title, icon: ic, ico: ic, tint, w: "48%", h: "62%", x: 160, y: 42,
         part: { html: () => `<div class="center-msg" style="height:100%">
-          <span class="app__icon" style="--s:42px;border-radius:10px;background:${tint};color:#0a1020">${icon(ic)}</span>
+          ${iconImg(ic)}
           <b style="color:#fff;font-size:12px">${title}</b>
           <span style="font-size:9.5px;max-width:220px">Makieta aplikacji — do zaprojektowania w LuminoOS.</span></div>` }
       };
@@ -99,9 +99,9 @@
       <div class="win-desktop">
         <div class="win-desktop-icons">
           <div class="win-desk-icon" data-open="explorer">${icon("i-pc")}<span>Ten komputer</span></div>
-          <div class="win-desk-icon" data-open="explorer">${icon("i-folder")}<span>Dokumenty</span></div>
-          <div class="win-desk-icon" data-open="explorer">${icon("i-trash")}<span>Kosz</span></div>
-          <div class="win-desk-icon" data-open="edge">${icon("i-globe")}<span>Przeglądarka</span></div>
+          <div class="win-desk-icon" data-open="explorer">${iconImg("files", "desk")}<span>Dokumenty</span></div>
+          <div class="win-desk-icon" data-open="explorer">${iconImg("trash", "desk")}<span>Kosz</span></div>
+          <div class="win-desk-icon" data-open="edge">${iconImg("chrome", "desk")}<span>Przeglądarka</span></div>
         </div>
         <div class="win-layer"></div>
       </div>
@@ -113,9 +113,9 @@
         <div class="start-scroll">
           <div class="start-head"><span>Przypięte</span><span class="start-all">Wszystkie aplikacje ›</span></div>
           <div class="start-grid">
-            ${START_APPS.map(([id, name, ic, color]) => `
+            ${START_APPS.map(([id, name, ic]) => `
               <button class="start-app" data-open="${id}" data-name="${name.toLowerCase()}">
-                <span class="start-app__ic" style="background:${color}">${icon(ic)}</span>
+                ${iconImg(ic)}
                 <span>${name}</span>
               </button>`).join("")}
           </div>
@@ -125,7 +125,7 @@
               <div><b>notatki.txt</b><small>Ostatnio edytowane</small></div></button>
             <button class="recent" data-open="explorer"><span class="file__ic f-img"></span>
               <div><b>tapeta.png</b><small>Wczoraj</small></div></button>
-            <button class="recent" data-open="spotify"><span class="app__icon ic-spotify" style="--s:22px;border-radius:5px">${icon("i-spotify")}</span>
+            <button class="recent" data-open="spotify">${iconImg("spotify", "sm")}
               <div><b>Neonowe Ulice</b><small>Mira Kova · Spotify</small></div></button>
             <button class="recent" data-open="mail"><span class="file__ic f-pdf"></span>
               <div><b>umowa.pdf</b><small>Wczoraj</small></div></button>
@@ -144,7 +144,7 @@
           ${TASKBAR_APPS.map(a => `
             <button class="tb-icon" data-tb="${a.id}" data-icon="${a.dataIcon || a.id}"
               title="${a.label}" aria-label="${a.label}" ${a.id === "start" ? 'aria-expanded="false"' : ""}>
-              ${icon(a.icon)}
+              ${a.ico ? iconImg(a.ico) : icon(a.icon)}
             </button>`).join("")}
         </div>
         <div class="taskbar__right" title="Panel szybkich ustawień">
@@ -175,7 +175,7 @@
       </div>
 
       <div class="win-toast">
-        <span class="app__icon ic-spotify" style="--s:22px;border-radius:6px">${icon("i-spotify")}</span>
+        ${iconImg("spotify", "sm")}
         <div><b>Spotify</b><span>Odtwarzanie uruchomione</span></div>
       </div>
     `;
@@ -266,7 +266,7 @@
       el.innerHTML = `
         <div class="win-titlebar">
           <div class="win-tabs">
-            <span class="win-tab">${icon(meta.icon)}<span>${meta.title}</span></span>
+            <span class="win-tab">${meta.ico ? iconImg(meta.ico) : icon(meta.icon)}<span>${meta.title}</span></span>
           </div>
           <div class="win-ctrl">
             <button class="min" title="Minimalizuj" aria-label="Minimalizuj"></button>

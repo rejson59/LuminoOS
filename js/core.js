@@ -211,12 +211,23 @@
       + '<path d="M10.1 8.7 16 12l-5.9 3.3V8.7Z" fill="#ff2d55"/>') }
   };
 
-  function brandIcon(id) {
-    const b = BRAND[id] || BRAND.settings;
-    const vars = [b.g1 ? `--g1:${b.g1}` : "", b.g2 ? `--g2:${b.g2}` : "", b.ink ? `--ink:${b.ink}` : ""]
-      .filter(Boolean).join(";");
-    return `<span class="app__icon bi" style="${vars}">${b.glyph}</span>`;
+  /* Ikony to gotowe grafiki (assets/icons/<id>.png) generowane przez
+     tools/make-icons.js — wyglądają jak ikony Apple w każdej przeglądarce. */
+  const ICON_V = "3";
+  const ICON_IDS = ["phone","messages","spotify","camera","chrome","gallery",
+    "youtube","calendar","gmail","maps","notes","calculator","files",
+    "settings","store","youtubeMusic","search","weather","terminal","clock","trash"];
+
+  /** <i> z ikoną aplikacji (tło = PNG, bez glifów w HTML) */
+  function iconImg(id, extra = "") {
+    const key = ICON_IDS.includes(id) ? id : "settings";
+    /* „sm” = mniejsza ikona w liście/powiadomieniu; rozmiar ustawia CSS */
+    const cls = extra ? `app__icon bi ${extra === "sm" ? "bi--sm" : extra}` : "app__icon bi";
+    const style = `--ico:url('assets/icons/${key}.png?v=${ICON_V}')`;
+    return `<i class="${cls}" style="${style}" aria-hidden="true"></i>`;
   }
 
-  window.Lumino = { $, $$, icon, fmtTime, parseDur, clamp, player, tracks, androidApps, appById, notifications, brandIcon };
+  function brandIcon(id) { return iconImg(id); }
+
+  window.Lumino = { $, $$, icon, iconImg, fmtTime, parseDur, clamp, player, tracks, androidApps, appById, notifications, brandIcon, BRAND };
 })();

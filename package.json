@@ -4,7 +4,7 @@
   "private": true,
   "description": "LuminoOS — interaktywne makiety telefonu (Android), tabletu (Android) i laptopa (Windows 11)",
   "scripts": {
-    "start": "python3 -m http.server 5173 --bind 0.0.0.0",
+    "start": "python3 tools/serve.py 5173",
     "test": "node tools/smoke-test.js && node tools/css-check.js && node tools/motion-check.js && node tools/layout-check.js && node tools/icon-check.js",
     "test:css": "node tools/css-check.js",
     "test:motion": "node tools/motion-check.js",
@@ -12,6 +12,7 @@
     "test:icons": "node tools/icon-check.js"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "jsdom": "^30.1.3"
   }
 }

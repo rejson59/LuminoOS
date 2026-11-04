@@ -323,67 +323,62 @@ button:active{transform:scale(.96)}
 
 
 /* ============================================================
-   7. IKONY — jeden styl: realistyczne szkło w stylu Apple
-   • kolor marki: gradient --g1 → --g2 przycięty maską squircle
-   • na tym szklana płytka (plate.png): rim, refleks, cień, refrakcja
-   • na wierzchu gloss (CSS) + biały glif z cieniem
-   Wszystkie ikony są kwadratami z zaokrągleniem (bez kół).
+   7. IKONY — grafiki w stylu Apple (jak iOS / macOS)
+   • każda ikona to gotowy obraz 512 px: assets/icons/<id>.png
+     (squircle, gradient, światło, szkło, glif — generowane przez
+      tools/make-icons.js, więc wygląd jest identyczny w każdej przeglądarce)
+   • brak glifów SVG w HTML, brak mask, brak filtrów: tylko obraz
+   • wszystkie ikony są kwadratami z zaokrągleniem (bez kół)
    ============================================================ */
-.bi{
-  --mask:url("../assets/icons/mask.png?v=2");
-  position:relative;
-  border-radius:31%!important;
-  isolation:isolate;
-  overflow:hidden;
-  display:grid;place-items:center;
-  background:none;
-  transition:transform 360ms var(--ease-ios), box-shadow 360ms var(--ease-soft),
-             filter 360ms var(--ease-soft);
+.app__icon.bi{
+  background-image:var(--ico);
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  background-color:transparent;
+  border-radius:0!important;
+  overflow:visible;
+  display:block;
+  flex:none;
+  color:transparent;
+  box-shadow:none;
+  filter:drop-shadow(0 9px 14px rgba(0,0,0,.34)) drop-shadow(0 2px 4px rgba(0,0,0,.20));
+  transition:transform 380ms var(--ease-ios), filter 380ms var(--ease-soft);
   will-change:transform;
-  box-shadow:
-    0 12px 22px -10px rgba(0,0,0,.55),
-    0 3px 8px -3px rgba(0,0,0,.35);
 }
-
-/* kolor marki — kryty, przycięty maską squircle */
-.bi::before{
-  content:"";position:absolute;inset:0;z-index:0;
-  background:linear-gradient(158deg, var(--g1,#a7d8ff) 0%, var(--g2,#2b6fd8) 78%, var(--g2,#2b6fd8) 100%);
-  -webkit-mask-image:var(--mask);
-          mask-image:var(--mask);
-  -webkit-mask-size:100% 100%;
-          mask-size:100% 100%;
-  -webkit-mask-repeat:no-repeat;
-          mask-repeat:no-repeat;
-}
-/* szklana płytka: jasna krawędź, refleks sierpowy, cień wewnętrzny, refrakcja */
-.bi::after{
-  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:url("../assets/icons/plate.png?v=2") center/100% 100% no-repeat;
-}
-
-/* glif: biały, z miękkim cieniem (jak w iOS) */
-.bi > svg{
-  position:relative;z-index:2;
-  width:52%;height:52%;
-  color:#fff;fill:currentColor;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.30));
-}
+.app__icon.bi > svg,.app__icon.bi > .cal-day{display:none}
 
 /* podświetlenie i uniesienie pod kursorem */
-.app:hover .bi,.dock-app:hover .bi{
-  transform:translateY(-4px) scale(1.07);
-  box-shadow:
-    0 20px 34px -14px rgba(0,0,0,.6),
-    0 0 0 .5px rgba(255,255,255,.25) inset,
-    0 0 26px -8px rgba(200,230,255,.45);
-  filter:saturate(1.08) brightness(1.04);
+.app:hover .app__icon.bi,.dock-app:hover .app__icon.bi{
+  transform:translateY(-4px) scale(1.06);
+  filter:drop-shadow(0 14px 20px rgba(0,0,0,.38)) drop-shadow(0 3px 6px rgba(0,0,0,.22))
+         saturate(1.06) brightness(1.03);
 }
-.app:active .bi,.dock-app:active .bi{transform:translateY(-1px) scale(.96)}
-
-/* mniejsze ikony (powiadomienia, Start, odtwarzacz, toast) */
-.notif .bi,.start-app .bi,.sp-tile .bi,.sp-playing .bi,.win-toast .bi{border-radius:30%!important}
+.app:active .app__icon.bi,.dock-app:active .app__icon.bi{transform:translateY(-1px) scale(.955)}
 
 @media (prefers-reduced-motion:reduce){
-  .bi,.app:hover .bi,.dock-app:hover .bi{transform:none!important}
+  .app__icon.bi,.app:hover .app__icon.bi,.dock-app:hover .app__icon.bi{transform:none!important}
 }
+
+/* ------------------------------------------------------------
+   8. Rozmiary ikon-obrazów w poszczególnych powłokach
+   (graficzne ikony mają własny cień, więc nie dostają box-shadow)
+   ------------------------------------------------------------ */
+/* Android: siatka aplikacji, dock, ekran blokady, powiadomienia */
+.app .app__icon.bi,.dock-app .app__icon.bi{width:var(--icon,44px);height:var(--icon,44px)}
+.ln .app__icon.bi{width:22px;height:22px}
+.notif .app__icon.bi{width:22px;height:22px}
+
+/* aplikacja w tle (placeholder) */
+.center-msg .app__icon.bi{width:40px;height:40px;margin-bottom:4px}
+/* Windows: menu Start, pasek zadań, karty okien, toast, listy */
+.start-app .app__icon.bi{width:28px;height:28px}
+.set-card .app__icon.bi{width:26px;height:26px}
+.recent .app__icon.bi{width:22px;height:22px}
+.win-toast .app__icon.bi{width:22px;height:22px}
+.tb-icon .app__icon.bi{width:22px;height:22px}
+.sp-playing .app__icon.bi{width:24px;height:24px}
+.app__icon.bi.bi--sm{width:22px;height:22px}
+.sp-tile .app__icon.bi{width:26px;height:26px}
+.win-desk-icon .app__icon.bi{width:30px;height:30px}
+.win-desk-icon .ico{width:26px;height:26px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.65))}
+.win-tab .app__icon.bi{width:14px;height:14px}
