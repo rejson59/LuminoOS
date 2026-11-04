@@ -11,16 +11,15 @@
 }
 .win-wallpaper{
   position:absolute;inset:0;
-  background:
-    radial-gradient(70% 60% at 22% 18%, rgba(88,160,255,.85), transparent 62%),
-    radial-gradient(60% 65% at 78% 30%, rgba(140,90,255,.75), transparent 60%),
-    radial-gradient(80% 80% at 52% 108%, rgba(0,215,190,.55), transparent 62%),
-    conic-gradient(from 200deg at 50% 46%, #0b2b66, #3a1c78, #0b4a6b, #0b2b66);
-  filter:saturate(1.15);
+  background:#0a1024 url("../assets/wallpaper-desktop.jpg") center/cover no-repeat;
+  filter:saturate(1.05);
 }
+/* delikatne wyrównanie jasności + ochrona czytelności ikon i paska zadań */
 .win-wallpaper::after{
   content:"";position:absolute;inset:0;
-  background:radial-gradient(45% 45% at 50% 50%, rgba(255,255,255,.10), transparent 70%);
+  background:
+    linear-gradient(180deg, rgba(4,10,24,.22) 0%, rgba(4,10,24,0) 26%, rgba(4,10,24,0) 68%, rgba(4,10,24,.30) 100%),
+    radial-gradient(120% 90% at 50% 50%, rgba(4,10,24,0) 55%, rgba(4,10,24,.28) 100%);
 }
 .win-desktop{position:absolute;inset:0 0 var(--tb-h) 0;padding:10px}
 
@@ -29,9 +28,10 @@
 .win-desk-icon{
   display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;text-align:center;
   line-height:1.15;cursor:pointer;padding:3px;border-radius:4px;
+  text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 8px rgba(0,0,0,.55);
 }
 .win-desk-icon:hover{background:rgba(255,255,255,.10)}
-.win-desk-icon .ico{width:26px;height:26px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.win-desk-icon .ico{width:26px;height:26px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.65))}
 .win-desk-icon:first-child .ico{color:#8fd0ff}
 .win-desk-icon:nth-child(2) .ico{color:#ffd67a}
 .win-desk-icon:nth-child(3) .ico{color:#cfd6e6}
@@ -380,11 +380,8 @@
   display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;
   padding:26px 30px;
   background:
-    radial-gradient(60% 60% at 30% 20%, rgba(90,140,255,.55), transparent 62%),
-    radial-gradient(60% 60% at 80% 30%, rgba(150,80,255,.45), transparent 60%),
-    radial-gradient(80% 70% at 50% 110%, rgba(0,200,190,.35), transparent 62%),
-    #0a1024;
-  backdrop-filter:blur(30px);
+    linear-gradient(180deg, rgba(3,8,20,.30), rgba(3,8,20,.55)),
+    #0a1024 url("../assets/wallpaper-lock.jpg") center/cover no-repeat;
   transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s;
 }
 .win-lock.is-unlocked{transform:translateY(-100%);opacity:0;pointer-events:none}

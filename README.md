@@ -86,6 +86,20 @@ Kierunek wizualny LuminoOS (kolory, typografia, ikony), nazwy i układ aplikacji
 zachowanie powłoki (gesty, powiadomienia, okna) oraz to, co ma być **wspólne**
 między urządzeniami. Wtedy podmieniamy makiety — zaczynając od telefonu.
 
+## Tapeta
+
+Tapeta laptopa pochodzi z pliku użytkownika (`b_Wygeneruj_piękną_now.webp`).
+W `assets/` leżą jej wersje zoptymalizowane pod makietę:
+
+| Plik | Rozmiar | Zastosowanie |
+|---|---|---|
+| `assets/wallpaper-desktop.jpg` | ~193 KB | pulpit laptopa (lekkie przyciemnienie + gradient pod ikonami) |
+| `assets/wallpaper-lock.jpg` | ~41 KB | ekran blokady (rozmycie + mocniejsze przyciemnienie) |
+
+Podmiana tapety: wrzuć nowy plik jako `assets/wallpaper-desktop.jpg`
+(i rozmyty wariant jako `assets/wallpaper-lock.jpg`) — style podciągną go
+automatycznie (`css/windows.css`, `.win-wallpaper` i `.win-lock`).
+
 ## Rozwiązywanie problemów
 
 - **Pusta scena po wybraniu „Telefon / Tablet / Laptop”** — naprawione (selektory
