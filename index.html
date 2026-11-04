@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LuminoOS — makiety urządzeń</title>
-<link rel="stylesheet" href="styles.css">
+<title>LuminoOS — makiety telefonu, tabletu i laptopa</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/android.css">
+<link rel="stylesheet" href="css/windows.css">
 </head>
 <body>
 
-<!-- ====== IKONY (sprite SVG) ====== -->
+<!-- ================= IKONY ================= -->
 <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
   <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3h2.2c.5 0 .9.3 1 .8l.9 3.3c.1.4 0 .8-.4 1l-1.4 1a12 12 0 0 0 5.9 5.9l1-1.4c.2-.3.6-.5 1-.4l3.3.9c.5.1.8.5.8 1v2.2c0 1.3-1.1 2.4-2.4 2.2C10.5 19.9 4.1 13.5 3.4 5.4 3.2 4.1 4.3 3 5.6 3Z"/></symbol>
   <symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H9l-4 3.6c-.6.6-1.6.1-1.6-.7V5.5Z"/></symbol>
@@ -22,6 +24,20 @@
   <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7Zm12 8v10H5V10h14Z"/></symbol>
   <symbol id="i-files" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h4.6l2 2.4H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Z"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.4c0-.9 1-1.4 1.7-1l9.4 6.1c.7.4.7 1.5 0 1.9L9.7 19.6c-.7.4-1.7-.1-1.7-1V5.4Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 4h3.6v16H7zM13.4 4H17v16h-3.6z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 4.8c0-.8.9-1.2 1.5-.8l9 6.5c.6.4.6 1.2 0 1.6l-9 6.5c-.6.4-1.5 0-1.5-.8V4.8ZM18 4h2v16h-2z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M19 4.8c0-.8-.9-1.2-1.5-.8l-9 6.5c-.6.4-.6 1.2 0 1.6l9 6.5c.6.4 1.5 0 1.5-.8V4.8ZM4 4h2v16H4z"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.4l-4.3 4.3-1.4-1.4L17.6 5H16V3ZM3 5h4.2l3.3 3.7-1.5 1.3L6.2 7H3V5Zm13 11.6V19h1.6l-4.3-4.3 1.4-1.4L19 17.6V16h2v5h-5v-2h.6l-3.8-3.8 1.5-1.3 2.7 2.7ZM3 19v-2h3.2l3.3-3.7 1.5 1.3L7.2 19H3Z"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M7 4h10a4 4 0 0 1 4 4v3h-2V8a2 2 0 0 0-2-2H7v3L2.5 5 7 1v3Zm10 16H7a4 4 0 0 1-4-4v-3h2v3a2 2 0 0 0 2 2h10v-3l4.5 4-4.5 4v-3Z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-8-4.9-8-10a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.1-8 10-8 10Z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M11 3h2v9.2l3.3-3.3 1.4 1.4L12 17l-5.7-6.7 1.4-1.4L11 12.2V3ZM4 19h16v2H4z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 4 7 12l7.5 8 1.5-1.4L9.6 12 16 5.4 14.5 4Z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.4 5 5 6.4l5.6 5.6L5 17.6 6.4 19l5.6-5.6L17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6 6.4 5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7V4Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M9.6 17.6 4 12l1.4-1.4 4.2 4.2 9-9L20 7.2l-10.4 10.4Z"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 3v4h12V5H6Zm1 7h3v3H7v-3Zm5 0h3v3h-3v-3Zm-5 4.5h3v3H7v-3Zm5 0h3v3h-3v-3Z"/></symbol>
+  <symbol id="i-spotify" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 8.4c4.5-1.4 9.6-.9 13 1.4"/><path d="M6.6 12.5c3.7-1.1 7.8-.6 10.7 1.3"/><path d="M7.7 16.4c2.9-.9 6-.5 8.2 1"/></g></symbol>
   <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M12 18.5a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Zm0-4.7c1.4 0 2.7.5 3.7 1.5l-1.5 1.5a3.1 3.1 0 0 0-4.4 0l-1.5-1.5a5.2 5.2 0 0 1 3.7-1.5Zm0-4.6c2.6 0 5 1 6.8 2.8l-1.5 1.5a7.6 7.6 0 0 0-10.6 0L5.2 12a9.6 9.6 0 0 1 6.8-2.8Zm0-4.6c3.8 0 7.3 1.5 10 4.1l-1.5 1.5a11.9 11.9 0 0 0-17 0L2 8.7a14.1 14.1 0 0 1 10-4.1Z"/></symbol>
   <symbol id="i-signal" viewBox="0 0 24 24"><path d="M2 21h3v-6H2v6Zm5.5 0h3V10h-3v11Zm5.5 0h3V5h-3v16Zm5.5 0h3V2h-3v19Z"/></symbol>
   <symbol id="i-battery" viewBox="0 0 24 24"><path d="M3 8h17v8H3z" opacity=".45"/><path d="M9 10h5v4H9z"/><path d="M21 10.5h1.5v3H21z" opacity=".45"/></symbol>
@@ -34,273 +50,84 @@
   <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h4.6l2 2.4H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Z"/></symbol>
   <symbol id="i-pc" viewBox="0 0 24 24"><path d="M3 4h18v12H3V4Zm6 14h6v2H9v-2ZM5 6v8h14V6H5Z"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M9 2h6l1 2h4v2H4V4h4l1-2ZM6 7h12l-1 14H7L6 7Z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 0-5 5v3H5.5A1.5 1.5 0 0 0 4 11.5v9A1.5 1.5 0 0 0 5.5 22h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 18.5 10H17V7a5 5 0 0 0-5-5Zm3 8H9V7a3 3 0 1 1 6 0v3Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><path d="M11 1h2v3h-2V1Zm0 19h2v3h-2v-3ZM1 11h3v2H1v-2Zm19 0h3v2h-3v-2ZM4.2 5.6 6.4 7.8 5 9.2 2.8 7 4.2 5.6Zm13.4 13.4 2.2 2.2-1.4 1.4-2.2-2.2 1.4-1.4Zm2.2-13.4L21.2 7 19 9.2l-1.4-1.4 2.2-2.2ZM5 14.8l1.4 1.4-2.2 2.2L2.8 17 5 14.8ZM12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></symbol>
+  <symbol id="i-bluetooth" viewBox="0 0 24 24"><path d="M10.5 2 17 8.5 12.5 12 17 15.5 10.5 22v-7.4L6.6 18 5.2 16.6 10 12l-4.8-4.6L6.6 6l3.9 3.4V2Zm2 3.8v3.9l1.9-1.9-1.9-2Zm0 8.5v3.9l1.9-2-1.9-1.9Z"/></symbol>
+  <symbol id="i-flash" viewBox="0 0 24 24"><path d="M13 2 5 13h5l-1 9 8-11h-5l1-9Z"/></symbol>
+  <symbol id="i-bell-off" viewBox="0 0 24 24"><path d="M12 2a6 6 0 0 1 6 6v4.2l2 3.8H4l2-3.8V8a6 6 0 0 1 6-6Zm-2 17h4a2 2 0 1 1-4 0Z" opacity=".85"/><path d="M3 3.7 4.4 2.3l17.3 19.4-1.4 1.4L3 3.7Z"/></symbol>
+  <symbol id="i-saver" viewBox="0 0 24 24"><path d="M3 8h16v8H3z" opacity=".45"/><path d="M7 10h6v4H7z"/><path d="M20 10.5h1.5v3H20z" opacity=".45"/><path d="M12 2.5 9 7h2.6L9.8 11 14 6.4h-2.6l1.6-3.9Z"/></symbol>
+  <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 7.7 10h-2.2A6 6 0 1 1 12 6c1.6 0 3 .6 4 1.6L13 11h8V3l-2.5 2.5A8 8 0 0 0 12 4Z"/></symbol>
+  <symbol id="i-airplane" viewBox="0 0 24 24"><path d="M21 15.5 13.5 12V6.5a1.5 1.5 0 0 0-3 0V12L3 15.5V18l7.5-2v3.5L8 21v1l4-1 4 1v-1l-2.5-1.5V16l7.5 2v-2.5Z"/></symbol>
+  <symbol id="i-cast" viewBox="0 0 24 24"><path d="M2 18h3a3 3 0 0 0-3-3v3Zm0-5a8 8 0 0 1 8 8h2a10 10 0 0 0-10-10v2Zm0-5a13 13 0 0 1 13 13h2A15 15 0 0 0 2 6v2Zm20-6H2v3h20v14h-8v2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z" opacity=".9"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M12 3 2 11.5h3V21h6v-6h2v6h6v-9.5h3L12 3Z"/></symbol>
+  <symbol id="i-search-tab" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 1 1-4.6 13.4l-3.2 3.2-1.4-1.4 3.2-3.2A7.5 7.5 0 0 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></symbol>
+  <symbol id="i-library" viewBox="0 0 24 24"><path d="M4 3h2v18H4V3Zm4 0h2v18H8V3Zm5 1 2-.5 5 17-2 .5-5-17Z"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6.5 19a4.5 4.5 0 0 1-.4-9A6 6 0 0 1 17.6 9a5 5 0 0 1-.6 10H6.5Z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 4.5 16.5 12 9 19.5 7.5 18 13.5 12 7.5 6 9 4.5Z"/></symbol>
+  <symbol id="i-play-circle" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-2 5.6 6 4.4-6 4.4V7.6Z"/></symbol>
 </svg>
 
 <header class="site-header">
   <div class="brand">
     <span class="brand-mark" aria-hidden="true"></span>
     <div>
-      <h1>LuminoOS <span class="tag">makiety</span></h1>
-      <p>Wizualny punkt wyjścia — telefon, tablet i laptop w znanym wyglądzie. Od tego ustalimy, co zmieniamy.</p>
+      <h1>LuminoOS <span class="tag">makiety interaktywne</span></h1>
+      <p>Trzy klikalne powłoki: Android na telefonie i tablecie oraz Windows 11 na laptopie. Punkt wyjścia — potem podmieniamy je na LuminoOS.</p>
     </div>
   </div>
   <div class="header-meta">
-    <span class="chip">Telefon · Android 15</span>
-    <span class="chip">Tablet · Android 15</span>
-    <span class="chip">Laptop · Windows 11</span>
+    <span class="chip">Ekran blokady · panel powiadomień</span>
+    <span class="chip">Okna · menu Start</span>
+    <span class="chip">Spotify w wersji testowej</span>
   </div>
 </header>
 
 <main class="stage" id="stage">
 
   <!-- ================= TELEFON ================= -->
-  <figure class="device device--phone" data-device="phone" tabindex="0">
+  <figure class="device device--phone">
     <div class="frame">
       <span class="side-btn side-btn--power"></span>
       <span class="side-btn side-btn--vol"></span>
-      <div class="screen android">
-        <div class="statusbar">
-          <span class="js-time">09:41</span>
-          <span class="statusbar__icons">
-            <svg class="ico ico--tiny"><use href="#i-signal"/></svg>
-            <svg class="ico ico--tiny"><use href="#i-wifi"/></svg>
-            <span class="batt">78<span>%</span></span>
-            <svg class="ico ico--tiny"><use href="#i-battery"/></svg>
-          </span>
-        </div>
-
-        <div class="punch"></div>
-
-        <div class="android-home">
-          <div class="clock-widget">
-            <div class="clock-widget__time js-time">09:41</div>
-            <div class="clock-widget__date js-date">poniedziałek, 4 listopada</div>
-          </div>
-
-          <div class="app-grid app-grid--phone">
-            <div class="app"><span class="app__icon ic-green"><svg class="ico"><use href="#i-phone"/></svg></span><span class="app__label">Telefon</span></div>
-            <div class="app"><span class="app__icon ic-blue"><svg class="ico"><use href="#i-message"/></svg></span><span class="app__label">Wiadomości</span></div>
-            <div class="app"><span class="app__icon ic-slate"><svg class="ico"><use href="#i-camera"/></svg></span><span class="app__label">Aparat</span></div>
-            <div class="app"><span class="app__icon ic-sky"><svg class="ico"><use href="#i-globe"/></svg></span><span class="app__label">Chrome</span></div>
-
-            <div class="app"><span class="app__icon ic-pink"><svg class="ico"><use href="#i-gallery"/></svg></span><span class="app__label">Zdjęcia</span></div>
-            <div class="app"><span class="app__icon ic-violet"><svg class="ico"><use href="#i-play"/></svg></span><span class="app__label">YouTube</span></div>
-            <div class="app"><span class="app__icon ic-amber"><svg class="ico"><use href="#i-calendar"/></svg></span><span class="app__label">Kalendarz</span></div>
-            <div class="app"><span class="app__icon ic-red"><svg class="ico"><use href="#i-mail"/></svg></span><span class="app__label">Gmail</span></div>
-
-            <div class="app"><span class="app__icon ic-teal"><svg class="ico"><use href="#i-maps"/></svg></span><span class="app__label">Mapy</span></div>
-            <div class="app"><span class="app__icon ic-yellow"><svg class="ico"><use href="#i-notes"/></svg></span><span class="app__label">Notatki</span></div>
-            <div class="app"><span class="app__icon ic-gray"><svg class="ico"><use href="#i-settings"/></svg></span><span class="app__label">Ustawienia</span></div>
-            <div class="app"><span class="app__icon ic-indigo"><svg class="ico"><use href="#i-files"/></svg></span><span class="app__label">Pliki</span></div>
-          </div>
-        </div>
-
-        <div class="android-dock">
-          <div class="dock-app ic-green"><svg class="ico"><use href="#i-phone"/></svg></div>
-          <div class="dock-app ic-blue"><svg class="ico"><use href="#i-message"/></svg></div>
-          <div class="dock-app ic-sky"><svg class="ico"><use href="#i-globe"/></svg></div>
-          <div class="dock-app ic-slate"><svg class="ico"><use href="#i-camera"/></svg></div>
-        </div>
-
-        <div class="navpill"></div>
-        <div class="page-dots"><i class="on"></i><i></i><i></i></div>
-      </div>
+      <div class="screen android" data-android="phone" data-device="phone"></div>
     </div>
     <figcaption class="device__caption">
-      <strong>Telefon</strong><span>Launcher, pasek stanu, dock, gesty</span>
+      <strong>Telefon</strong><span>Przesuń w górę, aby odblokować · klik w pasek stanu otwiera panel</span>
     </figcaption>
   </figure>
 
   <!-- ================= TABLET ================= -->
-  <figure class="device device--tablet" data-device="tablet" tabindex="0">
+  <figure class="device device--tablet">
     <div class="frame">
-      <div class="screen android">
-        <div class="statusbar">
-          <span class="js-time">09:41</span>
-          <span class="statusbar__icons">
-            <svg class="ico ico--tiny"><use href="#i-wifi"/></svg>
-            <span class="batt">64<span>%</span></span>
-            <svg class="ico ico--tiny"><use href="#i-battery"/></svg>
-          </span>
-        </div>
-
-        <div class="android-home android-home--tablet">
-          <div class="tablet-top">
-            <div class="tablet-greeting">
-              <span class="js-date">poniedziałek, 4 listopada</span>
-              <b>Dzień dobry</b>
-            </div>
-            <div class="search-pill">
-              <svg class="ico ico--tiny"><use href="#i-search"/></svg>
-              <span>Szukaj w tablecie</span>
-            </div>
-          </div>
-
-          <div class="widgets">
-            <div class="widget widget--weather">
-              <div class="widget__row">
-                <div>
-                  <b>12°</b>
-                  <span>Kraków · pochmurno</span>
-                </div>
-                <span class="sun"></span>
-              </div>
-              <div class="widget__hours">
-                <span>13°<small>10</small></span><span>14°<small>12</small></span><span>13°<small>14</small></span><span>11°<small>16</small></span><span>9°<small>18</small></span>
-              </div>
-            </div>
-            <div class="widget widget--calendar">
-              <div class="widget__head"><svg class="ico ico--tiny"><use href="#i-calendar"/></svg> Dziś</div>
-              <ul>
-                <li><i></i><span>10:00</span> Projekt Lumino</li>
-                <li><i></i><span>13:30</span> Spotkanie z zespołem</li>
-                <li><i></i><span>18:00</span> Siłownia</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="app-grid app-grid--tablet">
-            <div class="app"><span class="app__icon ic-green"><svg class="ico"><use href="#i-phone"/></svg></span><span class="app__label">Telefon</span></div>
-            <div class="app"><span class="app__icon ic-blue"><svg class="ico"><use href="#i-message"/></svg></span><span class="app__label">Wiadomości</span></div>
-            <div class="app"><span class="app__icon ic-red"><svg class="ico"><use href="#i-mail"/></svg></span><span class="app__label">Gmail</span></div>
-            <div class="app"><span class="app__icon ic-sky"><svg class="ico"><use href="#i-globe"/></svg></span><span class="app__label">Chrome</span></div>
-            <div class="app"><span class="app__icon ic-pink"><svg class="ico"><use href="#i-gallery"/></svg></span><span class="app__label">Zdjęcia</span></div>
-            <div class="app"><span class="app__icon ic-violet"><svg class="ico"><use href="#i-play"/></svg></span><span class="app__label">YouTube</span></div>
-            <div class="app"><span class="app__icon ic-teal"><svg class="ico"><use href="#i-maps"/></svg></span><span class="app__label">Mapy</span></div>
-            <div class="app"><span class="app__icon ic-amber"><svg class="ico"><use href="#i-calendar"/></svg></span><span class="app__label">Kalendarz</span></div>
-            <div class="app"><span class="app__icon ic-yellow"><svg class="ico"><use href="#i-notes"/></svg></span><span class="app__label">Notatki</span></div>
-            <div class="app"><span class="app__icon ic-indigo"><svg class="ico"><use href="#i-files"/></svg></span><span class="app__label">Pliki</span></div>
-            <div class="app"><span class="app__icon ic-gray"><svg class="ico"><use href="#i-settings"/></svg></span><span class="app__label">Ustawienia</span></div>
-            <div class="app"><span class="app__icon ic-purple"><svg class="ico"><use href="#i-play"/></svg></span><span class="app__label">Muzyka</span></div>
-          </div>
-        </div>
-
-        <div class="android-dock android-dock--tablet">
-          <div class="dock-app ic-green"><svg class="ico"><use href="#i-phone"/></svg></div>
-          <div class="dock-app ic-blue"><svg class="ico"><use href="#i-message"/></svg></div>
-          <div class="dock-app ic-sky"><svg class="ico"><use href="#i-globe"/></svg></div>
-          <div class="dock-app ic-pink"><svg class="ico"><use href="#i-gallery"/></svg></div>
-          <div class="dock-app ic-gray"><svg class="ico"><use href="#i-settings"/></svg></div>
-        </div>
-        <div class="navpill"></div>
-      </div>
+      <div class="screen android" data-android="tablet" data-device="tablet"></div>
     </div>
     <figcaption class="device__caption">
-      <strong>Tablet</strong><span>Widgety, siatka 6 kolumn, widok dwupanelowy</span>
+      <strong>Tablet</strong><span>Widgety, siatka 6 kolumn, ten sam panel i aplikacje</span>
     </figcaption>
   </figure>
 
   <!-- ================= LAPTOP ================= -->
-  <figure class="device device--laptop" data-device="laptop" tabindex="0">
+  <figure class="device device--laptop">
     <div class="lid">
-      <div class="screen win">
-        <div class="win-wallpaper"></div>
-
-        <div class="win-desktop">
-          <div class="win-desktop-icons">
-            <div class="win-desk-icon"><svg class="ico"><use href="#i-pc"/></svg><span>Ten komputer</span></div>
-            <div class="win-desk-icon"><svg class="ico"><use href="#i-folder"/></svg><span>Dokumenty</span></div>
-            <div class="win-desk-icon"><svg class="ico"><use href="#i-trash"/></svg><span>Kosz</span></div>
-            <div class="win-desk-icon"><svg class="ico"><use href="#i-globe"/></svg><span>Przeglądarka</span></div>
-          </div>
-
-          <div class="win-window" aria-label="Okno Eksploratora plików">
-            <div class="win-titlebar">
-              <div class="win-tabs">
-                <span class="win-tab">
-                  <svg class="ico ico--tiny"><use href="#i-folder"/></svg> Pliki
-                </span>
-              </div>
-              <div class="win-ctrl"><i class="min"></i><i class="max"></i><i class="close"></i></div>
-            </div>
-            <div class="win-toolbar">
-              <span class="tb-btn">＋ Nowy</span>
-              <span class="tb-sep"></span>
-              <span class="tb-path">› Ten komputer › Dokumenty</span>
-              <span class="tb-search"><svg class="ico ico--tiny"><use href="#i-search"/></svg> Szukaj</span>
-            </div>
-            <div class="win-body">
-              <div class="win-side">
-                <span class="side-item on"><svg class="ico ico--tiny"><use href="#i-pc"/></svg> Główny</span>
-                <span class="side-item"><svg class="ico ico--tiny"><use href="#i-folder"/></svg> Dokumenty</span>
-                <span class="side-item"><svg class="ico ico--tiny"><use href="#i-gallery"/></svg> Obrazy</span>
-                <span class="side-item"><svg class="ico ico--tiny"><use href="#i-play"/></svg> Muzyka</span>
-                <span class="side-item"><svg class="ico ico--tiny"><use href="#i-trash"/></svg> Kosz</span>
-              </div>
-              <div class="win-content">
-                <div class="file-grid">
-                  <div class="file"><span class="file__ic f-folder"></span><span>Projekty</span></div>
-                  <div class="file"><span class="file__ic f-folder"></span><span>Zdajęcia</span></div>
-                  <div class="file"><span class="file__ic f-txt"></span><span>notatki.txt</span></div>
-                  <div class="file"><span class="file__ic f-img"></span><span>tapeta.png</span></div>
-                  <div class="file"><span class="file__ic f-pdf"></span><span>umowa.pdf</span></div>
-                  <div class="file"><span class="file__ic f-zip"></span><span>archiwum.zip</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Menu Start -->
-        <div class="start-menu" id="startMenu" aria-hidden="true">
-          <div class="start-search"><svg class="ico ico--tiny"><use href="#i-search"/></svg> Wpisz, aby wyszukać</div>
-          <div class="start-head"><span>Przypięte</span><span class="start-all">Wszystkie aplikacje ›</span></div>
-          <div class="start-grid">
-            <div class="start-app"><span class="app__icon ic-sky"><svg class="ico"><use href="#i-globe"/></svg></span>Edge</div>
-            <div class="start-app"><span class="app__icon ic-yellow"><svg class="ico"><use href="#i-files"/></svg></span>Pliki</div>
-            <div class="start-app"><span class="app__icon ic-gray"><svg class="ico"><use href="#i-settings"/></svg></span>Ustawienia</div>
-            <div class="start-app"><span class="app__icon ic-amber"><svg class="ico"><use href="#i-notes"/></svg></span>Notatnik</div>
-            <div class="start-app"><span class="app__icon ic-blue"><svg class="ico"><use href="#i-store"/></svg></span>Store</div>
-            <div class="start-app"><span class="app__icon ic-violet"><svg class="ico"><use href="#i-play"/></svg></span>Media</div>
-          </div>
-          <div class="start-head"><span>Polecane</span></div>
-          <div class="start-recent">
-            <div class="recent"><span class="file__ic f-txt"></span><div><b>notatki.txt</b><small>Ostatnio edytowane</small></div></div>
-            <div class="recent"><span class="file__ic f-img"></span><div><b>tapeta.png</b><small>Wczoraj</small></div></div>
-          </div>
-          <div class="start-user">
-            <span class="avatar">Ł</span><span>Łukasz</span>
-            <span class="start-power"><svg class="ico ico--tiny"><use href="#i-gear-win"/></svg></span>
-          </div>
-        </div>
-
-        <div class="taskbar">
-          <div class="taskbar__left">
-            <span class="weather-pill">☁ 12°</span>
-          </div>
-          <div class="taskbar__center">
-            <button class="tb-icon" id="startBtn" title="Start" aria-expanded="false"><svg class="ico"><use href="#i-windows"/></svg></button>
-            <button class="tb-icon" title="Szukaj"><svg class="ico"><use href="#i-search"/></svg></button>
-            <button class="tb-icon" title="Widok zadań"><svg class="ico"><use href="#i-pc"/></svg></button>
-            <button class="tb-icon" title="Eksplorator plików"><svg class="ico"><use href="#i-folder"/></svg></button>
-            <button class="tb-icon" title="Edge"><svg class="ico"><use href="#i-edge"/></svg></button>
-            <button class="tb-icon" title="Sklep"><svg class="ico"><use href="#i-store"/></svg></button>
-          </div>
-          <div class="taskbar__right">
-            <span class="tray-ico">⌃</span>
-            <span class="tray-icon"><svg class="ico ico--tiny"><use href="#i-wifi"/></svg></span>
-            <span class="tray-icon"><svg class="ico ico--tiny"><use href="#i-volume"/></svg></span>
-            <span class="tray-icon"><svg class="ico ico--tiny"><use href="#i-battery"/></svg></span>
-            <span class="tray-clock"><b class="js-time">09:41</b><small class="js-date-short">04.11.2026</small></span>
-          </div>
-        </div>
-      </div>
+      <div class="screen win" id="winScreen"></div>
     </div>
-    <div class="base">
-      <span class="notch"></span>
-    </div>
+    <div class="base"></div>
     <figcaption class="device__caption">
-      <strong>Laptop</strong><span>Pulpit, okna, pasek zadań, menu Start</span>
+      <strong>Laptop</strong><span>Przeciągaj okna · Start · pasek zadań · Spotify</span>
     </figcaption>
   </figure>
 
 </main>
 
 <footer class="site-footer">
-  <p><strong>Jak używać:</strong> kliknij urządzenie, aby je wyróżnić · w laptopie przycisk Start otwiera menu Start · podwójne kliknięcie wraca do widoku wszystkich.</p>
-  <p class="muted">Makiety poglądowe. Kolejny krok: ustalamy kierunek wizualny i zachowania LuminoOS, potem podmieniamy te ekrany.</p>
+  <p><strong>Co działa:</strong> ekran blokady, panel powiadomień i szybkie ustawienia, przełączanie stron, otwieranie aplikacji, Spotify (odtwarzanie, przewijanie utworów), wiadomości, kalkulator, notatki, kalendarz, ustawienia z przełącznikami — a w laptopie okna z przeciąganiem, minimalizacją i maksymalizacją, menu Start z wyszukiwaniem oraz pasek zadań.</p>
+  <p class="muted">To makiety poglądowe: dane, utwory i pliki są przykładowe. Miejsce na docelowy wygląd i zachowanie LuminoOS.</p>
 </footer>
 
-<script src="app.js"></script>
+<script src="js/core.js"></script>
+<script src="js/apps.js"></script>
+<script src="js/android.js"></script>
+<script src="js/windows.js"></script>
+<script src="js/page.js"></script>
 </body>
 </html>

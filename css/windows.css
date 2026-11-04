@@ -1,0 +1,305 @@
+/* ============================================================
+   WINDOWS 11 — laptop
+   ============================================================ */
+
+.win{
+  --tb-h:38px;
+  position:relative;
+  font-family:"Segoe UI Variable","Segoe UI",var(--font);
+  color:#fff;background:#0a1024;
+  user-select:none;
+}
+.win-wallpaper{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(70% 60% at 22% 18%, rgba(88,160,255,.85), transparent 62%),
+    radial-gradient(60% 65% at 78% 30%, rgba(140,90,255,.75), transparent 60%),
+    radial-gradient(80% 80% at 52% 108%, rgba(0,215,190,.55), transparent 62%),
+    conic-gradient(from 200deg at 50% 46%, #0b2b66, #3a1c78, #0b4a6b, #0b2b66);
+  filter:saturate(1.15);
+}
+.win-wallpaper::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(45% 45% at 50% 50%, rgba(255,255,255,.10), transparent 70%);
+}
+.win-desktop{position:absolute;inset:0 0 var(--tb-h) 0;padding:10px}
+
+/* ---------------- ikony pulpitu ---------------- */
+.win-desktop-icons{display:flex;flex-direction:column;gap:10px;width:78px}
+.win-desk-icon{
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;text-align:center;
+  line-height:1.15;cursor:pointer;padding:3px;border-radius:4px;
+}
+.win-desk-icon:hover{background:rgba(255,255,255,.10)}
+.win-desk-icon .ico{width:26px;height:26px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.win-desk-icon:first-child .ico{color:#8fd0ff}
+.win-desk-icon:nth-child(2) .ico{color:#ffd67a}
+.win-desk-icon:nth-child(3) .ico{color:#cfd6e6}
+.win-desk-icon:nth-child(4) .ico{color:#8fd0ff}
+
+/* ---------------- okna ---------------- */
+.win-window{
+  position:absolute;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;
+  background:rgba(24,27,38,.90);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  box-shadow:0 24px 50px -14px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.16);
+  font-size:10.5px;
+  transition:box-shadow .18s, opacity .16s;
+  will-change:transform;
+}
+.win-window.is-inactive{box-shadow:0 14px 30px -14px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.10)}
+.win-window.is-inactive .win-titlebar{opacity:.72}
+.win-window.is-minimized{opacity:0;pointer-events:none;transform:translateY(28px) scale(.96)!important}
+.win-window.is-maximized{left:0!important;top:0!important;width:100%!important;height:calc(100% - var(--tb-h))!important;border-radius:0}
+.win-titlebar{
+  display:flex;align-items:center;justify-content:space-between;height:32px;flex:none;
+  cursor:grab;touch-action:none;
+}
+.win-titlebar:active{cursor:grabbing}
+.win-tabs{display:flex;gap:4px;padding-left:8px;min-width:0}
+.win-tab{
+  display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px 6px 0 0;
+  background:rgba(255,255,255,.09);font-size:10px;color:#e9edf7;min-width:0;
+}
+.win-tab span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.win-tab .ico{color:#ffd67a;width:12px;height:12px}
+.win-ctrl{display:flex;height:32px;flex:none}
+.win-ctrl button{
+  width:34px;border:0;background:none;display:grid;place-items:center;cursor:pointer;
+  color:#cfd6e6;position:relative;
+}
+.win-ctrl button:hover{background:rgba(255,255,255,.12)}
+.win-ctrl button.close:hover{background:#e81123;color:#fff}
+.win-ctrl button::before{content:"";display:block}
+.win-ctrl .min::before{width:9px;height:1px;background:currentColor}
+.win-ctrl .max::before{width:8px;height:8px;border:1px solid currentColor;border-radius:1px}
+.win-ctrl .close::before{
+  width:10px;height:10px;
+  background-image:linear-gradient(45deg,transparent 45%,currentColor 45%,currentColor 55%,transparent 55%),
+                   linear-gradient(-45deg,transparent 45%,currentColor 45%,currentColor 55%,transparent 55%);
+}
+
+.win-body{flex:1;display:flex;min-height:0}
+
+/* --- Eksplorator plików --- */
+.win-toolbar{
+  display:flex;align-items:center;gap:10px;padding:5px 10px;flex:none;
+  background:rgba(255,255,255,.05);
+  border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);
+}
+.tb-btn{padding:3px 9px;border-radius:5px;background:rgba(255,255,255,.08);font-size:9.5px;border:0;color:inherit;font-family:inherit;cursor:pointer}
+.tb-btn:hover{background:rgba(255,255,255,.14)}
+.tb-sep{width:1px;height:14px;background:rgba(255,255,255,.14)}
+.tb-path{font-size:9.5px;color:#c3cbdd;flex:1;display:flex;gap:4px;align-items:center;min-width:0;
+  overflow:hidden;white-space:nowrap}
+.tb-search{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#a9b2c6;
+  background:rgba(255,255,255,.07);border-radius:5px;padding:3px 9px;width:96px;flex:none}
+.win-side{
+  width:118px;flex:none;padding:8px 6px;background:rgba(255,255,255,.035);
+  border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:2px;
+}
+.side-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:5px;font-size:9.5px;
+  color:#cfd6e6;cursor:pointer;border:0;background:none;font-family:inherit;text-align:left;width:100%}
+.side-item .ico{color:#9fb4ff;width:12px;height:12px}
+.side-item:hover{background:rgba(255,255,255,.07)}
+.side-item.on{background:rgba(255,255,255,.11)}
+.win-content{flex:1;padding:10px;overflow:auto;min-width:0}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:12px 8px}
+.file{
+  display:flex;flex-direction:column;align-items:center;gap:5px;font-size:8.5px;color:#dbe2ef;
+  text-align:center;padding:5px 3px;border-radius:5px;cursor:pointer;border:0;background:none;font-family:inherit;
+}
+.file:hover{background:rgba(124,196,255,.16);outline:1px solid rgba(124,196,255,.35)}
+.file.selected{background:rgba(124,196,255,.26);outline:1px solid rgba(124,196,255,.5)}
+.file__ic{width:28px;height:22px;border-radius:3px;flex:none;position:relative;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.f-folder{background:linear-gradient(#ffd777,#e0a63a);border-radius:3px 4px 3px 3px}
+.f-folder::before{content:"";position:absolute;top:-3px;left:0;width:12px;height:5px;border-radius:3px 3px 0 0;background:#ffe08f}
+.f-txt{background:linear-gradient(#eef2f8,#c7d0de)}
+.f-img{background:linear-gradient(#a8e6c0,#4fb980)}
+.f-pdf{background:linear-gradient(#ff9b8f,#d1352a)}
+.f-zip{background:linear-gradient(#bcdcff,#5b8fd6)}
+.file__ic.lg{width:44px;height:36px}
+
+/* --- pasek zadań --- */
+.taskbar{
+  position:absolute;left:0;right:0;bottom:0;height:var(--tb-h);
+  display:flex;align-items:center;justify-content:space-between;padding:0 10px;
+  background:rgba(18,21,30,.80);
+  backdrop-filter:blur(26px) saturate(160%);
+  -webkit-backdrop-filter:blur(26px) saturate(160%);
+  border-top:1px solid rgba(255,255,255,.10);
+  z-index:500;
+}
+.taskbar__left{width:118px}
+.weather-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;
+  font-size:8.5px;color:#dbe2ef;background:rgba(255,255,255,.07)}
+.taskbar__center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px}
+.tb-icon{
+  position:relative;width:32px;height:28px;display:grid;place-items:center;border:0;border-radius:5px;
+  background:transparent;color:#e6ecf8;cursor:pointer;padding:0;transition:background .15s;
+}
+.tb-icon .ico{width:15px;height:15px}
+.tb-icon:hover{background:rgba(255,255,255,.10)}
+.tb-icon[aria-expanded="true"],.tb-icon.is-running{background:rgba(255,255,255,.13)}
+.tb-icon.is-running::after{
+  content:"";position:absolute;bottom:1px;left:50%;transform:translateX(-50%);
+  width:12px;height:2px;border-radius:2px;background:#8fb6ff;
+}
+.tb-icon[data-icon="folder"] .ico{color:#ffd67a}
+.tb-icon[data-icon="edge"] .ico{color:#8ed0ff}
+.tb-icon[data-icon="spotify"] .ico{color:#1ed760}
+.tb-icon[data-icon="store"] .ico{color:#a8c7fa}
+.taskbar__right{display:flex;align-items:center;gap:6px;font-size:9px;color:#dbe2ef;cursor:pointer}
+.tray-icon{width:16px;height:16px;display:grid;place-items:center;opacity:.9}
+.tray-icon .ico{width:11px;height:11px}
+.tray-ico{opacity:.7;font-size:9px}
+.tray-clock{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;padding-left:4px;font-size:8.5px}
+.tray-clock b{font-weight:500;font-size:9px}
+.tray-clock small{font-size:8px;opacity:.85}
+
+/* --- menu Start --- */
+.start-menu{
+  position:absolute;left:50%;bottom:calc(var(--tb-h) + 6px);
+  transform:translate(-50%,12px) scale(.98);
+  width:340px;padding:12px;border-radius:10px;
+  background:rgba(30,33,45,.94);
+  backdrop-filter:blur(30px) saturate(150%);
+  -webkit-backdrop-filter:blur(30px) saturate(150%);
+  box-shadow:0 26px 54px -16px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.14);
+  font-size:10px;color:#eaeef8;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .18s, transform .18s, visibility .18s;
+  z-index:520;
+}
+.start-menu.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0) scale(1)}
+.start-search{
+  display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:99px;margin-bottom:10px;
+  background:rgba(255,255,255,.08);box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;
+  color:#aeb7ca;font-size:9.5px;
+}
+.start-search input{
+  border:0;background:none;outline:none;color:#eaeef8;font-family:inherit;font-size:9.5px;flex:1;min-width:0;
+}
+.start-search input::placeholder{color:#aeb7ca}
+.start-head{display:flex;justify-content:space-between;align-items:center;font-size:9.5px;color:#c8d0e0;margin:6px 2px}
+.start-all{color:#8fb6ff;font-size:9px}
+.start-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.start-app{
+  display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 2px;border-radius:6px;
+  font-size:8.5px;color:#dbe2f0;text-align:center;cursor:pointer;border:0;background:none;font-family:inherit;
+}
+.start-app:hover{background:rgba(255,255,255,.09)}
+.start-app .app__icon{--s:28px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.start-app.is-hidden{display:none}
+.start-recent{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.recent{display:flex;align-items:center;gap:7px;padding:6px;border-radius:6px;background:rgba(255,255,255,.05);cursor:pointer;border:0;font-family:inherit;color:inherit;text-align:left}
+.recent:hover{background:rgba(255,255,255,.10)}
+.recent b{font-size:8.5px;font-weight:600;display:block}
+.recent small{font-size:7.5px;color:#98a2b8}
+.start-user{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;
+  border-top:1px solid rgba(255,255,255,.10);font-size:9.5px}
+.avatar{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(140deg,#6fa8ff,#2b52c4);font-size:9px;font-weight:600}
+.start-user > span:nth-child(2){flex:1}
+.start-power{display:grid;place-items:center;width:24px;height:20px;border-radius:4px;color:#c8d0e0;border:0;background:none;cursor:pointer}
+.start-power:hover{background:rgba(255,255,255,.1)}
+
+/* --- Spotify (Windows) --- */
+.sp-win{background:linear-gradient(180deg,#12341f,#07120b 60%,#040a06);color:#fff}
+.sp-win .win-titlebar{background:rgba(0,0,0,.25)}
+.sp-win .win-tab .ico{color:#1ed760}
+.sp-win__body{flex:1;display:flex;min-height:0}
+.sp-win__side{
+  width:118px;flex:none;padding:8px;display:flex;flex-direction:column;gap:2px;
+  background:rgba(0,0,0,.22);font-size:9px;
+}
+.sp-win__side .side-item{font-size:9px}
+.sp-win__side .side-item .ico{color:#cfe9d8}
+.sp-win__main{flex:1;min-width:0;display:flex;flex-direction:column;padding:10px 12px 12px;overflow:hidden}
+.sp-win__head{display:flex;align-items:flex-end;gap:10px;margin-bottom:10px}
+.sp-win__head .cover{width:54px;height:54px;border-radius:6px;flex:none}
+.sp-win__head div{min-width:0}
+.sp-win__head small{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.sp-win__head b{display:block;font-size:16px;line-height:1.1;margin:2px 0 3px}
+.sp-win__head span{font-size:8.5px;color:rgba(255,255,255,.6)}
+.sp-win__tracks{flex:1;overflow-y:auto;min-height:0}
+.sp-win__tracks::-webkit-scrollbar{width:6px}
+.sp-win__tracks::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:3px}
+.sp-win__bar{
+  flex:none;margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:9px;
+}
+.sp-win__bar .cover{width:26px;height:26px;border-radius:4px;flex:none}
+.sp-win__bar .pm{flex:1;min-width:0;font-size:9px}
+.sp-win__bar .pm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-win__bar .pm span{display:block;font-size:8px;color:rgba(255,255,255,.6)}
+.sp-win__bar button{width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.14);
+  color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.sp-win__bar button.play{background:#1ed760;color:#04150a}
+.sp-win__bar button .ico{width:11px;height:11px}
+.sp-win__progress{height:3px;border-radius:3px;background:rgba(255,255,255,.14);margin-top:6px;overflow:hidden}
+.sp-win__progress i{display:block;height:100%;width:0;background:#1ed760}
+
+/* --- Ustawienia (Windows) --- */
+.win-settings{padding:12px;display:flex;flex-direction:column;gap:8px;overflow:auto;height:100%}
+.win-settings h4{margin:0 0 2px;font-size:11px;font-weight:600}
+.set-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:6px;
+  background:rgba(255,255,255,.06);font-size:9.5px}
+.set-card .sicon{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:rgba(255,255,255,.10);flex:none}
+.set-card .sicon .ico{width:12px;height:12px}
+.set-card > span{flex:1}
+.set-card .val{font-size:8.5px;color:#a9b2c6}
+.win .switch{width:32px;height:18px;border-radius:99px;background:rgba(255,255,255,.20);border:0;position:relative;cursor:pointer;flex:none;padding:0}
+.win .switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#e8eefb;transition:transform .18s}
+.win .switch[aria-checked="true"]{background:#4cc2ff}
+.win .switch[aria-checked="true"]::after{transform:translateX(14px);background:#06121f}
+
+/* --- Notatnik / teksty --- */
+.win-editor{padding:12px;font-size:10px;line-height:1.6;color:#e4eaf6;overflow:auto;height:100%}
+.win-editor textarea{width:100%;height:100%;background:transparent;border:0;outline:none;color:#e4eaf6;
+  font-family:"Cascadia Code",Consolas,monospace;font-size:10px;line-height:1.6;resize:none}
+
+/* --- Toast / powiadomienie Windows --- */
+.win-toast{
+  position:absolute;right:10px;bottom:calc(var(--tb-h) + 10px);z-index:530;
+  width:200px;padding:9px 11px;border-radius:8px;
+  background:rgba(30,33,45,.94);backdrop-filter:blur(20px);
+  box-shadow:0 14px 30px -10px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.14);
+  font-size:9px;display:flex;gap:8px;align-items:flex-start;
+  transform:translateX(120%);opacity:0;transition:transform .28s, opacity .28s;
+}
+.win-toast.is-open{transform:none;opacity:1}
+.win-toast .app__icon{--s:22px;border-radius:6px}
+.win-toast b{display:block;font-size:9px}
+.win-toast span{display:block;font-size:8.5px;color:#b9c2d6;margin-top:1px}
+
+/* ---------------- responsywność ekranu laptopa ---------------- */
+@media (max-width:1500px){
+  .win-window{font-size:9.5px}
+  .win-side{width:104px}
+}
+@media (max-width:780px){
+  .win{font-size:8.5px}
+  .win-side{width:74px;font-size:8px}
+  .win-toolbar .tb-search{display:none}
+  .win-desktop-icons{width:56px}
+  .start-menu{width:min(88%,320px)}
+  .sp-win__side{width:78px}
+}
+
+/* --- Kalkulator (okno Windows) --- */
+.win-calc{display:flex;flex-direction:column;height:100%;padding:8px 10px 10px;background:rgba(20,24,34,.55)}
+.win-calc__out{flex:none;text-align:right;padding:10px 8px 8px}
+.win-calc__expr{font-size:9px;color:rgba(255,255,255,.5);min-height:13px}
+.win-calc__val{font-size:24px;font-weight:300;letter-spacing:-.6px;line-height:1.15;word-break:break-all}
+.win-calc__keys{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding-top:4px}
+.win-calc__keys button{
+  border:0;border-radius:5px;background:rgba(255,255,255,.09);color:#eef2fa;font-family:inherit;
+  font-size:11px;cursor:pointer;transition:background .12s,transform .1s;
+}
+.win-calc__keys button:hover{background:rgba(255,255,255,.16)}
+.win-calc__keys button:active{transform:scale(.97)}
+.win-calc__keys button.op{background:rgba(76,194,255,.18);color:#bfe6ff}
+.win-calc__keys button.fn{background:rgba(255,255,255,.14)}
+.win-calc__keys button.eq{background:#4cc2ff;color:#06121f;font-weight:600}
