@@ -3,7 +3,7 @@
    ============================================================ */
 (function () {
   "use strict";
-  const { $, $$, icon, player, tracks, androidApps, notifications, APP } = window.Lumino;
+  const { $, $$, icon, player, tracks, androidApps, notifications, APP, brandIcon } = window.Lumino;
   const fmtTime = window.Lumino.fmtTime;
 
   const DOCK = ["phone", "messages", "chrome", "spotify"];
@@ -11,7 +11,7 @@
   const appTile = (app, cls = "app") => `
     <button class="${cls}" data-app="${app.id}">
       <span class="app__wrap">
-        <span class="app__icon ${app.color}">${icon(app.icon)}</span>
+        ${brandIcon(app.id)}
         ${app.badge ? `<span class="app__badge">${app.badge}</span>` : ""}
       </span>
       <span class="app__label">${app.label}</span>
@@ -69,24 +69,39 @@
                 ${androidApps.slice(1, 13).map(a => appTile(a)).join("")}
               </div>
             ` : `
-              <div class="clock-widget">
+              <div class="glance">
+                <div class="glance__main">
+                  <span class="glance__ico">${icon("i-calendar")}</span>
+                  <div><b>10:00 · Projekt Lumino</b><span>Spotkanie online</span></div>
+                </div>
+                <div class="glance__weather"><span class="sun"></span> 12°</div>
+              </div>
+              <div class="clock-widget clock-widget--home">
                 <div class="clock-widget__time js-time">09:41</div>
                 <div class="clock-widget__date js-date">poniedziałek, 4 listopada</div>
               </div>
+              <div class="searchbar">
+                <span class="searchbar__g">G</span>
+                <span>Szukaj w telefonie</span>
+                <span class="searchbar__mic">${icon("i-mic")}</span>
+                <span class="searchbar__lens">${icon("i-camera")}</span>
+              </div>
               <div class="app-grid">
-                ${androidApps.slice(0, 12).map(a => appTile(a)).join("")}
+                ${androidApps.slice(0, 8).map(a => appTile(a)).join("")}
+              </div>
+              <div class="page-dots page-dots--inline"><i class="on"></i><i></i></div>
+              <div class="app-grid app-grid--second">
+                ${androidApps.slice(8, 12).map(a => appTile(a)).join("")}
               </div>
             `}
           </div>
 
-          <div class="page page--wide">
-            <div class="clock-widget" style="margin-bottom:6px">
-              <div class="clock-widget__date">Druga strona · aplikacje</div>
-            </div>
-            <div class="app-grid" style="margin-top:8px">
-              ${androidApps.slice(12).map(a => appTile(a)).join("")}
+          <div class="page page--apps">
+            <div class="page-hint">Aplikacje</div>
+            <div class="app-grid app-grid--all">
+              ${androidApps.map(a => appTile(a)).join("")}
               <button class="app" data-action="drawer">
-                <span class="app__icon ic-gray">${icon("i-search")}</span>
+                <span class="app__icon bi" style="--bg:#3c4043">${icon("i-search")}</span>
                 <span class="app__label">Wszystkie</span>
               </button>
             </div>
@@ -96,13 +111,12 @@
         <div class="dock">
           ${DOCK.map(id => {
             const a = androidApps.find(x => x.id === id);
-            return `<button class="dock-app ${a.color}" data-app="${id}" aria-label="${a.label}">${icon(a.icon)}</button>`;
+            return `<button class="dock-app" data-app="${id}" aria-label="${a.label}">${brandIcon(id)}</button>`;
           }).join("")}
         </div>
 
         <div class="navbar">
-          <div class="page-dots"><i class="on"></i><i></i></div>
-          <div class="navbar__pill" data-action="drawer" title="Wszystkie aplikacje"></div>
+          <button class="navbar__pill" data-action="drawer" title="Wszystkie aplikacje" aria-label="Wszystkie aplikacje"></button>
         </div>
 
         <!-- szuflada aplikacji -->
@@ -150,17 +164,35 @@
           </span>
         </div>
         <div class="qs-grid">
-          <button class="qs on" data-qs="wifi">${icon("i-wifi")}<span>Wi-Fi</span></button>
-          <button class="qs on" data-qs="bt">${icon("i-bluetooth")}<span>Bluetooth</span></button>
-          <button class="qs" data-qs="saver">${icon("i-saver")}<span>Oszczędzanie</span></button>
-          <button class="qs" data-qs="flash">${icon("i-flash")}<span>Latarka</span></button>
-          <button class="qs on" data-qs="rotate">${icon("i-rotate")}<span>Auto-obrót</span></button>
-          <button class="qs" data-qs="dnd">${icon("i-bell-off")}<span>Nie przeszkadzać</span></button>
-          ${isTablet ? `<button class="qs" data-qs="air">${icon("i-airplane")}<span>Samolot</span></button>
-          <button class="qs" data-qs="cast">${icon("i-cast")}<span>Przesyłanie</span></button>` : ""}
+          <button class="qs qs--wide on" data-qs="wifi">
+            <span class="qs__ic">${icon("i-wifi")}</span>
+            <span class="qs__txt"><b>Internet</b><small>Lumino_5G</small></span>
+          </button>
+          <button class="qs qs--wide on" data-qs="bt">
+            <span class="qs__ic">${icon("i-bluetooth")}</span>
+            <span class="qs__txt"><b>Bluetooth</b><small>2 urządzenia</small></span>
+          </button>
+          <button class="qs qs--wide" data-qs="dnd">
+            <span class="qs__ic">${icon("i-bell-off")}</span>
+            <span class="qs__txt"><b>Nie przeszkadzać</b><small>Wyłączone</small></span>
+          </button>
+          <button class="qs qs--wide" data-qs="saver">
+            <span class="qs__ic">${icon("i-saver")}</span>
+            <span class="qs__txt"><b>Oszczędzanie</b><small>Wyłączone</small></span>
+          </button>
+          <button class="qs" data-qs="flash" title="Latarka">${icon("i-flash")}</button>
+          <button class="qs" data-qs="rotate" title="Auto-obrót">${icon("i-rotate")}</button>
+          <button class="qs" data-qs="air" title="Tryb samolotowy">${icon("i-airplane")}</button>
+          <button class="qs" data-qs="cast" title="Przesyłanie">${icon("i-cast")}</button>
         </div>
-        <div class="slider-row">${icon("i-sun")}<input class="slider" type="range" min="0" max="100" value="70" aria-label="Jasność"></div>
-        <div class="slider-row">${icon("i-volume")}<input class="slider" type="range" min="0" max="100" value="55" aria-label="Głośność"></div>
+        <div class="slider-row">
+          <span class="slider-ico">${icon("i-sun")}</span>
+          <input class="slider slider--bright" type="range" min="0" max="100" value="70" aria-label="Jasność">
+        </div>
+        <div class="slider-row">
+          <span class="slider-ico">${icon("i-volume")}</span>
+          <input class="slider slider--vol" type="range" min="0" max="100" value="55" aria-label="Głośność">
+        </div>
         <div class="panel-notifs">
           ${notifications.map(n => {
             const a = androidApps.find(x => x.id === n.app);

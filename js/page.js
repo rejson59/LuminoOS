@@ -11,6 +11,8 @@
   // data skrócona w Windows
   const shortDate = new Date().toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: "numeric" });
   $$(".js-date-short").forEach(el => { el.textContent = shortDate; });
+  const longDate = new Date().toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" });
+  $$(".js-date-long").forEach(el => { el.textContent = longDate; });
 
   // telefony / tablety
   const androidScreens = $$("[data-android]");
@@ -25,6 +27,7 @@
     const win = document.getElementById("winScreen");
     if (e.key === "Escape") {
       if (win && win.lumino) win.lumino.closeStart();
+      if (win && win.lumino) win.lumino.unlockPC();
       androidScreens.forEach(s => {
         const api = s.lumino;
         if (!api) return;

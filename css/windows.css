@@ -303,3 +303,119 @@
 .win-calc__keys button.op{background:rgba(76,194,255,.18);color:#bfe6ff}
 .win-calc__keys button.fn{background:rgba(255,255,255,.14)}
 .win-calc__keys button.eq{background:#4cc2ff;color:#06121f;font-weight:600}
+
+/* ============================================================
+   Windows 11 — dopracowanie wyglądu
+   ============================================================ */
+
+/* --- menu Start: 6 kolumn, 18 aplikacji, przewijane --- */
+.start-menu{
+  width:392px;padding:14px 14px 0;border-radius:12px;
+  background:rgba(43,47,58,.86);
+  backdrop-filter:blur(40px) saturate(170%);
+  -webkit-backdrop-filter:blur(40px) saturate(170%);
+  box-shadow:0 30px 60px -18px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.10);
+  display:flex;flex-direction:column;max-height:calc(100% - 54px);
+}
+.start-search{
+  margin:0 0 12px;padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.06);
+  box-shadow:0 0 0 1px rgba(255,255,255,.10) inset;color:#c8d0e0;
+}
+.start-search input{font-size:10px}
+.start-scroll{overflow-y:auto;min-height:0;padding-right:4px;margin-bottom:2px}
+.start-scroll::-webkit-scrollbar{width:6px}
+.start-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.20);border-radius:3px}
+.start-head{font-size:10px;color:#dfe5f2;margin:2px 4px 8px;font-weight:600}
+.start-all{color:#a8c7fa;font-weight:400;font-size:9.5px}
+.start-grid{grid-template-columns:repeat(6,1fr);gap:2px;margin-bottom:12px}
+.start-app{
+  padding:9px 3px 7px;border-radius:6px;gap:7px;font-size:8px;color:#e9edf7;line-height:1.15;
+  min-width:0;
+}
+.start-app .ico{width:21px;height:21px;color:#cfe0ff}
+.start-app span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.start-app:hover{background:rgba(255,255,255,.08)}
+.start-app.is-hidden{display:none}
+.start-recent{grid-template-columns:1fr 1fr;gap:4px}
+.recent{padding:8px;border-radius:6px;background:rgba(255,255,255,.045)}
+.recent:hover{background:rgba(255,255,255,.09)}
+.recent b{font-size:9px}
+.recent small{font-size:7.5px}
+.start-user{
+  margin:6px -14px 0;padding:10px 16px;border-top:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.18);border-radius:0 0 12px 12px;
+}
+.start-user .avatar{width:24px;height:24px}
+
+/* --- pasek zadań bliżej oryginału --- */
+.taskbar{
+  background:rgba(32,35,44,.80);
+  backdrop-filter:blur(36px) saturate(170%);
+  -webkit-backdrop-filter:blur(36px) saturate(170%);
+  border-top:1px solid rgba(255,255,255,.07);
+  height:40px;
+}
+.win{--tb-h:40px}
+.tb-icon{width:36px;height:32px;border-radius:4px}
+.tb-icon .ico{width:16px;height:16px}
+.tb-icon[data-icon="folder"] .ico{color:#f7c76b}
+.tb-icon[data-icon="edge"] .ico{color:#7fd0ff}
+.tb-icon[data-icon="store"] .ico{color:#a8c7fa}
+.taskbar__right{gap:8px}
+.tray-clock b{font-size:9.5px}
+
+/* --- okna: wyraźniejsze, bez prześwitującego tła pulpitu --- */
+.win-window{
+  background:#1b1f2b;
+  border-radius:8px;
+  box-shadow:0 22px 48px -14px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.14);
+}
+.win-titlebar{background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06)}
+.win-tab{background:rgba(255,255,255,.07);font-size:10px}
+.win-ctrl button{height:32px;width:36px}
+
+/* --- ekran blokady laptopa --- */
+.win-lock{
+  position:absolute;inset:0;z-index:900;
+  display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;
+  padding:26px 30px;
+  background:
+    radial-gradient(60% 60% at 30% 20%, rgba(90,140,255,.55), transparent 62%),
+    radial-gradient(60% 60% at 80% 30%, rgba(150,80,255,.45), transparent 60%),
+    radial-gradient(80% 70% at 50% 110%, rgba(0,200,190,.35), transparent 62%),
+    #0a1024;
+  backdrop-filter:blur(30px);
+  transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s;
+}
+.win-lock.is-unlocked{transform:translateY(-100%);opacity:0;pointer-events:none}
+.win-lock__time{font-size:44px;font-weight:600;letter-spacing:-1px;line-height:1}
+.win-lock__date{font-size:12px;color:rgba(255,255,255,.8);margin-top:4px}
+.win-lock__weather{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:10px;color:rgba(255,255,255,.8)}
+.win-lock__center{
+  align-self:center;margin-bottom:auto;margin-top:auto;display:flex;flex-direction:column;
+  align-items:center;gap:8px;
+}
+.win-lock__avatar{
+  width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:600;
+  background:linear-gradient(140deg,#6fa8ff,#2b52c4);box-shadow:0 8px 22px rgba(0,0,0,.4);
+}
+.win-lock__name{font-size:12px}
+.win-lock__hint{font-size:9.5px;color:rgba(255,255,255,.65)}
+.win-lock__btn{
+  border:0;border-radius:99px;padding:7px 18px;font-family:inherit;font-size:10px;cursor:pointer;
+  background:rgba(255,255,255,.16);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.14) inset;
+}
+.win-lock__btn:hover{background:rgba(255,255,255,.24)}
+.win-lock__bottom{display:flex;gap:16px;font-size:9px;color:rgba(255,255,255,.6)}
+
+/* --- powiadomienie toast: bardziej Windows --- */
+.win-toast{width:230px;padding:10px 12px;border-radius:8px;background:rgba(43,47,58,.94)}
+.win-toast b{font-size:9.5px}
+.win-toast span{font-size:8.5px}
+
+/* kafle aplikacji w menu Start */
+.start-app__ic{
+  width:26px;height:26px;border-radius:5px;display:grid;place-items:center;
+  color:#fff;box-shadow:0 2px 5px rgba(0,0,0,.35),0 0 0 .5px rgba(255,255,255,.14) inset;
+}
+.start-app__ic .ico{width:15px;height:15px;color:#fff}

@@ -184,3 +184,146 @@ body::before{
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
 }
+
+/* ============================================================
+   Brandowe ikony aplikacji (styl Android / Pixel)
+   ============================================================ */
+.bi{
+  width:var(--icon,var(--s,46px));height:var(--icon,var(--s,46px));
+  border-radius:50%;background:var(--bg,#3c4043);
+  display:grid;place-items:center;position:relative;overflow:hidden;flex:none;
+  box-shadow:0 2px 6px rgba(0,0,0,.35),0 0 0 .5px rgba(255,255,255,.06) inset;
+  color:#fff;
+}
+.bi.bi--circle{border-radius:50%!important}
+.bi:not(.bi--circle){border-radius:26%}
+.app__icon.bi{border-radius:26%;width:var(--icon,var(--s,46px));height:var(--icon,var(--s,46px))}
+.app__icon.bi.bi--circle{border-radius:50%!important}
+.bi svg{width:62%;height:62%;display:block}
+.bi .cal-day{
+  font-family:Roboto,system-ui,sans-serif;font-size:calc(var(--icon,46px) * .44);
+  font-weight:600;color:#1a73e8;margin-top:6%;
+}
+.bi.gcal{background:#fff}
+.bi.gcal::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:26%;background:#1a73e8;
+}
+.bi.gcal .cal-day{position:relative;margin-top:26%;color:#1a73e8}
+
+/* Chrome */
+.bi.chrome{background:conic-gradient(from -30deg,#ea4335 0 33%,#fbbc04 33% 66%,#34a853 66% 100%);overflow:visible}
+.bi.chrome::before{content:"";position:absolute;inset:14%;border-radius:50%;background:#fff}
+.bi.chrome::after{content:"";position:absolute;inset:32%;border-radius:50%;background:#4285f4;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+/* Zdjęcia (Google Photos) */
+.bi.photos{background:#fff}
+.bi.photos::before{
+  content:"";position:absolute;inset:16%;border-radius:50%;
+  background:conic-gradient(from 0deg,#4285f4 0 25%,#ea4335 25% 50%,#fbbc04 50% 75%,#34a853 75% 100%);
+  -webkit-mask:radial-gradient(circle,transparent 0 26%,#000 27%);
+          mask:radial-gradient(circle,transparent 0 26%,#000 27%);
+}
+/* Gmail */
+.bi.gmail{background:#fff}
+.bi.gmail svg{width:74%;height:74%}
+/* Mapy */
+.bi.gmaps{background:#fff}
+.bi.gmaps svg{width:80%;height:80%}
+/* Sklep Play */
+.bi.store{background:#fff}
+.bi.store .play-mark{
+  width:0;height:0;position:absolute;left:30%;top:24%;
+  border-left:calc(var(--icon,46px) * .42) solid transparent;
+  border-top:calc(var(--icon,46px) * .26) solid transparent;
+  border-bottom:calc(var(--icon,46px) * .26) solid transparent;
+  border-left-color:#00c3ff;transform:rotate(0deg);
+}
+.bi.store::before{
+  content:"";position:absolute;inset:22% 24%;
+  background:
+    linear-gradient(135deg,#00d4ff 0 33%,#00e676 33% 66%,#ffca28 66% 83%,#ff3d00 83%);
+  clip-path:polygon(0 0,100% 50%,0 100%);
+}
+.bi.store .play-mark{display:none}
+
+/* rozmiar ikon w docku i siatkach */
+.dock .dock-app.bi{width:var(--icon,44px);height:var(--icon,44px);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.app .bi{box-shadow:0 4px 10px rgba(0,0,0,.30),0 0 0 .5px rgba(255,255,255,.06) inset}
+
+/* ============================================================
+   Pasek widoków + osobne podglądy (skalowanie urządzenia)
+   ============================================================ */
+.viewbar{
+  position:relative;z-index:3;
+  display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;
+  padding:10px clamp(18px,4vw,48px) 0;
+}
+.viewbar__group{
+  display:flex;gap:3px;padding:3px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+}
+.viewbtn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border:0;border-radius:999px;cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:500;color:var(--txt-2);
+  background:transparent;transition:background .16s,color .16s;
+}
+.viewbtn .ico{width:13px;height:13px}
+.viewbtn:hover{color:var(--txt);background:rgba(255,255,255,.06)}
+.viewbtn.is-active{
+  color:#08121f;background:linear-gradient(150deg,#a9d5ff,#7cc4ff);
+  box-shadow:0 4px 12px rgba(124,196,255,.30);
+}
+.viewbtn__dot{
+  width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;
+}
+.viewbar__hint{margin:0;font-size:11.5px;color:var(--txt-3);text-align:right;max-width:420px}
+
+/* tryb "wszystkie" — jak dotąd */
+.stage[data-view="all"]{align-items:flex-end}
+
+/* tryb pojedynczy: tylko wybrane urządzenie, powiększone */
+.stage[data-view="phone"] .device,
+.stage[data-view="tablet"] .device,
+.stage[data-view="laptop"] .device{display:none}
+.stage[data-view="phone"] .device[data-device="phone"],
+.stage[data-view="tablet"] .device[data-device="tablet"],
+.stage[data-view="laptop"] .device[data-device="laptop"]{
+  display:flex;
+  transform:scale(var(--zoom,1));
+  transform-origin:center center;
+  transition:transform .35s cubic-bezier(.2,.7,.2,1);
+}
+
+/* pojedynczy widok: wyśrodkowanie i więcej miejsca */
+.stage[data-view="phone"],
+.stage[data-view="tablet"],
+.stage[data-view="laptop"]{
+  align-items:center;justify-content:center;
+  padding-top:clamp(10px,2vh,26px);
+}
+
+/* w pojedynczym widoku nie przygaszamy */
+.stage.single .device{opacity:1}
+
+/* ramki większe w widoku pojedynczym (skala liczona w JS) */
+@media (max-width:780px){
+  .viewbar__hint{display:none}
+  .viewbtn{padding:7px 11px;font-size:11.5px}
+}
+
+/* w pojedynczym podglądzie oddajemy miejsce urządzeniu */
+body[data-view="phone"] .site-footer,
+body[data-view="tablet"] .site-footer,
+body[data-view="laptop"] .site-footer{display:none}
+body[data-view="phone"] .site-header p,
+body[data-view="tablet"] .site-header p,
+body[data-view="laptop"] .site-header p{display:none}
+body[data-view="phone"] .site-header,
+body[data-view="tablet"] .site-header,
+body[data-view="laptop"] .site-header{padding-bottom:0}
+body[data-view="phone"] .stage,
+body[data-view="tablet"] .stage,
+body[data-view="laptop"] .stage{padding-bottom:6px}
+body[data-view="phone"] .device__caption,
+body[data-view="tablet"] .device__caption,
+body[data-view="laptop"] .device__caption{margin-top:8px}

@@ -34,6 +34,21 @@
       </div>` } }
   };
 
+  const EXTRA_APPS = [
+    ["mail", "Poczta", "i-mail", "#5aa9ff"],
+    ["calendar", "Kalendarz", "i-calendar", "#ff9f6b"],
+    ["photos", "Zdjęcia", "i-gallery", "#ff8fb1"],
+    ["maps", "Mapy", "i-maps", "#6fe3c4"],
+    ["terminal", "Terminal", "i-files", "#d6dbe6"],
+    ["paint", "Paint", "i-gallery", "#ffd166"],
+    ["word", "Word", "i-notes", "#5aa9ff"],
+    ["excel", "Excel", "i-calc", "#7bd88f"],
+    ["xbox", "Xbox", "i-play", "#7bd88f"],
+    ["camera", "Aparat", "i-camera", "#cfd6e6"],
+    ["clock", "Zegar", "i-sun", "#cfd6e6"],
+    ["recycle", "Kosz", "i-trash", "#cfd6e6"]
+  ];
+
   const TASKBAR_APPS = [
     { id: "start", icon: "i-windows", label: "Start" },
     { id: "search", icon: "i-search", label: "Szukaj" },
@@ -44,17 +59,41 @@
   ];
 
   const START_APPS = [
-    ["edge", "Edge", "ic-sky", "i-edge"],
-    ["explorer", "Pliki", "ic-yellow", "i-files"],
-    ["settings", "Ustawienia", "ic-gray", "i-settings"],
-    ["notepad", "Notatnik", "ic-amber", "i-notes"],
-    ["spotify", "Spotify", "ic-spotify", "i-spotify"],
-    ["store", "Store", "ic-blue", "i-store"],
-    ["weather", "Pogoda", "ic-amber", "i-sun"],
-    ["calculator", "Kalkulator", "ic-black", "i-calc"]
+    ["edge", "Edge", "i-edge", "#1a73e8"],
+    ["explorer", "Pliki", "i-folder", "#e8b33c"],
+    ["settings", "Ustawienia", "i-gear-win", "#8b95a8"],
+    ["notepad", "Notatnik", "i-notes", "#6fa8dc"],
+    ["spotify", "Spotify", "i-spotify", "#1ed760"],
+    ["store", "Sklep", "i-store", "#4cc2ff"],
+    ["weather", "Pogoda", "i-sun", "#ffb54d"],
+    ["calculator", "Kalkulator", "i-calc", "#5f6368"],
+    ["mail", "Poczta", "i-mail", "#3b82f6"],
+    ["calendar", "Kalendarz", "i-calendar", "#ef6a4c"],
+    ["photos", "Zdjęcia", "i-gallery", "#e8567f"],
+    ["maps", "Mapy", "i-maps", "#39b98a"],
+    ["terminal", "Terminal", "i-files", "#2b2f36"],
+    ["paint", "Paint", "i-gallery", "#f2c744"],
+    ["word", "Word", "i-notes", "#2b579a"],
+    ["excel", "Excel", "i-calc", "#217346"],
+    ["xbox", "Xbox", "i-play", "#107c10"],
+    ["clock", "Zegar", "i-sun", "#5f6368"]
   ];
 
+  function registerExtraApps() {
+    EXTRA_APPS.forEach(([id, title, ic, tint]) => {
+      if (WIN_APPS[id]) return;
+      WIN_APPS[id] = {
+        title, icon: ic, tint, w: "48%", h: "62%", x: 160, y: 42,
+        part: { html: () => `<div class="center-msg" style="height:100%">
+          <span class="app__icon" style="--s:42px;border-radius:10px;background:${tint};color:#0a1020">${icon(ic)}</span>
+          <b style="color:#fff;font-size:12px">${title}</b>
+          <span style="font-size:9.5px;max-width:220px">Makieta aplikacji — do zaprojektowania w LuminoOS.</span></div>` }
+      };
+    });
+  }
+
   function buildWindows(screen) {
+    registerExtraApps();
     screen.innerHTML = `
       <div class="win-wallpaper"></div>
       <div class="win-desktop">
@@ -71,23 +110,31 @@
         <div class="start-search">${icon("i-search", "ico--tiny")}
           <input type="text" placeholder="Wpisz, aby wyszukać" aria-label="Szukaj aplikacji">
         </div>
-        <div class="start-head"><span>Przypięte</span><span class="start-all">Wszystkie aplikacje ›</span></div>
-        <div class="start-grid">
-          ${START_APPS.map(([id, name, c, i]) => `
-            <button class="start-app" data-open="${id}" data-name="${name.toLowerCase()}">
-              <span class="app__icon ${c}">${icon(i)}</span>${name}
-            </button>`).join("")}
-        </div>
-        <div class="start-head"><span>Polecane</span></div>
-        <div class="start-recent">
-          <button class="recent" data-open="notepad"><span class="file__ic f-txt"></span>
-            <div><b>notatki.txt</b><small>Ostatnio edytowane</small></div></button>
-          <button class="recent" data-open="explorer"><span class="file__ic f-img"></span>
-            <div><b>tapeta.png</b><small>Wczoraj</small></div></button>
+        <div class="start-scroll">
+          <div class="start-head"><span>Przypięte</span><span class="start-all">Wszystkie aplikacje ›</span></div>
+          <div class="start-grid">
+            ${START_APPS.map(([id, name, ic, color]) => `
+              <button class="start-app" data-open="${id}" data-name="${name.toLowerCase()}">
+                <span class="start-app__ic" style="background:${color}">${icon(ic)}</span>
+                <span>${name}</span>
+              </button>`).join("")}
+          </div>
+          <div class="start-head"><span>Polecane</span></div>
+          <div class="start-recent">
+            <button class="recent" data-open="notepad"><span class="file__ic f-txt"></span>
+              <div><b>notatki.txt</b><small>Ostatnio edytowane</small></div></button>
+            <button class="recent" data-open="explorer"><span class="file__ic f-img"></span>
+              <div><b>tapeta.png</b><small>Wczoraj</small></div></button>
+            <button class="recent" data-open="spotify"><span class="app__icon ic-spotify" style="--s:22px;border-radius:5px">${icon("i-spotify")}</span>
+              <div><b>Neonowe Ulice</b><small>Mira Kova · Spotify</small></div></button>
+            <button class="recent" data-open="mail"><span class="file__ic f-pdf"></span>
+              <div><b>umowa.pdf</b><small>Wczoraj</small></div></button>
+          </div>
         </div>
         <div class="start-user">
           <span class="avatar">Ł</span><span>Łukasz</span>
-          <button class="start-power" title="Zasilanie">${icon("i-gear-win")}</button>
+          <button class="start-power" data-power="lock" title="Zablokuj">${icon("i-lock")}</button>
+          <button class="start-power" data-power="off" title="Zasilanie">${icon("i-gear-win")}</button>
         </div>
       </div>
 
@@ -106,6 +153,24 @@
           <span class="tray-icon">${icon("i-volume")}</span>
           <span class="tray-icon">${icon("i-battery")}</span>
           <span class="tray-clock"><b class="js-time">09:41</b><small class="js-date-short">04.11.2026</small></span>
+        </div>
+      </div>
+
+      <div class="win-lock">
+        <div>
+          <div class="win-lock__time js-time">09:41</div>
+          <div class="win-lock__date js-date-long">poniedziałek, 4 listopada</div>
+          <div class="win-lock__weather">${icon("i-sun")} 12° · Kraków, pochmurno</div>
+        </div>
+        <div class="win-lock__center">
+          <div class="win-lock__avatar">Ł</div>
+          <div class="win-lock__name">Łukasz</div>
+          <button class="win-lock__btn" data-lock="unlock">Kliknij, aby się zalogować</button>
+          <div class="win-lock__hint">Makieta — hasło nie jest wymagane</div>
+        </div>
+        <div class="win-lock__bottom">
+          <span>${icon("i-wifi", "ico--tiny")} Lumino_5G</span>
+          <span>${icon("i-battery", "ico--tiny")} 78%</span>
         </div>
       </div>
 
@@ -145,6 +210,22 @@
       $$(".start-app", startMenu).forEach(a => {
         a.classList.toggle("is-hidden", q && !a.dataset.name.includes(q));
       });
+    });
+
+    /* ---------------- ekran blokady ---------------- */
+    const lockEl = $(".win-lock", screen);
+    function lockPC() {
+      closeStart();
+      lockEl.classList.remove("is-unlocked");
+    }
+    function unlockPC() { lockEl.classList.add("is-unlocked"); }
+    $("[data-lock='unlock']", screen).addEventListener("click", unlockPC);
+    screen.addEventListener("click", e => {
+      const p = e.target.closest("[data-power]");
+      if (!p) return;
+      closeStart();
+      if (p.dataset.power === "lock") lockPC();
+      else showToast("Zasilanie", "Makieta — tu pojawi się menu zasilania");
     });
 
     /* ---------------- powiadomienie ---------------- */
@@ -325,7 +406,7 @@
     openWindow("explorer");
 
     /* ---------------- API ---------------- */
-    screen.lumino = { openWindow, closeWindow, closeStart, openStart };
+    screen.lumino = { openWindow, closeWindow, closeStart, openStart, lockPC, unlockPC };
   }
 
   /* ---------------- kalkulator (Windows) ---------------- */

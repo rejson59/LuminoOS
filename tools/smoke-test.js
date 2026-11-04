@@ -34,6 +34,7 @@ dom.window.addEventListener("load", async () => {
   const phone = document.querySelector('[data-android="phone"]');
   const tablet = document.querySelector('[data-android="tablet"]');
   const win = document.getElementById("winScreen");
+  const stage = document.getElementById("stage");
 
   console.log("\n— Budowa powłok —");
   check("telefon zbudowany", () => assert(phone.querySelectorAll(".app").length >= 12));
@@ -209,6 +210,51 @@ dom.window.addEventListener("load", async () => {
   check("Notatnik ma pole tekstowe", () => {
     win.lumino.openWindow("notepad");
     assert(win.querySelector('[data-win="notepad"] textarea'));
+  });
+
+  console.log("\n— Podglądy (osobne widoki) —");
+  check("przełącznik widoków istnieje", () => {
+    assert(document.querySelectorAll("[data-view]").length >= 4);
+  });
+  check("widok telefonu pokazuje tylko telefon", () => {
+    dom.window.Lumino.setView("phone");
+    assert(stage.dataset.view === "phone");
+    const single = document.body.dataset.view === "phone";
+    assert(single);
+  });
+  check("widok laptopa ustawia się z przycisku", () => {
+    document.querySelector('.viewbtn[data-view="laptop"]').click();
+    assert(stage.dataset.view === "laptop");
+  });
+  check("powrót do wszystkich", () => {
+    document.querySelector('.viewbtn[data-view="all"]').click();
+    assert(stage.dataset.view === "all");
+  });
+
+  console.log("\n— Ikony brandowe i ekrany —");
+  check("ikony aplikacji są brandowe (nie jednolite gradienty)", () => {
+    assert(phone.querySelectorAll(".app .bi").length >= 8);
+    assert(phone.querySelectorAll(".dock .bi").length === 4);
+  });
+  check("telefon ma At a Glance i pasek wyszukiwania", () => {
+    assert(phone.querySelector(".glance"));
+    assert(phone.querySelector(".searchbar"));
+  });
+  check("panel ma kafelki z opisem (Internet/Bluetooth)", () => {
+    assert(phone.querySelector(".qs__txt b"));
+  });
+  check("Windows: menu Start ma 6 kolumn i 18 aplikacji", () => {
+    assert(win.querySelectorAll(".start-app").length === 18);
+  });
+  check("Windows: ekran blokady i logowanie", () => {
+    const lock = win.querySelector(".win-lock");
+    assert(lock && !lock.classList.contains("is-unlocked"));
+    win.querySelector('[data-lock="unlock"]').click();
+    assert(lock.classList.contains("is-unlocked"));
+  });
+  check("Windows: nowe aplikacje otwierają okna", () => {
+    win.lumino.openWindow("terminal");
+    assert(win.querySelector('[data-win="terminal"]'));
   });
 
   console.log("\n— Błędy JS —");

@@ -503,3 +503,130 @@
 .center-msg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
   height:100%;text-align:center;color:rgba(255,255,255,.7);font-size:10.5px;padding:20px}
 .center-msg .app__icon{--s:40px;margin-bottom:4px}
+
+/* ============================================================
+   Elementy w stylu Androida 15 / Pixela
+   ============================================================ */
+
+/* At a Glance (lewy górny róg, jak w Pixelu) */
+.glance{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:2px 6px 8px;
+}
+.glance__main{display:flex;align-items:center;gap:9px;min-width:0}
+.glance__ico{
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:rgba(255,255,255,.14);color:#cfe3ff;
+}
+.glance__ico .ico{width:13px;height:13px}
+.glance__main b{display:block;font-size:10.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.glance__main span{display:block;font-size:9px;color:rgba(255,255,255,.6)}
+.glance__weather{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;flex:none}
+.glance__weather .sun{width:16px;height:16px}
+
+/* pasek wyszukiwania Google (Pixel) */
+.searchbar{
+  display:flex;align-items:center;gap:9px;
+  margin:2px 2px 10px;padding:9px 12px;border-radius:99px;
+  background:rgba(255,255,255,.13);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.14) inset, 0 4px 14px rgba(0,0,0,.18);
+  font-size:10.5px;color:rgba(255,255,255,.78);
+}
+.searchbar__g{
+  font-weight:700;font-size:12px;flex:none;
+  background:linear-gradient(90deg,#4285f4,#34a853,#fbbc04,#ea4335);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.searchbar > span:nth-child(2){flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.searchbar__mic,.searchbar__lens{width:14px;height:14px;opacity:.75;display:grid;place-items:center}
+.searchbar__lens{color:#8ab4f8}
+
+/* dwie sekcje siatki + kropki w środku (jak strony w Pixelu) */
+.app-grid--second{margin-top:0}
+.page-dots--inline{position:static;transform:none;margin:8px 0 6px;display:flex;justify-content:center;gap:5px}
+.page-dots--inline i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.30)}
+.page-dots--inline i.on{background:#fff}
+.page-hint{font-size:11px;color:rgba(255,255,255,.6);padding:12px 4px 10px;letter-spacing:.02em}
+.app-grid--all{margin-top:0}
+
+/* siatka: ikony większe, etykiety jak w Androidzie */
+.app-grid{gap:16px 4px}
+.app{gap:7px}
+.app__label{font-size:10px;font-weight:400;letter-spacing:0}
+
+/* panel powiadomień — kafelki 2×2 + rząd małych (Android 15) */
+.qs-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:7px;
+}
+.android[data-android="tablet"] .qs-grid{grid-template-columns:repeat(4,1fr)}
+.qs{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px;border-radius:20px;background:rgba(255,255,255,.09);
+  border:0;color:#fff;font-family:inherit;cursor:pointer;text-align:left;
+  box-shadow:0 0 0 .5px rgba(255,255,255,.08) inset;
+  transition:background .16s,color .16s;
+  min-height:36px;
+}
+.qs .ico{width:15px;height:15px;flex:none}
+.qs__ic{
+  width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:rgba(255,255,255,.14);
+}
+.qs__ic .ico{width:13px;height:13px}
+.qs__txt{min-width:0}
+.qs__txt b{display:block;font-size:9.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qs__txt small{display:block;font-size:8px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qs.on{background:#d3e3fd;color:#041b3c}
+.qs.on .qs__ic{background:rgba(4,27,60,.10)}
+.qs.on .qs__txt small{color:rgba(4,27,60,.65)}
+.qs.on .ico{color:#041b3c}
+.qs--wide{justify-content:flex-start}
+.qs:not(.qs--wide) .ico{width:16px;height:16px}
+
+.slider-row{gap:10px;padding:0 2px}
+.slider-ico{
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:rgba(255,255,255,.14);
+}
+.slider-ico .ico{width:13px;height:13px}
+.slider{
+  -webkit-appearance:none;appearance:none;height:26px;flex:1;border-radius:99px;outline:none;cursor:pointer;
+  background:linear-gradient(90deg,#a8c7fa var(--v,60%),rgba(255,255,255,.16) var(--v,60%));
+}
+.slider--vol{background:linear-gradient(90deg,#c7d6ff var(--v,55%),rgba(255,255,255,.16) var(--v,55%))}
+.slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.45);
+}
+.slider::-moz-range-thumb{width:16px;height:16px;border:0;border-radius:50%;background:#fff}
+
+/* powiadomienia — karty jak w Androidzie 15 */
+.notif{border-radius:24px;padding:10px 12px;gap:10px}
+.notif .app__icon{--s:24px}
+.notif b{font-size:10px}
+.notif p{font-size:9px}
+.notif small{font-size:8px;padding-top:1px}
+
+/* pasek gestów */
+.navbar{height:26px}
+.navbar__pill{
+  width:108px;height:4px;border-radius:99px;background:rgba(255,255,255,.75);
+  border:0;padding:0;
+}
+.navbar__pill:hover{background:#fff}
+
+/* ekran blokady: typografia Pixela */
+.lock-clock b{font-size:62px;font-weight:300;letter-spacing:-3px}
+.android[data-device="tablet"] .lock-clock b{font-size:68px}
+.lock-hint{font-size:9.5px;letter-spacing:.02em}
+
+/* dock: ikony brandowe */
+.dock{padding:10px 12px;border-radius:26px;background:rgba(255,255,255,.10);gap:4px}
+.dock .dock-app{background:none!important;box-shadow:none!important;width:auto;height:auto;padding:0}
+.dock .dock-app .bi{width:44px;height:44px}
+.android[data-android="tablet"] .dock .dock-app .bi{width:46px;height:46px}
+
+/* zegar na stronie głównej telefonu (Pixel) */
+.clock-widget--home{margin:2px 0 8px;text-align:left;padding-left:6px}
+.clock-widget--home .clock-widget__time{font-size:40px;font-weight:300;letter-spacing:-1.8px}
+.clock-widget--home .clock-widget__date{font-size:10.5px;margin-top:3px;color:rgba(255,255,255,.7)}
