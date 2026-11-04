@@ -120,53 +120,101 @@
 
 
 
-  /* ---------------- szklane, nowoczesne ikony aplikacji ---------------- */
-  const SV = (body, extra = "") =>
-    `<svg viewBox="0 0 24 24" ${extra}>${body}</svg>`;
+  /* ---------------- ikony: liquid glass (bez kolorowych płytek) ----------------
+     Każda ikona to przezroczysty, szklany kwadrat (squircle), a w środku
+     kolorowy glif marki. Kolor glifu ustawia --ink.
+     ------------------------------------------------------------------------- */
+  const SV = (body, extra = "") => `<svg viewBox="0 0 24 24" ${extra}>${body}</svg>`;
 
   const BRAND = {
-    phone: { g: "linear-gradient(150deg,#5ce1a0,#0f9d58 58%,#0a6b3d)", glyph:
-      SV('<path fill="rgba(255,255,255,.96)" d="M6.6 3h2.2c.5 0 .9.3 1 .8l.9 3.3c.1.4 0 .8-.4 1l-1.4 1a12 12 0 0 0 5.9 5.9l1-1.4c.2-.3.6-.5 1-.4l3.3.9c.5.1.8.5.8 1v2.2c0 1.3-1.1 2.4-2.4 2.2C10.5 19.9 4.1 13.5 3.4 5.4 3.2 4.1 4.3 3 5.6 3Z"/>') },
-    messages: { g: "linear-gradient(150deg,#7cc4ff,#1a73e8 60%,#123f8f)", glyph:
-      SV('<path fill="rgba(255,255,255,.96)" d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H9l-4 3.6c-.6.6-1.6.1-1.6-.7V5.5Z"/>') },
-    spotify: { r: "50%", g: "linear-gradient(150deg,#6ef79a,#1ed760 55%,#0d7a35)", glyph:
-      SV('<g fill="none" stroke="rgba(4,21,10,.92)" stroke-width="2" stroke-linecap="round"><path d="M5.5 8.4c4.5-1.4 9.6-.9 13 1.4"/><path d="M6.6 12.5c3.7-1.1 7.8-.6 10.7 1.3"/><path d="M7.7 16.4c2.9-.9 6-.5 8.2 1"/></g>') },
-    camera: { g: "linear-gradient(150deg,#8ea2c4,#3a4356 58%,#1b2029)", glyph:
-      SV('<rect x="2" y="6" width="20" height="13" rx="3.4" fill="rgba(255,255,255,.95)"/><circle cx="12" cy="12.5" r="4" fill="#2b2f36"/><circle cx="12" cy="12.5" r="2.1" fill="#9dc4ff"/><circle cx="18.3" cy="9" r=".9" fill="#2b2f36"/>') },
-    chrome: { r: "50%", g: "conic-gradient(from -30deg,#ff7a6e 0 33%,#ffd166 33% 66%,#5ce1a0 66% 100%)", glyph:
-      SV('<circle cx="12" cy="12" r="5.1" fill="rgba(255,255,255,.96)"/><circle cx="12" cy="12" r="2.6" fill="#4a90ff"/>', 'class="lu-chrome"') },
-    gallery: { r: "50%", g: "conic-gradient(from 0deg,#8ec5ff 0 25%,#ff9db4 25% 50%,#ffd166 50% 75%,#7ef0c8 75% 100%)", glyph:
-      SV('<circle cx="12" cy="12" r="6.6" fill="rgba(255,255,255,.9)"/><circle cx="12" cy="12" r="2.6" fill="rgba(255,255,255,0)"/>') },
-    youtube: { g: "linear-gradient(150deg,#ff7a7a,#ff0000 60%,#b30000)", glyph:
-      SV('<rect x="1.5" y="5" width="21" height="14" rx="4.4" fill="rgba(255,255,255,.96)"/><path d="M10 8.8 15.8 12 10 15.2V8.8Z" fill="#e00000"/>') },
-    calendar: { g: "linear-gradient(150deg,#fff,#eef2fb)", glyph:
-      `<span class="cal-day">4</span>` , cls: "lu-cal" },
-    gmail: { g: "linear-gradient(150deg,#fff,#eef2fb)", glyph:
-      SV('<path fill="#ea4335" d="M3 7.4 12 14l9-6.6V7L12 13.6 3 7v.4Z"/><path fill="#c5221f" d="M3 7.4 12 14l9-6.6V6a1.6 1.6 0 0 0-2.5-1.3L12 9.6 5.5 4.7A1.6 1.6 0 0 0 3 6v1.4Z"/><path fill="#4285f4" d="M3 8.2V18h3.2v-6.6L3 8.2Z"/><path fill="#34a853" d="M21 8.2V18h-3.2v-6.6L21 8.2Z"/>'),
-      cls: "lu-gmail" },
-    maps: { g: "linear-gradient(150deg,#7ef0c8,#2fa87a 55%,#1a6b52)", glyph:
-      SV('<path fill="rgba(255,255,255,.96)" d="M12 2.6a6.9 6.9 0 0 0-6.9 6.9C5.1 14.6 12 21.4 12 21.4s6.9-6.8 6.9-11.9A6.9 6.9 0 0 0 12 2.6Z"/><circle cx="12" cy="9.4" r="2.7" fill="#2fa87a"/>') },
-    notes: { g: "linear-gradient(150deg,#ffe9a8,#fbbc04 58%,#d09300)", glyph:
-      SV('<rect x="4.2" y="3" width="15.6" height="18" rx="2.6" fill="rgba(255,255,255,.94)"/><g fill="#e0a800"><rect x="7" y="7.2" width="10" height="1.7" rx=".85"/><rect x="7" y="11" width="10" height="1.7" rx=".85"/><rect x="7" y="14.8" width="6.4" height="1.7" rx=".85"/></g>') },
-    calculator: { g: "linear-gradient(150deg,#5a6376,#2b3040 60%,#151922)", glyph:
-      SV('<rect x="4.5" y="2.8" width="15" height="18.4" rx="3.2" fill="rgba(255,255,255,.14)"/><rect x="7" y="5.4" width="10" height="3.2" rx="1" fill="rgba(150,200,255,.95)"/><g fill="rgba(255,255,255,.9)"><circle cx="8.8" cy="12.4" r="1.15"/><circle cx="12" cy="12.4" r="1.15"/><circle cx="15.2" cy="12.4" r="1.15"/><circle cx="8.8" cy="16" r="1.15"/><circle cx="12" cy="16" r="1.15"/><circle cx="8.8" cy="19.2" r="1.05"/><circle cx="12" cy="19.2" r="1.05"/></g><circle cx="15.2" cy="16" r="1.15" fill="rgba(150,200,255,.95)"/>') },
-    files: { g: "linear-gradient(150deg,#8fc6ff,#1a73e8 58%,#0f4bb0)", glyph:
-      SV('<path fill="rgba(255,255,255,.96)" d="M3 6.4A2.2 2.2 0 0 1 5.2 4.2h4.4l2 2.4h7.2A2.2 2.2 0 0 1 21 8.8v8.6a2.2 2.2 0 0 1-2.2 2.2H5.2A2.2 2.2 0 0 1 3 17.4V6.4Z"/>') },
-    settings: { r: "50%", g: "linear-gradient(150deg,#aab4c8,#5f6368 58%,#33383f)", glyph:
-      SV('<path fill="rgba(255,255,255,.95)" d="m10.3 2h3.4l.5 2.3c.6.2 1.1.5 1.6.9l2.2-.9 2.4 2.4-.9 2.2c.4.5.7 1 .9 1.6l2.3.5v3.4l-2.3.5c-.2.6-.5 1.1-.9 1.6l.9 2.2-2.4 2.4-2.2-.9c-.5.4-1 .7-1.6.9l-.5 2.3h-3.4l-.5-2.3c-.6-.2-1.1-.5-1.6-.9l-2.2.9L4 18.9l.9-2.2c-.4-.5-.7-1-.9-1.6L1.7 14.6v-3.4L4 10.7c.2-.6.5-1.1.9-1.6L4 6.9l2.4-2.4 2.2.9c.5-.4 1-.7 1.6-.9L10.3 2Zm1.7 6.3a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4Z"/>') },
-    store: { g: "linear-gradient(150deg,#fff,#eaf1fb)", glyph:
-      SV('<path d="M4.4 3.2 20 11.4c.6.3.6 1 0 1.3L4.4 20.8c-.5.2-.9-.1-.9-.6V3.8c0-.5.4-.8.9-.6Z" fill="#00c3ff"/><path d="M4.4 3.2 13 12 4.4 20.8c-.5.2-.9-.1-.9-.6V3.8c0-.5.4-.8.9-.6Z" fill="#00e676"/><path d="M4.4 3.2 9.4 6 8 12l-3.6-8.8Z" fill="#ffca28"/>'),
-      cls: "lu-store" },
-    youtubeMusic: { r: "50%", g: "linear-gradient(150deg,#ff7a7a,#ff0000 60%,#b30000)", glyph:
-      SV('<circle cx="12" cy="12" r="8.4" fill="rgba(255,255,255,.14)"/><circle cx="12" cy="12" r="3.2" fill="rgba(255,255,255,.95)"/><path d="M10.8 9.6 15 12l-4.2 2.4V9.6Z" fill="#e00000"/>') }
+    phone: { ink: "#3ddc84", glyph: SV(
+      '<path fill="currentColor" d="M6.6 3h2.2c.5 0 .9.3 1 .8l.9 3.3c.1.4 0 .8-.4 1l-1.4 1a12 12 0 0 0 5.9 5.9l1-1.4c.2-.3.6-.5 1-.4l3.3.9c.5.1.8.5.8 1v2.2c0 1.3-1.1 2.4-2.4 2.2C10.5 19.9 4.1 13.5 3.4 5.4 3.2 4.1 4.3 3 5.6 3Z"/>') },
+
+    messages: { ink: "#5aa9ff", glyph: SV(
+      '<path fill="currentColor" d="M4 5.6A2.6 2.6 0 0 1 6.6 3h10.8A2.6 2.6 0 0 1 20 5.6v7.8a2.6 2.6 0 0 1-2.6 2.6H9.2l-3.8 3.4c-.6.5-1.4.1-1.4-.7V5.6Z"/>'
+      + '<g fill="rgba(10,20,40,.45)"><circle cx="9" cy="9" r="1"/><circle cx="12" cy="9" r="1"/><circle cx="15" cy="9" r="1"/></g>') },
+
+    spotify: { ink: "#1ed760", glyph: SV(
+      '<g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">'
+      + '<path d="M5.4 8.3c4.6-1.5 9.9-.9 13.4 1.5"/>'
+      + '<path d="M6.5 12.4c3.8-1.1 8-.6 11 1.4"/>'
+      + '<path d="M7.6 16.4c2.9-.9 6.1-.5 8.4 1"/></g>') },
+
+    camera: { ink: "#e2e8f0", glyph: SV(
+      '<rect x="2.4" y="6" width="19.2" height="12.8" rx="3.4" fill="currentColor"/>'
+      + '<circle cx="12" cy="12.4" r="3.7" fill="none" stroke="rgba(12,18,30,.6)" stroke-width="1.9"/>'
+      + '<circle cx="12" cy="12.4" r="1.5" fill="rgba(12,18,30,.55)"/>'
+      + '<circle cx="18.2" cy="9.2" r="1" fill="rgba(12,18,30,.5)"/>') },
+
+    chrome: { glyph: SV(
+      '<g fill="none" stroke-width="3.1">'
+      + '<circle cx="12" cy="12" r="9.1" stroke="#ea4335" stroke-dasharray="19.1 38.1"/>'
+      + '<circle cx="12" cy="12" r="9.1" stroke="#fbbc04" stroke-dasharray="19.1 38.1" stroke-dashoffset="-19.1"/>'
+      + '<circle cx="12" cy="12" r="9.1" stroke="#34a853" stroke-dasharray="19.1 38.1" stroke-dashoffset="-38.2"/>'
+      + '</g><circle cx="12" cy="12" r="4.9" fill="rgba(255,255,255,.92)"/><circle cx="12" cy="12" r="2.5" fill="#4285f4"/>') },
+
+    gallery: { glyph: SV(
+      '<g fill="none" stroke-width="3.3" stroke-linecap="round">'
+      + '<path d="M12 3.2a8.8 8.8 0 0 1 8.8 8.8" stroke="#4285f4"/>'
+      + '<path d="M20.8 12a8.8 8.8 0 0 1-8.8 8.8" stroke="#34a853"/>'
+      + '<path d="M12 20.8A8.8 8.8 0 0 1 3.2 12" stroke="#fbbc04"/>'
+      + '<path d="M3.2 12A8.8 8.8 0 0 1 12 3.2" stroke="#ea4335"/>'
+      + '</g>') },
+
+    youtube: { glyph: SV(
+      '<rect x="2" y="5.4" width="20" height="13.2" rx="4.2" fill="#ff2d55"/>'
+      + '<path d="M10.2 8.8 15.8 12l-5.6 3.2V8.8Z" fill="#fff"/>') },
+
+    calendar: { ink: "#5aa9ff", glyph: SV(
+      '<rect x="3.5" y="4.3" width="17" height="16.2" rx="3.6" fill="rgba(255,255,255,.94)"/>'
+      + '<path d="M3.5 7.9a3.6 3.6 0 0 1 3.6-3.6h9.8a3.6 3.6 0 0 1 3.6 3.6v.6H3.5V7.9Z" fill="currentColor"/>'
+      + '<text class="lu-day" x="12" y="17.6" text-anchor="middle" font-size="6.6" font-weight="700" fill="#1a73e8">4</text>') },
+
+    gmail: { glyph: SV(
+      '<path fill="#ea4335" d="M3 7.6 12 14.2l9-6.6V7L12 13.6 3 7v.6Z"/>'
+      + '<path fill="#c5221f" d="M3 7.6 12 14.2l9-6.6V6.2a1.7 1.7 0 0 0-2.6-1.4L12 9.7 5.6 4.8A1.7 1.7 0 0 0 3 6.2v1.4Z"/>'
+      + '<path fill="#4285f4" d="M3 8.4V18h3.3v-6.6L3 8.4Z"/>'
+      + '<path fill="#34a853" d="M21 8.4V18h-3.3v-6.6L21 8.4Z"/>'
+      + '<path fill="#fbbc04" d="M6.3 11.4V18h3.1v-4.4l-3.1-2.2Z"/>'
+      + '<path fill="#34a853" d="M17.7 11.4V18h-3.1v-4.4l3.1-2.2Z"/>') },
+
+    maps: { ink: "#34d399", glyph: SV(
+      '<path fill="currentColor" d="M12 2.3a7 7 0 0 0-7 7c0 5.3 7 12.4 7 12.4s7-7.1 7-12.4a7 7 0 0 0-7-7Z"/>'
+      + '<circle cx="12" cy="9.2" r="2.7" fill="rgba(8,20,16,.85)"/>') },
+
+    notes: { ink: "#fbbf24", glyph: SV(
+      '<rect x="4.6" y="3.2" width="14.8" height="17.6" rx="2.8" fill="currentColor"/>'
+      + '<g stroke="rgba(20,14,0,.45)" stroke-width="1.7" stroke-linecap="round">'
+      + '<path d="M8.2 8.4h7.6"/><path d="M8.2 12h7.6"/><path d="M8.2 15.6h4.8"/></g>') },
+
+    calculator: { ink: "#a8c7fa", glyph: SV(
+      '<rect x="4.4" y="2.6" width="15.2" height="18.8" rx="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/>'
+      + '<rect x="7" y="5.4" width="10" height="3.1" rx="1" fill="currentColor"/>'
+      + '<g fill="currentColor"><circle cx="8.7" cy="12.3" r="1.1"/><circle cx="12" cy="12.3" r="1.1"/><circle cx="15.3" cy="12.3" r="1.1"/>'
+      + '<circle cx="8.7" cy="15.9" r="1.1"/><circle cx="12" cy="15.9" r="1.1"/><circle cx="15.3" cy="15.9" r="1.1"/>'
+      + '<circle cx="8.7" cy="19.1" r="1.1"/><circle cx="12" cy="19.1" r="1.1"/></g>') },
+
+    files: { ink: "#60a5fa", glyph: SV(
+      '<path fill="currentColor" d="M3 6.4A2.3 2.3 0 0 1 5.3 4.1h4.5l2 2.4h6.9A2.3 2.3 0 0 1 21 8.8v8.5a2.3 2.3 0 0 1-2.3 2.3H5.3A2.3 2.3 0 0 1 3 17.3V6.4Z"/>') },
+
+    settings: { ink: "#c3cddf", glyph: SV(
+      '<path fill="currentColor" d="m10.3 2h3.4l.5 2.3c.6.2 1.1.5 1.6.9l2.2-.9 2.4 2.4-.9 2.2c.4.5.7 1 .9 1.6l2.3.5v3.4l-2.3.5c-.2.6-.5 1.1-.9 1.6l.9 2.2-2.4 2.4-2.2-.9c-.5.4-1 .7-1.6.9l-.5 2.3h-3.4l-.5-2.3c-.6-.2-1.1-.5-1.6-.9l-2.2.9L4 18.9l.9-2.2c-.4-.5-.7-1-.9-1.6L1.7 14.6v-3.4L4 10.7c.2-.6.5-1.1.9-1.6L4 6.9l2.4-2.4 2.2.9c.5-.4 1-.7 1.6-.9L10.3 2Zm1.7 6.3a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4Z"/>') },
+
+    store: { glyph: SV(
+      '<path d="M5.2 2.9 21 11.4c.7.4.7 1.4 0 1.8L5.2 21.7c-.7.4-1.6-.1-1.6-.9V3.8c0-.8.9-1.3 1.6-.9Z" fill="none"/>'
+      + '<path d="M5 2.6 12.4 12 5 21.4c-.7-.1-1.2-.6-1.2-1.4V4c0-.8.5-1.3 1.2-1.4Z" fill="#00c3ff"/>'
+      + '<path d="M12.4 12 19.8 2.9c.5.3.8.8.8 1.4v15.4c0 .6-.3 1.1-.8 1.4L12.4 12Z" fill="#00e676"/>'
+      + '<path d="M12.4 12 20 11.4c.7.4.7 1.4 0 1.8l-7.6 1.4V12Z" fill="#ffca28" opacity=".9"/>') },
+
+    youtubeMusic: { glyph: SV(
+      '<circle cx="12" cy="12" r="9.1" fill="none" stroke="#ff2d55" stroke-width="2.2"/>'
+      + '<path d="M10.1 8.7 16 12l-5.9 3.3V8.7Z" fill="#ff2d55"/>') }
   };
 
   function brandIcon(id) {
     const b = BRAND[id] || BRAND.settings;
-    const cls = ["app__icon", "bi"];
-    if (b.r) cls.push("bi--circle");
-    if (b.cls) cls.push(b.cls);
-    return `<span class="${cls.join(" ")}" style="--bg:${b.g}">${b.glyph}</span>`;
+    const style = b.ink ? `--ink:${b.ink}` : "";
+    return `<span class="app__icon bi" style="${style}">${b.glyph}</span>`;
   }
 
   window.Lumino = { $, $$, icon, fmtTime, parseDur, clamp, player, tracks, androidApps, appById, notifications, brandIcon };

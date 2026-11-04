@@ -39,25 +39,23 @@
             ${isTablet ? `
               <div class="tablet-top">
                 <div class="tablet-greeting"><span class="js-date">poniedziałek</span><b>Dzień dobry</b></div>
-                <button class="search-pill" data-action="drawer">${icon("i-search", "ico--tiny")} Szukaj w tablecie</button>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <button class="search-pill" data-action="drawer">${icon("i-search", "ico--tiny")} Szukaj</button>
+                  <button class="tablet-all" data-action="drawer" aria-label="Wszystkie aplikacje">${icon("i-plus")}</button>
+                </div>
               </div>
               <div class="widgets">
-                <div class="widget widget--weather">
+                <div class="widget widget--weather widget--compact">
                   <div class="widget__row"><div><b>12°</b><span>Kraków · pochmurno</span></div><span class="sun"></span></div>
-                  <div class="widget__hours">
-                    <span>13°<small>10</small></span><span>14°<small>12</small></span><span>13°<small>14</small></span>
-                    <span>11°<small>16</small></span><span>9°<small>18</small></span>
-                  </div>
                 </div>
-                <div class="widget widget--calendar">
+                <div class="widget widget--calendar widget--compact">
                   <div class="widget__head">${icon("i-calendar", "ico--tiny")} Dziś</div>
                   <ul>
                     <li><i></i><span>10:00</span> Projekt Lumino</li>
-                    <li><i style="background:#ffca58"></i><span>13:30</span> Spotkanie z zespołem</li>
-                    <li><i style="background:#7cf0dd"></i><span>18:00</span> Siłownia</li>
+                    <li><i style="background:#ffca58"></i><span>13:30</span> Zespół</li>
                   </ul>
                 </div>
-                <div class="widget widget--player" data-app="spotify">
+                <div class="widget widget--player widget--compact" data-app="spotify">
                   <span class="cover cv-1 widget-cover"></span>
                   <div style="min-width:0;flex:1">
                     <b data-w="title">Spotify</b><span data-w="artist">Wybierz utwór</span>
@@ -65,8 +63,8 @@
                   <button class="wp-btn" data-w="play" aria-label="Odtwórz">${icon("i-play")}</button>
                 </div>
               </div>
-              <div class="app-grid">
-                ${androidApps.slice(1, 13).map(a => appTile(a)).join("")}
+              <div class="app-grid app-grid--tablet-home">
+                ${androidApps.slice(0, 20).map(a => appTile(a)).join("")}
               </div>
             ` : `
               <div class="glance">

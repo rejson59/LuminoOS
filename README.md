@@ -128,6 +128,17 @@ Wszystkie ikony (`js/core.js` → `brandIcon`, styl `css/glass.css` → `.bi`) s
 krawędź, miękki cień i podniesienie pod kursorem. Dotyczy to pulpitu, docku,
 szuflady aplikacji, ekranu blokady i widgetów.
 
+### Ikony „liquid glass”
+Każda ikona to **ten sam szklany kwadrat** (zaokrąglone rogi ~31%, bez kół),
+mocno przezroczysty, z jasną krawędzią i refleksem światła — w środku zostaje
+tylko kolorowy glif marki (kolor ustawia `--ink`). Definicje: `js/core.js`
+(`brandIcon`), styl: `css/glass.css` (sekcja 7).
+
+### Tablet: komplet aplikacji na jednym ekranie
+`14` aplikacji w siatce **5 kolumn** + 3 kompaktowe widgety w jednym rzędzie.
+Siatka trzyma się w ramce (sprawdzane testem `tools/layout-check.js`), a pełna
+lista aplikacji jest w szufladzie (pasek gestów).
+
 ### Serwer bez cache
 `tools/serve.py` wysyła `Cache-Control: no-store`, więc **każde odświeżenie pokazuje
 najnowszą wersję** — bez `Ctrl+Shift+R`. Uruchomienie: `npm start`.

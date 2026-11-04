@@ -657,3 +657,75 @@
 .clock-widget--home{margin:2px 0 8px;text-align:left;padding-left:6px}
 .clock-widget--home .clock-widget__time{font-size:40px;font-weight:300;letter-spacing:-1.8px}
 .clock-widget--home .clock-widget__date{font-size:10.5px;margin-top:3px;color:rgba(255,255,255,.7)}
+
+
+/* ============================================================
+   TABLET — layout, który mieści wszystkie aplikacje
+   ============================================================ */
+.android[data-device="tablet"]{
+  --icon:50px;
+  --gap:12px;
+  --radius:15px;
+}
+.android[data-device="tablet"] .page{
+  padding:6px 18px 0;
+  overflow:hidden;
+}
+
+/* górny pasek: kompaktowy */
+.android[data-device="tablet"] .tablet-top{margin:0 0 8px;gap:10px}
+.android[data-device="tablet"] .tablet-greeting b{font-size:15px}
+.android[data-device="tablet"] .tablet-greeting span{font-size:9.5px}
+.android[data-device="tablet"] .search-pill{width:150px;padding:6px 12px;font-size:10px}
+.tablet-all{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;
+  border:0;cursor:pointer;color:#fff;font-size:12px;
+  background:rgba(255,255,255,.18);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.24) inset,0 6px 16px -10px rgba(0,0,0,.6);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  transition:transform 200ms var(--ease-ios), background-color 200ms;
+}
+.tablet-all:hover{transform:scale(1.06);background:rgba(255,255,255,.28)}
+
+/* widgety: jeden rząd, kompaktowe */
+.android[data-device="tablet"] .widgets{
+  grid-template-columns:1fr 1fr 1.25fr;
+  gap:8px;
+  margin-bottom:10px;
+}
+.android[data-device="tablet"] .widget--compact{padding:8px 10px;border-radius:14px}
+.android[data-device="tablet"] .widget--compact .widget__row b{font-size:18px}
+.android[data-device="tablet"] .widget--compact .widget__row span{font-size:8.5px}
+.android[data-device="tablet"] .widget--compact .sun{width:16px;height:16px}
+.android[data-device="tablet"] .widget--compact .widget__head{margin-bottom:4px;font-size:9px}
+.android[data-device="tablet"] .widget--compact li{font-size:8.5px;gap:5px}
+.android[data-device="tablet"] .widget--compact li span{font-size:8px}
+.android[data-device="tablet"] .widget--compact .cover{width:26px;height:26px;border-radius:7px}
+.android[data-device="tablet"] .widget--compact b[data-w="title"]{font-size:9.5px}
+.android[data-device="tablet"] .widget--compact span[data-w="artist"]{font-size:8px}
+.android[data-device="tablet"] .widget--compact .wp-btn{width:26px;height:26px;font-size:11px}
+
+/* siatka: 5 kolumn × 4 rzędy = 20 aplikacji, zawsze widoczna */
+.android[data-device="tablet"] .app-grid--tablet-home{
+  grid-template-columns:repeat(5,1fr);
+  gap:16px 8px;
+  margin-top:0;
+  padding-bottom:0;
+  flex:1;
+  align-content:start;
+}
+.android[data-device="tablet"] .app-grid--tablet-home .app{gap:5px}
+.android[data-device="tablet"] .app-grid--tablet-home .app__label{font-size:9.5px}
+.android[data-device="tablet"] .app-grid--tablet-home .bi{
+  width:var(--icon);height:var(--icon);
+}
+
+/* dock tabletu: mniejszy, żeby nie zabierał miejsca siatce */
+.android[data-device="tablet"] .dock{
+  margin:6px 60px 0;padding:6px 10px;border-radius:22px;
+}
+.android[data-device="tablet"] .dock .dock-app .bi{width:38px;height:38px}
+
+/* wysokość ramki: więcej miejsca dla treści */
+.device--tablet .frame{height:calc(var(--tablet-h) + 26px)}

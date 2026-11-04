@@ -377,84 +377,81 @@ button:active{transform:scale(.96)}
 
 
 /* ============================================================
-   7. SZKLANE IKONY APLIKACJI
-   Gradientowa „szkłana” płytka: rozświetlona góra, refleks,
-   miękka krawędź, cień i delikatna przezroczystość.
+   7. IKONY: LIQUID GLASS
+   Wszystkie ikony to ten sam szklany kwadrat (squircle) — bez kół.
+   Środek jest mocno przezroczysty, więc widoczna jest tylko
+   kolorowa ikona (glif). Krawędź: jasna, „mokra” obwódka + refleks.
    ============================================================ */
 .bi{
+  --radius-icon: 31%;
   position:relative;
-  border-radius:30%;
-  background-image:
-    linear-gradient(160deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.08) 34%, rgba(255,255,255,0) 60%),
-    var(--bg, linear-gradient(150deg,#8ea2c4,#3a4356));
-  background-blend-mode:overlay, normal;
+  border-radius:var(--radius-icon)!important;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,.10) 38%, rgba(255,255,255,.045) 100%);
+  background-color:rgba(255,255,255,.10);
   box-shadow:
-    0 1px 0 rgba(255,255,255,.55) inset,
-    0 -1px 0 rgba(0,0,0,.18) inset,
-    0 0 0 .5px rgba(255,255,255,.35) inset,
-    0 10px 22px -10px rgba(0,0,0,.65),
-    0 2px 6px rgba(0,0,0,.28);
+    0 0 0 .5px rgba(255,255,255,.42) inset,          /* jasna krawędź */
+    0 1px 0 rgba(255,255,255,.55) inset,             /* highlight góra */
+    0 -1px 0 rgba(0,0,0,.10) inset,
+    0 10px 22px -12px rgba(0,0,0,.55),
+    0 2px 8px -2px rgba(0,0,0,.28);
+  backdrop-filter:blur(8px) saturate(180%);
+  -webkit-backdrop-filter:blur(8px) saturate(180%);
   isolation:isolate;
-  transition:transform 320ms var(--ease-ios), box-shadow 320ms var(--ease-soft), filter 320ms var(--ease-soft);
+  overflow:hidden;
+  transition:transform 340ms var(--ease-ios), box-shadow 340ms var(--ease-soft),
+             background-color 340ms var(--ease-soft), filter 340ms var(--ease-soft);
   will-change:transform;
 }
-.bi.bi--circle{border-radius:50%}
+/* każdy wariant koloru znika — zostaje szkło */
+.bi.bi--circle{border-radius:var(--radius-icon)!important}
 
-/* refleks świetlny w górnej części (szkło) */
+/* refleks „liquid”: rozświetlona górna część + smuga światła */
 .bi::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
   background:
-    radial-gradient(120% 70% at 26% 4%, rgba(255,255,255,.62), rgba(255,255,255,.14) 42%, transparent 68%),
-    radial-gradient(90% 60% at 82% 92%, rgba(255,255,255,.20), transparent 62%);
-  opacity:.85;
-  z-index:0;
+    radial-gradient(120% 74% at 24% 2%, rgba(255,255,255,.55), rgba(255,255,255,.12) 44%, transparent 70%),
+    linear-gradient(112deg, transparent 34%, rgba(255,255,255,.18) 48%, transparent 60%);
+  opacity:.9;
 }
-/* cienka obwódka + połysk krawędzi */
+/* druga warstwa: „mokra” obwódka + cień narożny = efekt szkła 3D */
 .bi::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:0 0 0 1px rgba(255,255,255,.28) inset;
-  background:linear-gradient(125deg, rgba(255,255,255,.34), transparent 30%, transparent 72%, rgba(255,255,255,.14));
-  z-index:0;
-}
-.bi > svg, .bi > .cal-day{position:relative;z-index:1}
-.bi svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
-.bi svg.lu-chrome{filter:none}
-
-/* Calendar z dzisiejszą datą: biała płytka + niebieski pasek */
-.bi.lu-cal{background-image:linear-gradient(160deg,#fff,#f0f4fb);backdrop-filter:blur(6px)}
-.bi.lu-cal::before{background:linear-gradient(180deg, rgba(26,115,232,.96) 0 22%, transparent 22%);opacity:1}
-.bi.lu-cal::after{box-shadow:0 0 0 1px rgba(26,115,232,.18) inset}
-.bi.lu-cal .cal-day{color:#1a73e8;font-weight:700}
-
-/* Gmail / Sklep: jasne płytki, delikatne szkło */
-.bi.lu-gmail, .bi.lu-store{background-image:linear-gradient(160deg,#fff,#eef3fb)}
-.bi.lu-gmail svg, .bi.lu-store svg{filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.18))}
-
-/* podświetlenie i uniesienie pod kursorem */
-.app:hover .bi{
-  transform:translateY(-4px) scale(1.07);
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
   box-shadow:
-    0 1px 0 rgba(255,255,255,.7) inset,
-    0 0 0 .5px rgba(255,255,255,.5) inset,
-    0 18px 30px -12px rgba(0,0,0,.6),
-    0 0 22px -4px rgba(150,205,255,.45);
-  filter:saturate(1.12) brightness(1.06);
+    0 0 0 1px rgba(255,255,255,.16) inset,
+    0 6px 14px -10px rgba(0,0,0,.6) inset;
+  background:linear-gradient(150deg, rgba(255,255,255,.22), transparent 38%, transparent 74%, rgba(255,255,255,.10));
 }
+
+/* glif — jedyny kolorowy element ikony */
+.bi > svg{
+  position:relative;z-index:1;
+  width:58%;height:58%;
+  color:var(--ink, #e8eefc);
+  fill:currentColor;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));
+}
+.bi > svg .lu-day{fill:currentColor;filter:none}
+.bi > svg text{filter:none}
+
+/* hover: uniesienie + mocniejsze szkło i poświata glifu */
+.app:hover .bi,
 .dock-app:hover .bi{
-  transform:translateY(-3px) scale(1.1);
-  filter:saturate(1.15) brightness(1.08);
-  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 16px 28px -12px rgba(0,0,0,.6), 0 0 20px -4px rgba(160,215,255,.5);
+  transform:translateY(-4px) scale(1.06);
+  background-color:rgba(255,255,255,.20);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.55) inset,
+    0 1px 0 rgba(255,255,255,.7) inset,
+    0 18px 30px -14px rgba(0,0,0,.6),
+    0 0 26px -6px rgba(180,220,255,.45);
 }
-.app:active .bi, .dock-app:active .bi{transform:translateY(-1px) scale(.97)}
+.app:hover .bi > svg,
+.dock-app:hover .bi > svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.5)) brightness(1.1)}
+.app:active .bi,.dock-app:active .bi{transform:translateY(-1px) scale(.97)}
 
-/* ikony w oknach/starcie Windows: mniejsza skala efektów */
-.start-app .bi, .notif .bi, .sp-tile .bi{border-radius:26%}
-.start-app:hover .bi{transform:scale(1.06)}
-
-/* dock: wyraźne szkło pod ikonami */
-.dock{gap:6px}
-.dock .dock-app{background:none!important;box-shadow:none!important}
+/* mniejsze ikony (powiadomienia, Start, miniodtwarzacz) */
+.notif .bi, .start-app .bi, .sp-tile .bi, .sp-playing .bi, .win-toast .bi{border-radius:30%!important}
 
 @media (prefers-reduced-motion:reduce){
-  .bi, .app:hover .bi, .dock-app:hover .bi{transform:none!important;filter:none!important}
+  .bi,.app:hover .bi,.dock-app:hover .bi{transform:none!important;filter:none!important}
 }
